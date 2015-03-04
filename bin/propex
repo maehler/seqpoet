@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+
+import propex
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('genomedir', help = ('directory containing the genome '
+        'files to use (FASTA or GenBank format)'))
+    parser.add_argument('probe', help = ('FASTA file containing either a '
+        'single sequence (probe) or a pair of sequences (primer pair)'))
+
+    parser.add_argument('--version', help = ('print version and exit'),
+        action='version', version='%(prog)s v{0}'.format(propex.__version__))
+
+    args = parser.parse_args()
+
+    args.genomedir = os.path.abspath(args.genomedir)
+    args.probe = os.path.abspath(args.probe)
+
+    if not os.path.exists(args.genomedir):
+        parser.error('file or directory not found: {}'.format(args.genomedir))
+    if not os.path.isdir(args.genomedir):
+        parser.error('argument genomedir must be a directory')
+    if not os.path.exists(args.probe):
+        parser.error('file or directory not found: {}'.format(args.probe))
+
+    return args
+
+def main():
+    args = parse_args()
+
+if __name__ == '__main__':
+    main()
