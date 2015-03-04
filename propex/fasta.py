@@ -1,10 +1,20 @@
+"""The FASTA module contains classes for accessing FASTA files and
+FASTA index files.
+"""
+
 import collections
 import itertools
 import os
 
 class FastaIndex(object):
+    """Represents an index for a FASTA file."""
 
     def __init__(self, fname):
+        """FastaIndex constructor.
+
+        Args:
+            fname: filename of the FASTA index
+        """
         self.filename = fname
         if not os.path.isfile(fname):
             self.index = self.create_index()
@@ -12,6 +22,23 @@ class FastaIndex(object):
             self.index = self.parse_index()
 
     def parse_index(self):
+        """Parse a FASTA index file
+
+        Parse a FASTA index file to match the format of samtools faidx.
+
+        Returns:
+            an OrderedDict with sequence names (headers) as keys and
+            dicts as values. The value dicts have the following members:
+
+            name:    the sequence name (FASTA header line)
+            length:  sequence length
+            offset:  the byte offset of the first base of the sequence
+            nbase:   number of bases per line of sequence
+            linelen: number of bytes per line of sequence
+        Raises:
+            ValueError: if the file cannot be parsed, if the file contains
+                        duplicated headers or if the file is empty.
+        """
         index = collections.OrderedDict()
         with open(self.filename) as f:
             for line in f:
@@ -30,6 +57,19 @@ class FastaIndex(object):
         return index
 
     def create_index(self):
+        """Generate a FASTA index from a FASTA file.
+
+        This function assumes that the fasta index filename in the constructor
+        has a corresponding FASTA file without the ".fai" (or any other)
+        extension.
+
+        Returns:
+            see parse_index
+        Raises:
+            ValueError: if the FASTA file contains duplicate headers or
+                        if the FASTA file has sequence entries where lines
+                        have different lengths (not counting the last line).
+        """
         fasta_fname = os.path.splitext(self.filename)[0]
         index = collections.OrderedDict()
         header_offset = 0
@@ -97,8 +137,15 @@ class FastaIndex(object):
             .format(**x) for x in self.index.itervalues())
 
 class FastaRecord(object):
+    """Represent a FASTA record."""
 
     def __init__(self, seq, header):
+        """FastaRecord constructor.
+
+        Args:
+            seq: the sequence of the record
+            header: the name (or FASTA header) of the record
+        """
         self.seq = seq
         self.header = header
 
@@ -110,12 +157,25 @@ class FastaRecord(object):
             self.seq[:5], len(self))
 
 class Fasta(object):
+    """Represent a FASTA file."""
 
     def __init__(self, fname):
+        """Fasta constructor.
+
+        Args:
+            fname: filename of the FASTA file
+        """
         self.filename = fname
         self.index = FastaIndex(self.filename + '.fai')
 
     def get_record(self, key):
+        """Get a single FASTA record.
+
+        Args:
+            key: an integer.
+        Returns:
+            the FastaRecord stored at key.
+        """
         indexdict = self.index[key]
         if indexdict['length'] == 0:
             return FastaRecord('', indexdict['name'])
@@ -131,6 +191,11 @@ class Fasta(object):
         return FastaRecord(seq, indexdict['name'])
 
     def generate_records(self):
+        """FastaRecord generator.
+
+        Returns:
+            a FastaRecord generator.
+        """
         for i in xrange(len(self.index)):
             yield self.get_record(i)
 
