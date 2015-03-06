@@ -9,6 +9,7 @@ class TestFastaIndex:
         testdir = os.path.dirname(__file__)
         self.valid_index = os.path.join(testdir, 'data', 'valid_index.fasta.fai')
         self.invalid_index = os.path.join(testdir, 'data', 'uneven.fasta.fai')
+        self.empty_index = os.path.join(testdir, 'data', 'empty.fasta.fai')
 
     def test_faidx_length(self):
         faidx = propex.FastaIndex(self.valid_index)
@@ -28,10 +29,27 @@ class TestFastaIndex:
                                         'aaa\t44\t127\t28\t29',
                                         'bbb\t73\t178\t28\t29'])
 
+    def test_keys(self):
+        faidx = propex.FastaIndex(self.valid_index)
+        assert faidx.keys() == ['seq1', 'seq2', 'aaa', 'bbb']
+
+    def test_iter(self):
+        faidx = propex.FastaIndex(self.valid_index)
+        for k, v in faidx:
+            pass
+
+    def test_repr(self):
+        faidx = propex.FastaIndex(self.valid_index)
+        assert repr(faidx) == '<FastaIndex for {0}>' \
+            .format(os.path.splitext(self.valid_index)[0])
+
+    @raises(ValueError)
+    def test_nonexisting_index(self):
+        faidx = propex.FastaIndex(self.invalid_index)
+
     @raises(ValueError)
     def test_empty_index(self):
-        faidx = propex.FastaIndex(self.invalid_index)
-        print faidx
+        faidx = propex.FastaIndex(self.empty_index)
 
     @raises(ValueError)
     def test_incorrect_filetype(self):
@@ -69,6 +87,7 @@ class TestFasta:
         fasta = propex.Fasta(self.valid_index)
         assert len(fasta[1]) == 28
         assert fasta[1].seq == 'cacaggaggatagaccagatgacagata'
+        assert repr(fasta[1]) == '<FastaRecord \'seq2\': cacag... (28 nt)>'
 
     @raises(IndexError)
     def test_invalid_index(self):
