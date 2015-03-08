@@ -37,3 +37,37 @@ class TestGenBank:
     def test_load_directory(self):
         gbs = [propex.GenBank(os.path.join(self.genbankdir, x)) \
             for x in os.listdir(self.genbankdir)]
+
+class TestGenBankFeature:
+
+    def test_qualifier_names(self):
+        f = {'name': 'lalala'}
+        gbf = propex.GenBankFeature('CDS', '123..679', f)
+        assert gbf.get_qualifier('name') == f['name'], \
+            'wrong name: {0}'.format(gbf.get_qualifier('name'))
+
+    def test_parse_feature(self):
+        feature = '''     CDS             complement(52625..53704)
+                     /gene="recF"
+                     /locus_tag="LMG718_02589"
+                     /inference="ab initio prediction:Prodigal:2.60"
+                     /inference="similar to AA sequence:UniProtKB:Q9RVE0"
+                     /codon_start=1
+                     /transl_table=11
+                     /product="DNA replication and repair protein RecF"
+                     /translation="MKLKQIELKNFRNYEDLKLDFHPNLNIFLGQNAQGKTNILEAIH
+                     FLALTRSHRTSHDKELICWSGQEMKVSGLVEKAHVNVPLEVQLSSKGRIAKANHLKEN
+                     RLADYIGQLKILMFAPENLELVKGSPATRRRFMDIELGQIHAVYLYDSMRYNRALKER
+                     NAYLKFDQAKIDKNFLTVLDEQLAEHGNKIMFERKTFIEKLEIHAKKIHEQLTHGLET
+                     LKITYNQNVKTDFSKELLSRQDHDIFRHQTTVGPHRDDLQFFINEINVADFGSQGQQR
+                     TVTLSIKLAEIDLIFEETGEYPILLLDDVMSELDNHRQLDLIETSLGKTQTFITTTTL
+                     DHLKNLPENLSIFHVTDGTIEKEKE"'''
+        gbf = propex.GenBankFeature.from_string(feature)
+
+        assert gbf.feature_type == 'CDS'
+        gbf_gene = gbf.get_qualifier('gene')
+        assert gbf_gene == 'recF', 'gene name ({0}) is wrong'.format(gbf_gene)
+        gbf_inference = gbf.get_qualifier('inference')
+        assert len(gbf_inference) == 2
+        assert gbf_inference == ['ab initio prediction:Prodigal:2.60',
+                                 'similar to AA sequence:UniProtKB:Q9RVE0']
