@@ -125,7 +125,7 @@ class GenBank(object):
                         indexdicts[-1]['CDS'] = []
                     indexdicts[-1]['CDS'].append({
                         'offset': offset,
-                        'location': line.strip().split()[1]
+                        'location': Location(line.strip().split()[1])
                     })
                 if line.strip().split()[0] == 'ORIGIN':
                     indexdicts[-1]['ORIGIN'] = offset + len(line)
