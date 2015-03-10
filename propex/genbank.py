@@ -1,6 +1,58 @@
 import collections
+import re
 
 from propex.sequence import Sequence
+
+class Location(object):
+
+    loc_complement = re.compile(r'^complement\((.+)\)$')
+
+    loc_single = re.compile(r'^(\d+)$')
+    loc_range = re.compile(r'^(\d+)\.\.(\d+)$')
+    loc_lower_unknown = re.compile(r'^<(\d+)\.\.(\d+)$')
+    loc_upper_unknown = re.compile(r'^(\d+)\.\.>(\d+)$')
+    loc_one_of = re.compile(r'^(\d+)\.(\d+)$')
+
+    def __init__(self, locstring):
+        self.locstring = locstring
+        self.loctype, self.start, self.stop, self.is_complement = self._parse()
+
+    def _regex_dict(self):
+        return {
+            'single': Location.loc_single,
+            'range': Location.loc_range,
+            'upper_unknown': Location.loc_lower_unknown,
+            'lower_unknown': Location.loc_upper_unknown,
+            'one_of': Location.loc_one_of
+        }
+
+    def _parse(self):
+        locstring = self.locstring
+        re_name = None
+        regex = None
+        is_complement = False
+        if Location.loc_complement.match(locstring):
+            is_complement = True
+            locstring = Location.loc_complement.match(locstring).group(1)
+        for name, r in self._regex_dict().iteritems():
+            if r.match(locstring) is not None:
+                re_name = name
+                regex = r
+        if re_name is None:
+            raise ValueError('unknown location string: {0}'.format(self.locstring))
+
+        if re_name == 'single':
+            start = stop = int(regex.match(locstring).group(1))
+        else:
+            start, stop = map(int, regex.match(locstring).groups())
+
+        return re_name, start, stop, is_complement
+
+    def __str__(self):
+        return self.locstring
+
+    def __repr__(self):
+        return '<Location: {0}>'.format(repr(self.locstring))
 
 class GenBankFeature(object):
 
@@ -39,7 +91,7 @@ class GenBankFeature(object):
                 value = qualifiers[-1][1] + line.strip('"')
                 qualifiers[-1] = (key, value)
 
-        return cls(ftype, location, dict(qualifiers))
+        return cls(ftype, Location(location), dict(qualifiers))
 
     def get_qualifier(self, qualifier_name):
         if qualifier_name not in self.qualifiers:

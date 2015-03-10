@@ -3,6 +3,7 @@ from nose.plugins.skip import SkipTest
 import os
 
 import propex
+from propex.genbank import Location
 
 class TestGenBank:
 
@@ -83,3 +84,99 @@ class TestGenBankFeature:
         assert gbf.get_qualifier('locus_tag') == ''
         assert gbf.get_qualifier('note') is None
         assert gbf.get_qualifier('random') == ''
+
+class TestLocationRegex:
+
+    def setUp(self):
+        # Examples taken from http://www.insdc.org/files/feature_table.html#3.4.3
+        self.single = '467'
+        self.range = '340..565'
+        self.lower_unknown = '<345..500'
+        self.lower_unknown2 = '<1..888'
+        self.upper_unknown = '1..>888'
+        self.one_of = '102.110'
+        self.complement = 'complement(340..565)'
+        self.complement2 = 'complement(467)'
+
+    def test_complement(self):
+        match = Location.loc_complement.match(self.complement)
+        assert match
+        assert match.group(1) == '340..565'
+        match = Location.loc_complement.match(self.complement2)
+        assert match
+        assert match.group(1) == '467'
+        match = Location.loc_complement.match(self.one_of)
+        assert match is None
+
+    def test_range_regex(self):
+        match = Location.loc_range.match(self.range)
+        assert Location.loc_one_of.match(self.range) is None
+        assert match
+        assert match.group(1) == '340'
+        assert match.group(2) == '565'
+
+    def test_single_regex(self):
+        match = Location.loc_single.match(self.single)
+        assert match
+        assert match.group(1) == '467'
+
+    def test_lower_unknown(self):
+        match1 = Location.loc_lower_unknown.match(self.lower_unknown)
+        match2 = Location.loc_lower_unknown.match(self.lower_unknown2)
+        assert match1
+        assert match1.group(1) == '345'
+        assert match1.group(2) == '500'
+        assert match2
+        assert match2.group(1) == '1'
+        assert match2.group(2) == '888'
+
+    def test_upper_unknown(self):
+        match = Location.loc_upper_unknown.match(self.upper_unknown)
+        assert match
+        assert match.group(1) == '1'
+        assert match.group(2) == '888'
+
+    def test_one_of(self):
+        match = Location.loc_one_of.match(self.one_of)
+        assert match
+        assert match.group(1) == '102'
+        assert match.group(2) == '110'
+
+class TestLocation:
+
+    def setUp(self):
+        # Examples taken from http://www.insdc.org/files/feature_table.html#3.4.3
+        self.single = '467'
+        self.range = '340..565'
+        self.lower_unknown = '<345..500'
+        self.lower_unknown2 = '<1..888'
+        self.upper_unknown = '1..>888'
+        self.one_of = '102.110'
+
+    def test_single(self):
+        loc = Location(self.single)
+        assert loc.start == 467
+        assert loc.stop == 467
+
+    def test_range(self):
+        loc = Location(self.range)
+        assert loc.start == 340
+        assert loc.stop == 565
+
+    def test_lower_unknown(self):
+        loc = Location(self.lower_unknown)
+        assert loc.start == 345
+        assert loc.stop == 500
+        loc = Location(self.lower_unknown2)
+        assert loc.start == 1
+        assert loc.stop == 888
+
+    def test_upper_unknown(self):
+        loc = Location(self.upper_unknown)
+        assert loc.start == 1
+        assert loc.stop == 888
+
+    def test_one_of(self):
+        loc = Location(self.one_of)
+        assert loc.start == 102
+        assert loc.stop == 110
