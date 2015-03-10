@@ -123,7 +123,10 @@ class GenBank(object):
                 if line.strip().split()[0] == 'CDS':
                     if 'CDS' not in indexdicts[-1]:
                         indexdicts[-1]['CDS'] = []
-                    indexdicts[-1]['CDS'].append(offset)
+                    indexdicts[-1]['CDS'].append({
+                        'offset': offset,
+                        'location': line.strip().split()[1]
+                    })
                 if line.strip().split()[0] == 'ORIGIN':
                     indexdicts[-1]['ORIGIN'] = offset + len(line)
                 offset += len(line)
@@ -137,8 +140,8 @@ class GenBank(object):
         with open(self.filename) as f:
             # Get the CDSs
             if 'CDS' in locus_index:
-                for cds_offset in locus_index['CDS']:
-                    f.seek(cds_offset)
+                for cds in locus_index['CDS']:
+                    f.seek(cds['offset'])
                     cds_string = f.readline()
                     line = f.readline()
                     while line[5] == ' ':
