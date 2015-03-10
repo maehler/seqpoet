@@ -155,8 +155,8 @@ class FastaRecord(object):
         return len(self.seq)
 
     def __repr__(self):
-        return '<FastaRecord \'{0}\': {1}... ({2} nt)>'.format(self.header,
-            self.seq[:5], len(self))
+        return '<FastaRecord {0}: {1} ({2} nt)>'.format(repr(self.header),
+            repr(self.seq[:5]), len(self))
 
 class Fasta(object):
     """Represent a FASTA file."""

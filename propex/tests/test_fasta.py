@@ -87,7 +87,8 @@ class TestFasta:
         fasta = propex.Fasta(self.valid_index)
         assert len(fasta[1]) == 28
         assert fasta[1].seq == 'cacaggaggatagaccagatgacagata'
-        assert repr(fasta[1]) == '<FastaRecord \'seq2\': cacag... (28 nt)>'
+        assert repr(fasta[1]) == '<FastaRecord \'seq2\': <Sequence: cacag...> (28 nt)>', \
+            'wrong repr string: {0}'.format(repr(fasta[1]))
 
     @raises(IndexError)
     def test_invalid_index(self):
@@ -128,6 +129,16 @@ class TestFastaWithoutIndex:
         for i, record in enumerate(fasta):
             assert len(record) == lens[i], \
                 'sequence length ({0}) is not {1}'.format(len(record), lens[i])
+
+    def test_record_repr(self):
+        fasta = propex.Fasta(self.valid_noindex)
+        headers = ['seq1', 'seq2', 'aaa', 'bbb']
+        seqs = ['actaa', 'cacag', 'actga', 'acatc']
+        lens = [78, 28, 44, 73]
+        for i, record in enumerate(fasta):
+            assert repr(record) == '<FastaRecord {0}: <Sequence: {1}...> ({2} nt)>' \
+                .format(repr(headers[i]), seqs[i], lens[i]), \
+                'wrong repr string: {0}'.format(repr(record))
 
     @raises(ValueError)
     def test_duplicate_headers(self):
