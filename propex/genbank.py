@@ -21,6 +21,7 @@ class GenBankFeature(object):
                 key = line[1:i]
                 value = line[i + 1:].strip('"')
                 if i == -1:
+                    key = line[1:]
                     value = None
                 elif not value:
                     value = ''

@@ -71,3 +71,15 @@ class TestGenBankFeature:
         assert len(gbf_inference) == 2
         assert gbf_inference == ['ab initio prediction:Prodigal:2.60',
                                  'similar to AA sequence:UniProtKB:Q9RVE0']
+
+    def test_empty_qualifiers(self):
+        feature = '''     CDS             complement(52625..53704)
+                     /gene="recF"
+                     /locus_tag=
+                     /note
+                     /random=""'''
+        gbf = propex.GenBankFeature.from_string(feature)
+
+        assert gbf.get_qualifier('locus_tag') == ''
+        assert gbf.get_qualifier('note') is None
+        assert gbf.get_qualifier('random') == ''
