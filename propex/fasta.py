@@ -6,6 +6,8 @@ import collections
 import itertools
 import os
 
+from propex.sequence import Sequence
+
 class FastaIndex(object):
     """Represents an index for a FASTA file."""
 
@@ -178,7 +180,7 @@ class Fasta(object):
         """
         indexdict = self.index[key]
         if indexdict['length'] == 0:
-            return FastaRecord('', indexdict['name'])
+            return FastaRecord(Sequence(''), indexdict['name'])
         seq = ''
         with open(self.filename) as f:
             f.seek(indexdict['offset'])
@@ -188,7 +190,7 @@ class Fasta(object):
                 seq += f.read(indexdict['linelen']).strip()
             restbytes = indexdict['length'] % len(seq)
             seq += f.read(restbytes).strip()
-        return FastaRecord(seq, indexdict['name'])
+        return FastaRecord(Sequence(seq), indexdict['name'])
 
     def generate_records(self):
         """FastaRecord generator.

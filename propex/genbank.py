@@ -1,5 +1,7 @@
 import collections
 
+from propex.sequence import Sequence
+
 class GenBankFeature(object):
 
     def __init__(self, feature_type, location, qualifiers=None):
@@ -103,7 +105,7 @@ class GenBank(object):
                 line = f.readline()
                 seq += ''.join(line.strip().split()[1:])
 
-        return GenBankLocus(locus_index['name'], seq, features)
+        return GenBankLocus(locus_index['name'], Sequence(seq), features)
 
     def __iter__(self):
         for i in xrange(len(self)):

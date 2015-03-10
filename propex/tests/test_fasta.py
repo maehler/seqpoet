@@ -73,7 +73,7 @@ class TestFasta:
         for i, record in enumerate(fasta):
             assert record.header == headers[i], \
                 'header {0} is not {1}'.format(record.header, headers[i])
-            assert len(record.seq.replace(' ', '')) == len(record.seq), \
+            assert len(record.seq.seq.replace(' ', '')) == len(record.seq), \
                 'spaces in sequence'
 
     def test_sequence_length(self):
@@ -119,7 +119,7 @@ class TestFastaWithoutIndex:
         for i, record in enumerate(fasta):
             assert record.header == headers[i], \
                 'header {0} is not {1}'.format(record.header, headers[i])
-            assert len(record.seq.replace(' ', '')) == len(record.seq), \
+            assert len(record.seq.seq.replace(' ', '')) == len(record.seq), \
                 'spaces in sequence'
 
     def test_sequence_length(self):
@@ -149,7 +149,7 @@ class TestInvalidFasta:
         for i, record in enumerate(fasta):
             assert record.header == headers[i], \
                 'header {0} is not {1}'.format(record.header, headers[i])
-            assert len(record.seq.replace(' ', '')) == len(record.seq), \
+            assert len(record.seq.seq.replace(' ', '')) == len(record.seq), \
                 'spaces in sequence'
 
     def test_sequence_length(self):
