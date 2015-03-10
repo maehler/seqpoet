@@ -39,6 +39,22 @@ class TestGenBank:
         gbs = [propex.GenBank(os.path.join(self.genbankdir, x)) \
             for x in os.listdir(self.genbankdir)]
 
+    def test_features_at_location(self):
+        gb = propex.GenBank(self.lmg718)
+        f = gb.features_at_location(Location('800'), '718_Contig_100_c')
+        assert len(f) == 1, 'found {0} features, expected 1'.format(len(f))
+        assert f[0].get_qualifier('locus_tag') == 'LMG718_00002'
+
+        f = gb.features_at_location(Location('450..720'), '718_Contig_100_c')
+        assert len(f) == 1, 'found {0} features, expected 1'.format(len(f))
+        assert f[0].get_qualifier('locus_tag') == 'LMG718_00001'
+
+        f = gb.features_at_location(Location('8800..8900'), '718_Contig_102_c')
+        assert len(f) == 2, 'found {0} features, expected 2'.format(len(f))
+        assert f[0].get_qualifier('locus_tag') == 'LMG718_00019'
+        assert f[1].get_qualifier('locus_tag') == 'LMG718_00020'
+
+
 class TestGenBankFeature:
 
     def test_qualifier_names(self):

@@ -109,6 +109,8 @@ class GenBankLocus(object):
 
 class GenBank(object):
 
+    features = ['CDS']
+
     def __init__(self, fname):
         self.filename = fname
         self.index = self.index()
@@ -161,6 +163,24 @@ class GenBank(object):
                 seq += ''.join(line.strip().split()[1:])
 
         return GenBankLocus(locus_index['name'], Sequence(seq), features)
+
+    def features_at_location(self, location, locus=None):
+        features = []
+        with open(self.filename) as f:
+            for feat in GenBank.features:
+                for loc in self.index:
+                    if feat not in loc or (locus is not None and loc['name'] != locus):
+                        continue
+                    for feature in loc[feat]:
+                        if feature['location'].overlaps(location):
+                            f.seek(feature['offset'])
+                            feat_string = f.readline()
+                            line = f.readline()
+                            while line[5] == ' ':
+                                feat_string += line
+                                line = f.readline()
+                            features.append(GenBankFeature.from_string(feat_string))
+        return features
 
     def __iter__(self):
         for i in xrange(len(self)):
