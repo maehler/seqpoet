@@ -55,6 +55,19 @@ class TestFastaIndex:
     def test_incorrect_filetype(self):
         faidx = propex.FastaIndex(os.path.splitext(self.invalid_index)[0])
 
+class TestFastaRecord:
+
+    def test_string_sequence(self):
+        fr = propex.FastaRecord('accaggata', 'test')
+
+    @raises(ValueError)
+    def test_invalid_sequence(self):
+        fr = propex.FastaRecord('thisisnotdna', 'test')
+
+    @raises(TypeError)
+    def test_wrong_sequence_type(self):
+        fr = propex.FastaRecord(['a', 'c', 'g', 't'], 'test')
+
 class TestFasta:
 
     def setUp(self):

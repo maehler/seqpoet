@@ -145,10 +145,18 @@ class FastaRecord(object):
         """FastaRecord constructor.
 
         Args:
-            seq: the sequence of the record
-            header: the name (or FASTA header) of the record
+            seq: the sequence of the record represented either as a string
+                 or as a Sequence object.
+            header: the name (or FASTA header) of the record.
+        Raises:
+            TypeError: if the seq argument is not str or Sequence
         """
-        self.seq = seq
+        if isinstance(seq, basestring):
+            self.seq = Sequence(seq)
+        elif isinstance(seq, Sequence):
+            self.seq = seq
+        else:
+            raise TypeError('seq must be a string or a Sequence object')
         self.header = header
 
     def __len__(self):
