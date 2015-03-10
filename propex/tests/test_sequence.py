@@ -43,6 +43,11 @@ class TestSequence:
         assert s[-6:] == 'cacata'
         assert s[4:8] == 'acac'
 
+    def test_equality(self):
+        s = propex.Sequence(self.seq1)
+        assert s == self.seq1.lower()
+        assert s[:3] == propex.Sequence(self.seq1[:3])
+
     @raises(ValueError)
     def test_illegal_characters(self):
         s = propex.Sequence(self.illegal)
