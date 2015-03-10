@@ -206,6 +206,19 @@ class TestLocation:
         assert loc.stop == 467
         assert loc.is_complement
 
+    def test_overlap(self):
+        loc1 = Location('100..200')
+        loc2 = Location('150..250')
+        loc3 = Location('150')
+        loc4 = Location('200..300')
+        loc5 = Location('201..301')
+        assert loc1.overlaps(loc2)
+        assert loc1.overlaps(loc3)
+        assert loc1.overlaps(loc4)
+        assert not loc3.overlaps(loc4)
+        assert not loc4.overlaps(loc3)
+        assert not loc1.overlaps(loc5)
+
     @raises(ValueError)
     def test_invalid_location(self):
         loc = Location('123..noloc')

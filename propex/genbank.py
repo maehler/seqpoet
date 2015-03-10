@@ -48,6 +48,9 @@ class Location(object):
 
         return re_name, start, stop, is_complement
 
+    def overlaps(self, loc2):
+        return self.start <= loc2.stop and loc2.start <= self.stop
+
     def __str__(self):
         return self.locstring
 
