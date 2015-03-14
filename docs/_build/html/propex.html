@@ -1,0 +1,479 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>propex package &mdash; propex 0.1.0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="propex 0.1.0 documentation" href="index.html"/>
+        <link rel="prev" title="Welcome to propex’s documentation!" href="index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> propex</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">propex package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-propex.fasta">propex.fasta module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-propex.genbank">propex.genbank module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-propex.sequence">propex.sequence module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-propex">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">propex</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>propex package</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/propex.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="propex-package">
+<h1>propex package<a class="headerlink" href="#propex-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-propex.fasta">
+<span id="propex-fasta-module"></span><h2>propex.fasta module<a class="headerlink" href="#module-propex.fasta" title="Permalink to this headline">¶</a></h2>
+<p>The FASTA module contains classes for accessing FASTA files and
+FASTA index files.</p>
+<dl class="class">
+<dt id="propex.fasta.Fasta">
+<em class="property">class </em><code class="descclassname">propex.fasta.</code><code class="descname">Fasta</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/fasta.html#Fasta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.fasta.Fasta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Represent a FASTA file.</p>
+<dl class="method">
+<dt id="propex.fasta.Fasta.generate_records">
+<code class="descname">generate_records</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/fasta.html#Fasta.generate_records"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.fasta.Fasta.generate_records" title="Permalink to this definition">¶</a></dt>
+<dd><p>FastaRecord generator.</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>a FastaRecord generator.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="propex.fasta.Fasta.get_record">
+<code class="descname">get_record</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/fasta.html#Fasta.get_record"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.fasta.Fasta.get_record" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a single FASTA record.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>key: an integer.</dd>
+<dt>Returns:</dt>
+<dd>the FastaRecord stored at key.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="propex.fasta.FastaIndex">
+<em class="property">class </em><code class="descclassname">propex.fasta.</code><code class="descname">FastaIndex</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/fasta.html#FastaIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.fasta.FastaIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Represents an index for a FASTA file.</p>
+<dl class="method">
+<dt id="propex.fasta.FastaIndex.create_index">
+<code class="descname">create_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/fasta.html#FastaIndex.create_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.fasta.FastaIndex.create_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a FASTA index from a FASTA file.</p>
+<p>This function assumes that the fasta index filename in the constructor
+has a corresponding FASTA file without the &#8221;.fai&#8221; (or any other)
+extension.</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>see parse_index</dd>
+<dt>Raises:</dt>
+<dd><dl class="first last docutils">
+<dt>ValueError: if the FASTA file contains duplicate headers or</dt>
+<dd>if the FASTA file has sequence entries where lines
+have different lengths (not counting the last line).</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="propex.fasta.FastaIndex.keys">
+<code class="descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/fasta.html#FastaIndex.keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.fasta.FastaIndex.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="propex.fasta.FastaIndex.parse_index">
+<code class="descname">parse_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/fasta.html#FastaIndex.parse_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.fasta.FastaIndex.parse_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a FASTA index file</p>
+<p>Parse a FASTA index file to match the format of samtools faidx.</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd><p class="first">an OrderedDict with sequence names (headers) as keys and
+dicts as values. The value dicts have the following members:</p>
+<p class="last">name:    the sequence name (FASTA header line)
+length:  sequence length
+offset:  the byte offset of the first base of the sequence
+nbase:   number of bases per line of sequence
+linelen: number of bytes per line of sequence</p>
+</dd>
+<dt>Raises:</dt>
+<dd><dl class="first last docutils">
+<dt>ValueError: if the file cannot be parsed, if the file contains</dt>
+<dd>duplicated headers or if the file is empty.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="propex.fasta.FastaRecord">
+<em class="property">class </em><code class="descclassname">propex.fasta.</code><code class="descname">FastaRecord</code><span class="sig-paren">(</span><em>seq</em>, <em>header</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/fasta.html#FastaRecord"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.fasta.FastaRecord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Represent a FASTA record.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-propex.genbank">
+<span id="propex-genbank-module"></span><h2>propex.genbank module<a class="headerlink" href="#module-propex.genbank" title="Permalink to this headline">¶</a></h2>
+<p>Classes for dealing with GenBank files.</p>
+<dl class="class">
+<dt id="propex.genbank.GenBank">
+<em class="property">class </em><code class="descclassname">propex.genbank.</code><code class="descname">GenBank</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/genbank.html#GenBank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.genbank.GenBank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Represent a GenBank file.</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd>filename: the filename of the GenBank file.
+index: a list of dictionaries representing an index of the file.</dd>
+</dl>
+<dl class="attribute">
+<dt id="propex.genbank.GenBank.features">
+<code class="descname">features</code><em class="property"> = ['CDS']</em><a class="headerlink" href="#propex.genbank.GenBank.features" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="propex.genbank.GenBank.features_at_location">
+<code class="descname">features_at_location</code><span class="sig-paren">(</span><em>location</em>, <em>locus=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/genbank.html#GenBank.features_at_location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.genbank.GenBank.features_at_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get features at a location.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>location: a Location object.
+locus: a locus name. Ignored if it is None.</dd>
+<dt>Returns:</dt>
+<dd>a list of GenBankFeature objects. If locus is not None, only
+features in that locus are returned, otherwise all loci are
+searched. Returns an empty list if there are no features
+overlapping the location.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="propex.genbank.GenBank.get_locus">
+<code class="descname">get_locus</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/genbank.html#GenBank.get_locus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.genbank.GenBank.get_locus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a specific GenBankLocus object.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>index: the index of the wanted locus in the index.</dd>
+<dt>Returns:</dt>
+<dd>a GenBankLocus object.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="propex.genbank.GenBankFeature">
+<em class="property">class </em><code class="descclassname">propex.genbank.</code><code class="descname">GenBankFeature</code><span class="sig-paren">(</span><em>feature_type</em>, <em>location</em>, <em>qualifiers=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/genbank.html#GenBankFeature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.genbank.GenBankFeature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Represent a GenBank feature.</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd>feature_type: a string with the feature key.
+location: a Location object representing the lcoation of the feature.
+qualifiers: a dictionary of qualifiers of the feature.</dd>
+</dl>
+<dl class="classmethod">
+<dt id="propex.genbank.GenBankFeature.from_string">
+<em class="property">classmethod </em><code class="descname">from_string</code><span class="sig-paren">(</span><em>feature_string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/genbank.html#GenBankFeature.from_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.genbank.GenBankFeature.from_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a GenBankFeature instance from a string.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>feature_string: a string representing a GenBank feature.</dd>
+<dt>Returns:</dt>
+<dd>a GenBankFeature object.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="propex.genbank.GenBankFeature.get_qualifier">
+<code class="descname">get_qualifier</code><span class="sig-paren">(</span><em>qualifier_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/genbank.html#GenBankFeature.get_qualifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.genbank.GenBankFeature.get_qualifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a feature qualifier.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>qualifier_name: a string representing a qualifier.</dd>
+<dt>Returns:</dt>
+<dd>the value of the qualifier.</dd>
+<dt>Raises:</dt>
+<dd><dl class="first last docutils">
+<dt>KeyError: if the feature does not have a qualifier called</dt>
+<dd>qualifier_name.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="propex.genbank.GenBankLocus">
+<em class="property">class </em><code class="descclassname">propex.genbank.</code><code class="descname">GenBankLocus</code><span class="sig-paren">(</span><em>name</em>, <em>seq</em>, <em>features=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/genbank.html#GenBankLocus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.genbank.GenBankLocus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A simple class representing a GenBank locus.</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd>name: locus name.
+seq: a Sequence object with the sequence of the locus.</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="propex.genbank.Location">
+<em class="property">class </em><code class="descclassname">propex.genbank.</code><code class="descname">Location</code><span class="sig-paren">(</span><em>locstring</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/genbank.html#Location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.genbank.Location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Represent a GenBank feature location.</p>
+<p>For more information on locations, see
+<a class="reference external" href="http://www.insdc.org/files/feature_table.html#3.4">http://www.insdc.org/files/feature_table.html#3.4</a></p>
+<p>As of now, not all types of locations are implemented. Those
+that are implemented are single bases, ranges, ranges with
+unknown lower bound, ranges with unknown upper bound and
+locations where the exact position is unknown, but it is one
+of the bases between two positions.</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd><p class="first">locstring: the string representation of the location.
+loctype: the type of the location.
+start: the start position (including).
+stop: the stop position (including).
+is_complement: boolean indicating whether the position represents</p>
+<blockquote class="last">
+<div>the complement of the sequence.</div></blockquote>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="propex.genbank.Location.loc_complement">
+<code class="descname">loc_complement</code><em class="property"> = &lt;_sre.SRE_Pattern object&gt;</em><a class="headerlink" href="#propex.genbank.Location.loc_complement" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="propex.genbank.Location.loc_lower_unknown">
+<code class="descname">loc_lower_unknown</code><em class="property"> = &lt;_sre.SRE_Pattern object&gt;</em><a class="headerlink" href="#propex.genbank.Location.loc_lower_unknown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="propex.genbank.Location.loc_one_of">
+<code class="descname">loc_one_of</code><em class="property"> = &lt;_sre.SRE_Pattern object&gt;</em><a class="headerlink" href="#propex.genbank.Location.loc_one_of" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="propex.genbank.Location.loc_range">
+<code class="descname">loc_range</code><em class="property"> = &lt;_sre.SRE_Pattern object&gt;</em><a class="headerlink" href="#propex.genbank.Location.loc_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="propex.genbank.Location.loc_single">
+<code class="descname">loc_single</code><em class="property"> = &lt;_sre.SRE_Pattern object&gt;</em><a class="headerlink" href="#propex.genbank.Location.loc_single" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="propex.genbank.Location.loc_upper_unknown">
+<code class="descname">loc_upper_unknown</code><em class="property"> = &lt;_sre.SRE_Pattern object&gt;</em><a class="headerlink" href="#propex.genbank.Location.loc_upper_unknown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="propex.genbank.Location.overlaps">
+<code class="descname">overlaps</code><span class="sig-paren">(</span><em>loc2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/genbank.html#Location.overlaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.genbank.Location.overlaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test whether two locations overlap.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>loc2: a Location object.</dd>
+<dt>Returns:</dt>
+<dd>True if the locations overlap with at least one base,
+otherwise False.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-propex.sequence">
+<span id="propex-sequence-module"></span><h2>propex.sequence module<a class="headerlink" href="#module-propex.sequence" title="Permalink to this headline">¶</a></h2>
+<p>Classes and functions for representing DNA sequences.</p>
+<dl class="class">
+<dt id="propex.sequence.Sequence">
+<em class="property">class </em><code class="descclassname">propex.sequence.</code><code class="descname">Sequence</code><span class="sig-paren">(</span><em>seq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/sequence.html#Sequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.sequence.Sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Represent a DNA sequence.</p>
+<dl class="method">
+<dt id="propex.sequence.Sequence.revcomp">
+<code class="descname">revcomp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/propex/sequence.html#Sequence.revcomp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#propex.sequence.Sequence.revcomp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the reverse complement of the sequence.</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>a sequence object representing the reverse complement
+of the sequence.</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="propex.sequence.Sequence.revcomp_trans">
+<code class="descname">revcomp_trans</code><em class="property"> = '\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !&quot;#$%&amp;\'()*+,-./0123456789:;&lt;=&gt;?&#64;ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`tbgdefchijklmnopqrsauvwxyz{|}~\x7f\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa0\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff'</em><a class="headerlink" href="#propex.sequence.Sequence.revcomp_trans" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-propex">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-propex" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Welcome to propex’s documentation!"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Author.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
