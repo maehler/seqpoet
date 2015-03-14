@@ -1,4 +1,8 @@
+#-*- encoding: utf-8 -*-
 """Classes for dealing with GenBank files.
+
+.. module:: genbank
+.. moduleauthor:: Niklas Mähler <niklas.mahler@gmail.com>
 """
 
 import collections
@@ -19,28 +23,35 @@ class Location(object):
     locations where the exact position is unknown, but it is one
     of the bases between two positions.
 
-    Attributes:
-        locstring: the string representation of the location.
-        loctype: the type of the location.
-        start: the start position (including).
-        stop: the stop position (including).
-        is_complement: boolean indicating whether the position represents
+    Class attributes:
+        * locstring: the string representation of the location.
+        * loctype: the type of the location.
+        * start: the start position (including).
+        * stop: the stop position (including).
+        * is_complement: boolean indicating whether the position represents
                        the complement of the sequence.
+
+    :param locstring: a GenBanke location string.
     """
 
+    #: Regular expression for finding complement locations.
     loc_complement = re.compile(r'^complement\((.+)\)$')
 
+    #: Regular expression for single base locations.
     loc_single = re.compile(r'^(\d+)$')
+    #: Regular expression for range locations,
     loc_range = re.compile(r'^(\d+)\.\.(\d+)$')
+    #: Regular expression for locations with unknown lower boundary.
     loc_lower_unknown = re.compile(r'^<(\d+)\.\.(\d+)$')
+    #: Regular expression for locations with unknown upper boundary.
     loc_upper_unknown = re.compile(r'^(\d+)\.\.>(\d+)$')
+    #: Regular expression for single base locations within a range.
     loc_one_of = re.compile(r'^(\d+)\.(\d+)$')
 
     def __init__(self, locstring):
         """Location constructor.
 
-        Args:
-            locstring: a GenBank location string.
+        :param locstring: a GenBank location string.
         """
         self.locstring = locstring
         self.loctype, self.start, self.stop, self.is_complement = self._parse()
@@ -92,16 +103,14 @@ class Location(object):
 
         return re_name, start, stop, is_complement
 
-    def overlaps(self, loc2):
-        """Test whether two locations overlap.
+    def overlaps(self, location):
+        """Test whether the location overlaps with another location.
 
-        Args:
-            loc2: a Location object.
-        Returns:
-            True if the locations overlap with at least one base,
+        :param location: a Location object.
+        :returns: True if the locations overlap with at least one base,
             otherwise False.
         """
-        return self.start <= loc2.stop and loc2.start <= self.stop
+        return self.start <= location.stop and location.start <= self.stop
 
     def __str__(self):
         return self.locstring
@@ -113,10 +122,15 @@ class GenBankFeature(object):
 
     """Represent a GenBank feature.
 
-    Attributes:
-        feature_type: a string with the feature key.
-        location: a Location object representing the lcoation of the feature.
-        qualifiers: a dictionary of qualifiers of the feature.
+    Class attributes
+        * feature_type: a string with the feature key.
+        * location: a Location object representing the lcoation of the feature.
+        * qualifiers: a dictionary of qualifiers of the feature.
+
+    :param feature_type: name of the feature.
+    :param location: a Location object.
+    :param qualifiers: a dictionary of qualifiers with the qualifier names as
+                       keys and the qualifier values as values.
     """
 
     def __init__(self, feature_type, location, qualifiers=None):
@@ -136,10 +150,8 @@ class GenBankFeature(object):
     def from_string(cls, feature_string):
         """Create a GenBankFeature instance from a string.
 
-        Args:
-            feature_string: a string representing a GenBank feature.
-        Returns:
-            a GenBankFeature object.
+        :param feature_string: a string representing a GenBank feature.
+        :returns: a GenBankFeature object.
         """
         lines = [x.strip() for x in feature_string.splitlines()]
         ftype, location = lines[0].strip().split()
@@ -174,12 +186,9 @@ class GenBankFeature(object):
     def get_qualifier(self, qualifier_name):
         """Get a feature qualifier.
 
-        Args:
-            qualifier_name: a string representing a qualifier.
-        Returns:
-            the value of the qualifier.
-        Raises:
-            KeyError: if the feature does not have a qualifier called
+        :param qualifier_name: a string representing a qualifier.
+        :returns: the value of the qualifier.
+        :raises: KeyError if the feature does not have a qualifier called
                       qualifier_name.
         """
         if qualifier_name not in self.qualifiers:
@@ -191,9 +200,12 @@ class GenBankLocus(object):
 
     """A simple class representing a GenBank locus.
 
-    Attributes:
-        name: locus name.
-        seq: a Sequence object with the sequence of the locus.
+    Class attributes:
+        * name: locus name.
+        * seq: a Sequence object with the sequence of the locus.
+
+    :param name: the name of the locus.
+    :param seq: a Sequence object representing the sequence of the locus.
     """
 
     def __init__(self, name, seq, features=None):
@@ -210,11 +222,14 @@ class GenBank(object):
 
     """Represent a GenBank file.
 
-    Attributes:
-        filename: the filename of the GenBank file.
-        index: a list of dictionaries representing an index of the file.
+    Class attributes:
+        * filename: the filename of the GenBank file.
+        * index: a list of dictionaries representing an index of the file.
+
+    :param fname: filename of the GenBank file.
     """
 
+    #: List of supported features.
     features = ['CDS']
 
     def __init__(self, fname):
@@ -257,10 +272,8 @@ class GenBank(object):
     def get_locus(self, index):
         """Get a specific GenBankLocus object.
 
-        Args:
-            index: the index of the wanted locus in the index.
-        Returns:
-            a GenBankLocus object.
+        :param index: the index of the wanted locus in the index.
+        :returns: a GenBankLocus object.
         """
         locus_index = self.index[index]
         locus_offset = locus_index['offset']
@@ -291,14 +304,12 @@ class GenBank(object):
     def features_at_location(self, location, locus=None):
         """Get features at a location.
 
-        Args:
-            location: a Location object.
-            locus: a locus name. Ignored if it is None.
-        Returns:
-            a list of GenBankFeature objects. If locus is not None, only
-            features in that locus are returned, otherwise all loci are
-            searched. Returns an empty list if there are no features
-            overlapping the location.
+        :param location: a Location object.
+        :param locus: a locus name. Ignored if it is None.
+        :returns: a list of GenBankFeature objects. If locus is not None, only
+                  features in that locus are returned, otherwise all loci are
+                  searched. Returns an empty list if there are no features
+                  overlapping the location.
         """
         features = []
         with open(self.filename) as f:

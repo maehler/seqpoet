@@ -1,4 +1,4 @@
-propex package
+propex package documentation
 ==============
 
 Submodules

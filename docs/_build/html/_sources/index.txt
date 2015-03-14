@@ -3,14 +3,21 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to propex's documentation!
-==================================
+propex: Prokaryotic Operon Extractor
+====================================
+
+The main purpose of propex is to provide a simple interface for operon
+extraction in prokaryotes. The secondary purpose of propex is to be a
+Python package that can be used for handling sequence data in the form
+of FASTA and GenBank files.
 
 Contents:
 
 .. toctree::
    :maxdepth: 4
 
+   insilico_pcr
+   operon_extraction
    propex
 
 
@@ -20,4 +27,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

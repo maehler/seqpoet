@@ -6,9 +6,14 @@ import string
 
 class Sequence(object):
     """Represent a DNA sequence.
+
+    :param seq: a string representing a DNA sequence. Bases A, C,
+                G, T and N are allowed.
+    :raises: ValuError if the sequence contains illegal characters.
     """
 
-    revcomp_trans = string.maketrans('acgt', 'tgca')
+    #: Reverse complement translation table.
+    _revcomp_trans = string.maketrans('acgt', 'tgca')
 
     def __init__(self, seq):
         """Sequence constructor.
@@ -30,11 +35,11 @@ class Sequence(object):
     def revcomp(self):
         """Get the reverse complement of the sequence.
 
-        Returns:
+        :returns:
             a sequence object representing the reverse complement
             of the sequence.
         """
-        return Sequence(self.seq.translate(Sequence.revcomp_trans)[::-1])
+        return Sequence(self.seq.translate(Sequence._revcomp_trans)[::-1])
 
     def __getitem__(self, key):
         return Sequence(self.seq[key])

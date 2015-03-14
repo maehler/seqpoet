@@ -1,110 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>propex.fasta &mdash; propex 0.1.0 documentation</title>
-  
-
-  
-  
-
-  
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-
-  
-  
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-
-  
-
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="propex 0.1.0 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
-
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-
+    <title>propex.fasta &mdash; propex 0.1.0 documentation</title>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        
-          <a href="../../index.html" class="fa fa-home"> propex</a>
-        
-        
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-      </div>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="propex 0.1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">propex 0.1.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        
-          
-          
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../propex.html">propex package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../propex.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../propex.html#module-propex.fasta">propex.fasta module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../propex.html#module-propex.genbank">propex.genbank module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../propex.html#module-propex.sequence">propex.sequence module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../propex.html#module-propex">Module contents</a></li>
-</ul>
-</li>
-</ul>
-
-          
-        
-      </div>
-      &nbsp;
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">propex</a>
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      
-    <li>propex.fasta</li>
-      <li class="wy-breadcrumbs-aside">
-        
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
             
   <h1>Source code for propex.fasta</h1><div class="highlight"><pre>
 <span class="sd">&quot;&quot;&quot;The FASTA module contains classes for accessing FASTA files and</span>
@@ -118,7 +58,10 @@
 <span class="kn">from</span> <span class="nn">propex.sequence</span> <span class="kn">import</span> <span class="n">Sequence</span>
 
 <div class="viewcode-block" id="FastaIndex"><a class="viewcode-back" href="../../propex.html#propex.fasta.FastaIndex">[docs]</a><span class="k">class</span> <span class="nc">FastaIndex</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Represents an index for a FASTA file.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Represents an index for a FASTA file.</span>
+
+<span class="sd">    :param fname: filename of the FASTA file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;FastaIndex constructor.</span>
@@ -133,11 +76,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_index</span><span class="p">()</span>
 
 <div class="viewcode-block" id="FastaIndex.parse_index"><a class="viewcode-back" href="../../propex.html#propex.fasta.FastaIndex.parse_index">[docs]</a>    <span class="k">def</span> <span class="nf">parse_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Parse a FASTA index file</span>
+        <span class="sd">&quot;&quot;&quot;Parse a FASTA index file to match the format of samtools faidx.</span>
 
-<span class="sd">        Parse a FASTA index file to match the format of samtools faidx.</span>
-
-<span class="sd">        Returns:</span>
+<span class="sd">        :returns:</span>
 <span class="sd">            an OrderedDict with sequence names (headers) as keys and</span>
 <span class="sd">            dicts as values. The value dicts have the following members:</span>
 
@@ -146,9 +87,9 @@
 <span class="sd">            offset:  the byte offset of the first base of the sequence</span>
 <span class="sd">            nbase:   number of bases per line of sequence</span>
 <span class="sd">            linelen: number of bytes per line of sequence</span>
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError: if the file cannot be parsed, if the file contains</span>
-<span class="sd">                        duplicated headers or if the file is empty.</span>
+<span class="sd">        :raises:</span>
+<span class="sd">            ValueError if the file cannot be parsed, if the file contains</span>
+<span class="sd">            duplicated headers or if the file is empty.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">index</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -174,12 +115,12 @@
 <span class="sd">        has a corresponding FASTA file without the &quot;.fai&quot; (or any other)</span>
 <span class="sd">        extension.</span>
 
-<span class="sd">        Returns:</span>
+<span class="sd">        :returns:</span>
 <span class="sd">            see parse_index</span>
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError: if the FASTA file contains duplicate headers or</span>
-<span class="sd">                        if the FASTA file has sequence entries where lines</span>
-<span class="sd">                        have different lengths (not counting the last line).</span>
+<span class="sd">        :raises:</span>
+<span class="sd">            ValueError if the FASTA file contains duplicate headers or</span>
+<span class="sd">            if the FASTA file has sequence entries where lines have different</span>
+<span class="sd">            lengths (not counting the last line of the sequence).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fasta_fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">index</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
@@ -248,7 +189,12 @@
             <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">itervalues</span><span class="p">())</span>
 </div>
 <div class="viewcode-block" id="FastaRecord"><a class="viewcode-back" href="../../propex.html#propex.fasta.FastaRecord">[docs]</a><span class="k">class</span> <span class="nc">FastaRecord</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Represent a FASTA record.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Represent a FASTA record.</span>
+
+<span class="sd">    :param seq: the sequence of the record represented either as a string</span>
+<span class="sd">                or as a Sequence object.</span>
+<span class="sd">    :raises: TypeError if the seq argument is not a string or a Sequence.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">,</span> <span class="n">header</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;FastaRecord constructor.</span>
@@ -290,10 +236,8 @@
 <div class="viewcode-block" id="Fasta.get_record"><a class="viewcode-back" href="../../propex.html#propex.fasta.Fasta.get_record">[docs]</a>    <span class="k">def</span> <span class="nf">get_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get a single FASTA record.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            key: an integer.</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            the FastaRecord stored at key.</span>
+<span class="sd">        :param key: an integer.</span>
+<span class="sd">        :returns: the FastaRecord stored at key.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">indexdict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">indexdict</span><span class="p">[</span><span class="s">&#39;length&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -312,8 +256,7 @@
 <div class="viewcode-block" id="Fasta.generate_records"><a class="viewcode-back" href="../../propex.html#propex.fasta.Fasta.generate_records">[docs]</a>    <span class="k">def</span> <span class="nf">generate_records</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;FastaRecord generator.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            a FastaRecord generator.</span>
+<span class="sd">        :returns: a FastaRecord generator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">)):</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_record</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
@@ -329,59 +272,43 @@
 </pre></div>
 
           </div>
-          <footer>
-  
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2015, Author.
-    </p>
-  </div>
-
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-  
-</footer>
         </div>
       </div>
-
-    </section>
-
-  </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'0.1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">propex 0.1.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Niklas Mähler.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.
+    </div>
+  </body>
 </html>

@@ -1,113 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>propex.genbank &mdash; propex 0.1.0 documentation</title>
-  
-
-  
-  
-
-  
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-
-  
-  
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-
-  
-
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="propex 0.1.0 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
-
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-
+    <title>propex.genbank &mdash; propex 0.1.0 documentation</title>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        
-          <a href="../../index.html" class="fa fa-home"> propex</a>
-        
-        
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-      </div>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="propex 0.1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">propex 0.1.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        
-          
-          
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../propex.html">propex package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../propex.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../propex.html#module-propex.fasta">propex.fasta module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../propex.html#module-propex.genbank">propex.genbank module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../propex.html#module-propex.sequence">propex.sequence module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../propex.html#module-propex">Module contents</a></li>
-</ul>
-</li>
-</ul>
-
-          
-        
-      </div>
-      &nbsp;
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">propex</a>
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      
-    <li>propex.genbank</li>
-      <li class="wy-breadcrumbs-aside">
-        
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
             
   <h1>Source code for propex.genbank</h1><div class="highlight"><pre>
+<span class="c">#-*- encoding: utf-8 -*-</span>
 <span class="sd">&quot;&quot;&quot;Classes for dealing with GenBank files.</span>
+
+<span class="sd">.. module:: genbank</span>
+<span class="sd">.. moduleauthor:: Niklas Mähler &lt;niklas.mahler@gmail.com&gt;</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">collections</span>
@@ -128,28 +72,35 @@
 <span class="sd">    locations where the exact position is unknown, but it is one</span>
 <span class="sd">    of the bases between two positions.</span>
 
-<span class="sd">    Attributes:</span>
-<span class="sd">        locstring: the string representation of the location.</span>
-<span class="sd">        loctype: the type of the location.</span>
-<span class="sd">        start: the start position (including).</span>
-<span class="sd">        stop: the stop position (including).</span>
-<span class="sd">        is_complement: boolean indicating whether the position represents</span>
+<span class="sd">    Class attributes:</span>
+<span class="sd">        * locstring: the string representation of the location.</span>
+<span class="sd">        * loctype: the type of the location.</span>
+<span class="sd">        * start: the start position (including).</span>
+<span class="sd">        * stop: the stop position (including).</span>
+<span class="sd">        * is_complement: boolean indicating whether the position represents</span>
 <span class="sd">                       the complement of the sequence.</span>
+
+<span class="sd">    :param locstring: a GenBanke location string.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c">#: Regular expression for finding complement locations.</span>
     <span class="n">loc_complement</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;^complement\((.+)\)$&#39;</span><span class="p">)</span>
 
+    <span class="c">#: Regular expression for single base locations.</span>
     <span class="n">loc_single</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;^(\d+)$&#39;</span><span class="p">)</span>
+    <span class="c">#: Regular expression for range locations,</span>
     <span class="n">loc_range</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;^(\d+)\.\.(\d+)$&#39;</span><span class="p">)</span>
+    <span class="c">#: Regular expression for locations with unknown lower boundary.</span>
     <span class="n">loc_lower_unknown</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;^&lt;(\d+)\.\.(\d+)$&#39;</span><span class="p">)</span>
+    <span class="c">#: Regular expression for locations with unknown upper boundary.</span>
     <span class="n">loc_upper_unknown</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;^(\d+)\.\.&gt;(\d+)$&#39;</span><span class="p">)</span>
+    <span class="c">#: Regular expression for single base locations within a range.</span>
     <span class="n">loc_one_of</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;^(\d+)\.(\d+)$&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locstring</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Location constructor.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            locstring: a GenBank location string.</span>
+<span class="sd">        :param locstring: a GenBank location string.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">locstring</span> <span class="o">=</span> <span class="n">locstring</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loctype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_complement</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse</span><span class="p">()</span>
@@ -201,16 +152,14 @@
 
         <span class="k">return</span> <span class="n">re_name</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">is_complement</span>
 
-<div class="viewcode-block" id="Location.overlaps"><a class="viewcode-back" href="../../propex.html#propex.genbank.Location.overlaps">[docs]</a>    <span class="k">def</span> <span class="nf">overlaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc2</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Test whether two locations overlap.</span>
+<div class="viewcode-block" id="Location.overlaps"><a class="viewcode-back" href="../../propex.html#propex.genbank.Location.overlaps">[docs]</a>    <span class="k">def</span> <span class="nf">overlaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test whether the location overlaps with another location.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            loc2: a Location object.</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            True if the locations overlap with at least one base,</span>
+<span class="sd">        :param location: a Location object.</span>
+<span class="sd">        :returns: True if the locations overlap with at least one base,</span>
 <span class="sd">            otherwise False.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;=</span> <span class="n">loc2</span><span class="o">.</span><span class="n">stop</span> <span class="ow">and</span> <span class="n">loc2</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;=</span> <span class="n">location</span><span class="o">.</span><span class="n">stop</span> <span class="ow">and</span> <span class="n">location</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span>
 </div>
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">locstring</span>
@@ -222,10 +171,15 @@
 
     <span class="sd">&quot;&quot;&quot;Represent a GenBank feature.</span>
 
-<span class="sd">    Attributes:</span>
-<span class="sd">        feature_type: a string with the feature key.</span>
-<span class="sd">        location: a Location object representing the lcoation of the feature.</span>
-<span class="sd">        qualifiers: a dictionary of qualifiers of the feature.</span>
+<span class="sd">    Class attributes</span>
+<span class="sd">        * feature_type: a string with the feature key.</span>
+<span class="sd">        * location: a Location object representing the lcoation of the feature.</span>
+<span class="sd">        * qualifiers: a dictionary of qualifiers of the feature.</span>
+
+<span class="sd">    :param feature_type: name of the feature.</span>
+<span class="sd">    :param location: a Location object.</span>
+<span class="sd">    :param qualifiers: a dictionary of qualifiers with the qualifier names as</span>
+<span class="sd">                       keys and the qualifier values as values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">qualifiers</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
@@ -245,10 +199,8 @@
 <div class="viewcode-block" id="GenBankFeature.from_string"><a class="viewcode-back" href="../../propex.html#propex.genbank.GenBankFeature.from_string">[docs]</a>    <span class="k">def</span> <span class="nf">from_string</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">feature_string</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a GenBankFeature instance from a string.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            feature_string: a string representing a GenBank feature.</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            a GenBankFeature object.</span>
+<span class="sd">        :param feature_string: a string representing a GenBank feature.</span>
+<span class="sd">        :returns: a GenBankFeature object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">feature_string</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()]</span>
         <span class="n">ftype</span><span class="p">,</span> <span class="n">location</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -283,12 +235,9 @@
 <div class="viewcode-block" id="GenBankFeature.get_qualifier"><a class="viewcode-back" href="../../propex.html#propex.genbank.GenBankFeature.get_qualifier">[docs]</a>    <span class="k">def</span> <span class="nf">get_qualifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qualifier_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get a feature qualifier.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            qualifier_name: a string representing a qualifier.</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            the value of the qualifier.</span>
-<span class="sd">        Raises:</span>
-<span class="sd">            KeyError: if the feature does not have a qualifier called</span>
+<span class="sd">        :param qualifier_name: a string representing a qualifier.</span>
+<span class="sd">        :returns: the value of the qualifier.</span>
+<span class="sd">        :raises: KeyError if the feature does not have a qualifier called</span>
 <span class="sd">                      qualifier_name.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">qualifier_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">qualifiers</span><span class="p">:</span>
@@ -300,9 +249,12 @@
 
     <span class="sd">&quot;&quot;&quot;A simple class representing a GenBank locus.</span>
 
-<span class="sd">    Attributes:</span>
-<span class="sd">        name: locus name.</span>
-<span class="sd">        seq: a Sequence object with the sequence of the locus.</span>
+<span class="sd">    Class attributes:</span>
+<span class="sd">        * name: locus name.</span>
+<span class="sd">        * seq: a Sequence object with the sequence of the locus.</span>
+
+<span class="sd">    :param name: the name of the locus.</span>
+<span class="sd">    :param seq: a Sequence object representing the sequence of the locus.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">seq</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
@@ -319,11 +271,14 @@
 
     <span class="sd">&quot;&quot;&quot;Represent a GenBank file.</span>
 
-<span class="sd">    Attributes:</span>
-<span class="sd">        filename: the filename of the GenBank file.</span>
-<span class="sd">        index: a list of dictionaries representing an index of the file.</span>
+<span class="sd">    Class attributes:</span>
+<span class="sd">        * filename: the filename of the GenBank file.</span>
+<span class="sd">        * index: a list of dictionaries representing an index of the file.</span>
+
+<span class="sd">    :param fname: filename of the GenBank file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c">#: List of supported features.</span>
     <span class="n">features</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;CDS&#39;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
@@ -366,10 +321,8 @@
 <div class="viewcode-block" id="GenBank.get_locus"><a class="viewcode-back" href="../../propex.html#propex.genbank.GenBank.get_locus">[docs]</a>    <span class="k">def</span> <span class="nf">get_locus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get a specific GenBankLocus object.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            index: the index of the wanted locus in the index.</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            a GenBankLocus object.</span>
+<span class="sd">        :param index: the index of the wanted locus in the index.</span>
+<span class="sd">        :returns: a GenBankLocus object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">locus_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
         <span class="n">locus_offset</span> <span class="o">=</span> <span class="n">locus_index</span><span class="p">[</span><span class="s">&#39;offset&#39;</span><span class="p">]</span>
@@ -400,14 +353,12 @@
 <div class="viewcode-block" id="GenBank.features_at_location"><a class="viewcode-back" href="../../propex.html#propex.genbank.GenBank.features_at_location">[docs]</a>    <span class="k">def</span> <span class="nf">features_at_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">locus</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get features at a location.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            location: a Location object.</span>
-<span class="sd">            locus: a locus name. Ignored if it is None.</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            a list of GenBankFeature objects. If locus is not None, only</span>
-<span class="sd">            features in that locus are returned, otherwise all loci are</span>
-<span class="sd">            searched. Returns an empty list if there are no features</span>
-<span class="sd">            overlapping the location.</span>
+<span class="sd">        :param location: a Location object.</span>
+<span class="sd">        :param locus: a locus name. Ignored if it is None.</span>
+<span class="sd">        :returns: a list of GenBankFeature objects. If locus is not None, only</span>
+<span class="sd">                  features in that locus are returned, otherwise all loci are</span>
+<span class="sd">                  searched. Returns an empty list if there are no features</span>
+<span class="sd">                  overlapping the location.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -438,59 +389,43 @@
 </pre></div>
 
           </div>
-          <footer>
-  
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2015, Author.
-    </p>
-  </div>
-
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-  
-</footer>
         </div>
       </div>
-
-    </section>
-
-  </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'0.1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">propex 0.1.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Niklas Mähler.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.
+    </div>
+  </body>
 </html>
