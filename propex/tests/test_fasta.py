@@ -163,6 +163,8 @@ class TestInvalidFasta:
         testdir = os.path.dirname(__file__)
         self.empty_sequence = os.path.join(testdir, 'data', 'empty_sequence.fasta')
         self.uneven = os.path.join(testdir, 'data', 'uneven.fasta')
+        self.gb = os.path.join(os.path.expanduser('~'), 'Dropbox',
+            'operon_extractor', 'data', 'LMG718-cremoris.gb')
 
     def test_empty_sequence(self):
         fasta = propex.Fasta(self.empty_sequence)
@@ -182,6 +184,12 @@ class TestInvalidFasta:
         for i, record in enumerate(fasta):
             assert len(record) == lens[i], \
                 'sequence length ({0}) is not {1}'.format(len(record), lens[i])
+
+    @raises(ValueError)
+    def test_genbank(self):
+        if not os.path.isfile(self.gb):
+            raise SkipTest
+        fasta = propex.Fasta(self.gb)
 
     @raises(ValueError)
     def test_uneven_rows(self):
