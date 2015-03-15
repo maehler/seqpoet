@@ -60,6 +60,11 @@ class TestGenBank:
         assert len(loci) > 0
         assert len(loci[0].seq) == 8967
 
+    @raises(ValueError)
+    def test_parse_fasta(self):
+        gb = propex.GenBank(os.path.join(self.genbankdir, '..', 'fasta_data',
+            'LMG718-cremoris.fasta'))
+
 
 class TestGenBankFeature:
 
