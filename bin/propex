@@ -24,6 +24,29 @@ def get_probe(fname):
 
     return seqs
 
+def get_sequences(dirname):
+    files = filter(os.path.isfile,
+        [os.path.join(dirname, x) for x in os.listdir(dirname)])
+
+    try:
+        seqs = [propex.GenBank(x) for x in files]
+    except ValueError:
+        seqs = None
+
+    if seqs is None:
+        try:
+            seqs = [propex.Fasta(x) for x in files]
+        except:
+            print('ERROR: directory does not seem to contain valid files: {0}' \
+                .format(dirname), file=sys.stderr)
+            exit(1)
+
+    if len(seqs) == 0:
+        print('ERROR: no sequence files found', file=sys.stderr)
+        exit(1)
+
+    return seqs
+
 def parse_args():
     parser = argparse.ArgumentParser()
 
@@ -54,6 +77,8 @@ def main():
 
     probe = get_probe(args.probe)
     is_primer = len(probe) == 2
+
+    seqs = get_sequences(args.genomedir)
 
 if __name__ == '__main__':
     main()
