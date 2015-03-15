@@ -56,7 +56,7 @@ class TestSearch:
 
         gb = GenBank(self.lmg718)
 
-        with open(os.path.join(self.genbankdir, 'primers.txt')) as f:
+        with open(os.path.join(self.genbankdir, '..', 'primers.txt')) as f:
             probe = Sequence(f.readline().strip())
 
         matches = defaultdict(list)
