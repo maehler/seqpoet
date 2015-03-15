@@ -1,5 +1,5 @@
 propex package documentation
-==============
+============================
 
 Submodules
 ----------
@@ -16,6 +16,14 @@ propex.genbank module
 ---------------------
 
 .. automodule:: propex.genbank
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+propex.search module
+--------------------
+
+.. automodule:: propex.search
     :members:
     :undoc-members:
     :show-inheritance:
