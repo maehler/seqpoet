@@ -301,6 +301,20 @@ class GenBank(object):
 
         return GenBankLocus(locus_index['name'], Sequence(seq), features)
 
+    def get_locus_from_name(self, name):
+        """Get a specific GenBankLocus object from the locus name.
+
+        Since loci in a single GenBank file can have the same name,
+        this function returns a list of loci.
+
+        :param name: the name of the locus to retrieve.
+        """
+        loci = []
+        for i, locus in enumerate(self.index):
+            if locus['name'] == name:
+                loci.append(self.get_locus(i))
+        return loci
+
     def features_at_location(self, location, locus=None):
         """Get features at a location.
 

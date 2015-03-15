@@ -54,6 +54,12 @@ class TestGenBank:
         assert f[0].get_qualifier('locus_tag') == 'LMG718_00019'
         assert f[1].get_qualifier('locus_tag') == 'LMG718_00020'
 
+    def test_get_locus_from_name(self):
+        gb = propex.GenBank(self.lmg718)
+        loci = gb.get_locus_from_name('718_Contig_106_c')
+        assert len(loci) > 0
+        assert len(loci[0].seq) == 8967
+
 
 class TestGenBankFeature:
 
