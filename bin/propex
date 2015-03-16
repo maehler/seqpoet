@@ -56,7 +56,7 @@ def find_matches(probe, seqs, is_primer, mismatches=2):
                 propex.search.search(str(probe[1]), str(record.seq.revcomp()),
                     mismatches=mismatches)
             else:
-                propex.search.search(str(prope[0]), str(record.seq),
+                propex.search.search(str(probe[0]), str(record.seq),
                     mismatches=mismatches)
 
 def parse_args():
