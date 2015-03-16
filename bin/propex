@@ -68,7 +68,8 @@ def parse_args():
         'single sequence (probe) or a pair of sequences (primer pair)'))
 
     parser.add_argument('-m', '--mismatches', help=('the maximum number of '
-        'mismatches allowed'), type=int, default=2)
+        'mismatches allowed when aligning probe/primer to the genome'),
+        type=int, default=2, metavar='N')
 
     parser.add_argument('--version', help=('print version and exit'),
         action='version', version='%(prog)s v{0}'.format(propex.__version__))
