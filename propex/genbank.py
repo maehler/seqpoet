@@ -227,6 +227,7 @@ class GenBank(object):
         * index: a list of dictionaries representing an index of the file.
 
     :param fname: filename of the GenBank file.
+    :raises: ValueError if parsing fails.
     """
 
     #: List of supported features.
@@ -252,6 +253,9 @@ class GenBank(object):
         with open(self.filename) as f:
             offset = 0
             for lineno, line in enumerate(f):
+                if lineno == 0 and not line.strip().startswith('LOCUS'):
+                    raise ValueError('does not look like a GenBank file: {0}' \
+                        .format(self.filename))
                 if line.strip().split()[0] == 'LOCUS':
                     current_locus = line.strip().split()[1]
                     indexdicts.append({})

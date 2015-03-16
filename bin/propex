@@ -1,19 +1,77 @@
 #!/usr/bin/env python
-
+from __future__ import print_function
 import argparse
 import os
+import sys
 
 import propex
+
+def get_probe(fname):
+    with open(fname) as f:
+        try:
+            seqs = [propex.sequence.Sequence(line.strip()) for line in f \
+                if len(line.strip()) > 0]
+        except ValueError:
+            print('ERROR: probe file does not contain valid sequences',
+                file=sys.stderr)
+            exit(1)
+
+    if len(seqs) == 0:
+        print('ERROR: probe file is empty', file=sys.stderr)
+        exit(1)
+    elif len(seqs) > 2:
+        print('ERROR: probe file contains too many sequences', file=sys.stderr)
+
+    return seqs
+
+def get_sequences(dirname):
+    files = filter(os.path.isfile,
+        [os.path.join(dirname, x) for x in os.listdir(dirname)])
+
+    try:
+        seqs = [propex.GenBank(x) for x in files]
+    except ValueError:
+        seqs = None
+
+    if seqs is None:
+        try:
+            seqs = [propex.Fasta(x) for x in files]
+        except:
+            print('ERROR: directory does not seem to contain valid files: {0}' \
+                .format(dirname), file=sys.stderr)
+            exit(1)
+
+    if len(seqs) == 0:
+        print('ERROR: no sequence files found', file=sys.stderr)
+        exit(1)
+
+    return seqs
+
+def find_matches(probe, seqs, is_primer, mismatches=2):
+    for f in seqs:
+        for record in f:
+            if is_primer:
+                propex.search.search(str(probe[0]), str(record.seq),
+                    mismatches=mismatches)
+                propex.search.search(str(probe[1]), str(record.seq.revcomp()),
+                    mismatches=mismatches)
+            else:
+                propex.search.search(str(probe[0]), str(record.seq),
+                    mismatches=mismatches)
 
 def parse_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('genomedir', help = ('directory containing the genome '
+    parser.add_argument('genomedir', help=('directory containing the genome '
         'files to use (FASTA or GenBank format)'))
-    parser.add_argument('probe', help = ('FASTA file containing either a '
+    parser.add_argument('probe', help=('FASTA file containing either a '
         'single sequence (probe) or a pair of sequences (primer pair)'))
 
-    parser.add_argument('--version', help = ('print version and exit'),
+    parser.add_argument('-m', '--mismatches', help=('the maximum number of '
+        'mismatches allowed when aligning probe/primer to the genome'),
+        type=int, default=2, metavar='N')
+
+    parser.add_argument('--version', help=('print version and exit'),
         action='version', version='%(prog)s v{0}'.format(propex.__version__))
 
     args = parser.parse_args()
@@ -21,6 +79,7 @@ def parse_args():
     args.genomedir = os.path.abspath(args.genomedir)
     args.probe = os.path.abspath(args.probe)
 
+    # Check paths
     if not os.path.exists(args.genomedir):
         parser.error('file or directory not found: {}'.format(args.genomedir))
     if not os.path.isdir(args.genomedir):
@@ -28,10 +87,21 @@ def parse_args():
     if not os.path.exists(args.probe):
         parser.error('file or directory not found: {}'.format(args.probe))
 
+    # Mismatches should be an integer >= 0
+    if args.mismatches < 0:
+        parser.error('mismatches must not be negative')
+
     return args
 
 def main():
     args = parse_args()
+
+    probe = get_probe(args.probe)
+    is_primer = len(probe) == 2
+
+    seqs = get_sequences(args.genomedir)
+
+    find_matches(probe, seqs, is_primer, mismatches=args.mismatches)
 
 if __name__ == '__main__':
     main()

@@ -69,9 +69,10 @@ class FastaIndex(object):
         :returns:
             see parse_index
         :raises:
-            ValueError if the FASTA file contains duplicate headers or
+            ValueError if the FASTA file contains duplicate headers,
             if the FASTA file has sequence entries where lines have different
-            lengths (not counting the last line of the sequence).
+            lengths (not counting the last line of the sequence) or if it is
+            an otherwise invalid FASTA file.
         """
         fasta_fname = os.path.splitext(self.filename)[0]
         index = collections.OrderedDict()
@@ -117,6 +118,8 @@ class FastaIndex(object):
                             'nbase': 0,
                             'linelen': 0
                         }
+                else:
+                    raise ValueError('invalid FASTA file')
                 f.seek(header_offset)
         return index
 
