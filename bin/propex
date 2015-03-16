@@ -47,15 +47,30 @@ def get_sequences(dirname):
 
     return seqs
 
+def find_matches(probe, seqs, is_primer, mismatches=2):
+    for f in seqs:
+        for record in f:
+            if is_primer:
+                propex.search.search(str(probe[0]), str(record.seq),
+                    mismatches=mismatches)
+                propex.search.search(str(probe[1]), str(record.seq.revcomp()),
+                    mismatches=mismatches)
+            else:
+                propex.search.search(str(prope[0]), str(record.seq),
+                    mismatches=mismatches)
+
 def parse_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('genomedir', help = ('directory containing the genome '
+    parser.add_argument('genomedir', help=('directory containing the genome '
         'files to use (FASTA or GenBank format)'))
-    parser.add_argument('probe', help = ('FASTA file containing either a '
+    parser.add_argument('probe', help=('FASTA file containing either a '
         'single sequence (probe) or a pair of sequences (primer pair)'))
 
-    parser.add_argument('--version', help = ('print version and exit'),
+    parser.add_argument('-m', '--mismatches', help=('the maximum number of '
+        'mismatches allowed'), type=int, default=2)
+
+    parser.add_argument('--version', help=('print version and exit'),
         action='version', version='%(prog)s v{0}'.format(propex.__version__))
 
     args = parser.parse_args()
@@ -63,12 +78,17 @@ def parse_args():
     args.genomedir = os.path.abspath(args.genomedir)
     args.probe = os.path.abspath(args.probe)
 
+    # Check paths
     if not os.path.exists(args.genomedir):
         parser.error('file or directory not found: {}'.format(args.genomedir))
     if not os.path.isdir(args.genomedir):
         parser.error('argument genomedir must be a directory')
     if not os.path.exists(args.probe):
         parser.error('file or directory not found: {}'.format(args.probe))
+
+    # Mismatches should be an integer >= 0
+    if args.mismatches < 0:
+        parser.error('mismatches must not be negative')
 
     return args
 
@@ -79,6 +99,8 @@ def main():
     is_primer = len(probe) == 2
 
     seqs = get_sequences(args.genomedir)
+
+    find_matches(probe, seqs, is_primer, mismatches=args.mismatches)
 
 if __name__ == '__main__':
     main()
