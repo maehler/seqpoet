@@ -10,7 +10,7 @@ class TestGenBank:
     def setUp(self):
         self.testdir = os.path.dirname(__file__)
         self.genbankdir = os.path.join(os.path.expanduser('~'), 'Dropbox',
-                                       'operon_extractor', 'data')
+                                       'operon_extractor', 'data_genbank')
 
         if not os.path.isdir(self.genbankdir):
             raise SkipTest
@@ -62,7 +62,7 @@ class TestGenBank:
 
     @raises(ValueError)
     def test_parse_fasta(self):
-        gb = propex.GenBank(os.path.join(self.genbankdir, '..', 'fasta_data',
+        gb = propex.GenBank(os.path.join(self.genbankdir, '..', 'data_fasta',
             'LMG718-cremoris.fasta'))
 
 

@@ -34,7 +34,7 @@ class TestSearch:
         self.haystack = 'accgtgacgggcacgaggcatcattatctagcagcacatg'
         self.needle = 'gaggcat'
         self.genbankdir = os.path.join(os.path.expanduser('~'), 'Dropbox',
-                                       'operon_extractor', 'data')
+                                       'operon_extractor', 'data_genbank')
         self.lmg718 = os.path.join(self.genbankdir, 'LMG718-cremoris.gb')
 
     def test_exact_match(self):

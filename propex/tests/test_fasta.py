@@ -1,4 +1,5 @@
 from nose.tools import raises
+from nose.plugins.skip import SkipTest
 import os
 
 import propex
@@ -164,7 +165,7 @@ class TestInvalidFasta:
         self.empty_sequence = os.path.join(testdir, 'data', 'empty_sequence.fasta')
         self.uneven = os.path.join(testdir, 'data', 'uneven.fasta')
         self.gb = os.path.join(os.path.expanduser('~'), 'Dropbox',
-            'operon_extractor', 'data', 'LMG718-cremoris.gb')
+            'operon_extractor', 'data_genbank', 'LMG718-cremoris.gb')
 
     def test_empty_sequence(self):
         fasta = propex.Fasta(self.empty_sequence)
