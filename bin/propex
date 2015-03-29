@@ -47,17 +47,17 @@ def get_sequences(dirname):
 
     return seqs
 
-def find_matches(probe, seqs, is_primer, mismatches=2):
+
+def match_probe(probe, seqs, mismatches=2):
     for f in seqs:
         for record in f:
-            if is_primer:
-                propex.search.search(str(probe[0]), str(record.seq),
-                    mismatches=mismatches)
-                propex.search.search(str(probe[1]), str(record.seq.revcomp()),
-                    mismatches=mismatches)
-            else:
-                propex.search.search(str(probe[0]), str(record.seq),
-                    mismatches=mismatches)
+            res = propex.search.search(str(probe), str(record.seq),
+                mismatches=mismatches)
+
+def match_primer(primers, seqs, mismatches=2):
+    for f in seqs:
+        for record in f:
+            pass
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -101,7 +101,11 @@ def main():
 
     seqs = get_sequences(args.genomedir)
 
-    find_matches(probe, seqs, is_primer, mismatches=args.mismatches)
+    if is_primer:
+        match_primer(probe, seqs, mismatches=args.mismatches)
+    else:
+        match_probe(probe[0], seqs, mismatches=args.mismatches)
+
 
 if __name__ == '__main__':
     main()
