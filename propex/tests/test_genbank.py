@@ -192,45 +192,45 @@ class TestLocation:
     def test_single(self):
         loc = Location(self.single)
         assert loc.start == 467
-        assert loc.stop == 467
+        assert loc.end == 467
         assert not loc.is_complement
 
     def test_range(self):
         loc = Location(self.range)
         assert loc.start == 340
-        assert loc.stop == 565
+        assert loc.end == 565
         assert not loc.is_complement
 
     def test_lower_unknown(self):
         loc = Location(self.lower_unknown)
         assert loc.start == 345
-        assert loc.stop == 500
+        assert loc.end == 500
         assert not loc.is_complement
         loc = Location(self.lower_unknown2)
         assert loc.start == 1
-        assert loc.stop == 888
+        assert loc.end == 888
         assert not loc.is_complement
 
     def test_upper_unknown(self):
         loc = Location(self.upper_unknown)
         assert loc.start == 1
-        assert loc.stop == 888
+        assert loc.end == 888
         assert not loc.is_complement
 
     def test_one_of(self):
         loc = Location(self.one_of)
         assert loc.start == 102
-        assert loc.stop == 110
+        assert loc.end == 110
         assert not loc.is_complement
 
     def test_complement(self):
         loc = Location(self.complement)
         assert loc.start == 340
-        assert loc.stop == 565
+        assert loc.end == 565
         assert loc.is_complement
         loc = Location(self.complement2)
         assert loc.start == 467
-        assert loc.stop == 467
+        assert loc.end == 467
         assert loc.is_complement
 
     def test_overlap(self):

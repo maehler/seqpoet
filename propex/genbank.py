@@ -27,11 +27,11 @@ class Location(object):
         * locstring: the string representation of the location.
         * loctype: the type of the location.
         * start: the start position (including).
-        * stop: the stop position (including).
+        * end: the end position (including).
         * is_complement: boolean indicating whether the position represents
                        the complement of the sequence.
 
-    :param locstring: a GenBanke location string.
+    :param locstring: a GenBank location string.
     """
 
     #: Regular expression for finding complement locations.
@@ -54,7 +54,7 @@ class Location(object):
         :param locstring: a GenBank location string.
         """
         self.locstring = locstring
-        self.loctype, self.start, self.stop, self.is_complement = self._parse()
+        self.loctype, self.start, self.end, self.is_complement = self._parse()
 
     def _regex_dict(self):
         """Utility function for location regular expressions.
@@ -76,7 +76,7 @@ class Location(object):
         """Parse a location string.
 
         Returns:
-            a 4-tuple with the location type, start position, stop
+            a 4-tuple with the location type, start position, end
             position and a boolean to indicate whether the feature
             is located on the complement strand.
         Raises:
@@ -97,11 +97,11 @@ class Location(object):
             raise ValueError('unknown location string: {0}'.format(self.locstring))
 
         if re_name == 'single':
-            start = stop = int(regex.match(locstring).group(1))
+            start = end = int(regex.match(locstring).group(1))
         else:
-            start, stop = map(int, regex.match(locstring).groups())
+            start, end = map(int, regex.match(locstring).groups())
 
-        return re_name, start, stop, is_complement
+        return re_name, start, end, is_complement
 
     def overlaps(self, location):
         """Test whether the location overlaps with another location.
@@ -110,7 +110,7 @@ class Location(object):
         :returns: True if the locations overlap with at least one base,
             otherwise False.
         """
-        return self.start <= location.stop and location.start <= self.stop
+        return self.start <= location.end and location.start <= self.end
 
     def __str__(self):
         return self.locstring
