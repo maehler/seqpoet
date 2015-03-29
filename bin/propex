@@ -24,34 +24,46 @@ def get_probe(fname):
 
     return seqs
 
-def get_sequences(dirname):
+def get_sequences(dirname, genbank_only=False):
     files = filter(os.path.isfile,
         [os.path.join(dirname, x) for x in os.listdir(dirname)])
 
+    n_ignore = 0
     seqs = []
 
     print('Parsing sequence files', file=sys.stderr)
 
     for fname in files:
         print('\t{0}'.format(fname), file=sys.stderr, end='\t')
-        genbank_success = True
-        fasta_success = True
+        genbank_success = False
+        fasta_success = False
         try:
             seqs.append(propex.GenBank(fname))
+            genbank_success = True
         except ValueError:
-            genbank_success = False
+            pass
 
-        if not genbank_success:
+        if not genbank_success and not genbank_only:
             try:
                 seqs.append(propex.Fasta(fname))
+                fasta_success = True
             except ValueError:
-                fasta_success = False
+                pass
 
         if not (genbank_success or fasta_success):
-            print('parsing failed', file=sys.stderr)
+            if genbank_only:
+                n_ignore += 1
+                print('ignored', file=sys.stderr)
+            else:
+                print('parsing failed', file=sys.stderr)
         else:
             print('{0} sequences'.format(len(seqs[-1])))
 
+    if n_ignore > 0:
+        print('WARNING: {0} file{1} ignored. If you want to perform '
+            'operon extraction, you need annotations. Currently only '
+            'GenBank files are supported.'.format(n_ignore,
+            's' if n_ignore > 1 else ''), file=sys.stderr)
     if len(seqs) == 0:
         print('ERROR: no sequence files found', file=sys.stderr)
         exit(1)
@@ -77,6 +89,9 @@ def parse_args():
         'files to use (FASTA or GenBank format)'))
     parser.add_argument('probe', help=('FASTA file containing either a '
         'single sequence (probe) or a pair of sequences (primer pair)'))
+
+    parser.add_argument('--pcr', help='only perform in silico PCR',
+        action='store_true')
 
     parser.add_argument('-m', '--mismatches', help=('the maximum number of '
         'mismatches allowed when aligning probe/primer to the genome'),
@@ -110,7 +125,7 @@ def main():
     probe = get_probe(args.probe)
     is_primer = len(probe) == 2
 
-    seqs = get_sequences(args.genomedir)
+    seqs = get_sequences(args.genomedir, genbank_only=not args.pcr)
 
     if is_primer:
         match_primer(probe, seqs, mismatches=args.mismatches)
