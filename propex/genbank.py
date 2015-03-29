@@ -17,6 +17,18 @@ class Location(object):
     For more information on locations, see
     http://www.insdc.org/files/feature_table.html#3.4
 
+    Location (and GenBank files) are using 1-based positions. To make
+    location-bases string handling easier, the Location class represents
+    the locations internally as 0-based::
+
+        >>> loc = Location('42..84')
+        >>> loc.start
+        41
+        >>> loc.end
+        83
+        >>> loc.locstring
+        '42..84'
+
     As of now, not all types of locations are implemented. Those
     that are implemented are single bases, ranges, ranges with
     unknown lower bound, ranges with unknown upper bound and
@@ -26,8 +38,8 @@ class Location(object):
     Class attributes:
         * locstring: the string representation of the location.
         * loctype: the type of the location.
-        * start: the start position (including).
-        * end: the end position (including).
+        * start: the start position (0-based, including).
+        * end: the end position (0-based, including).
         * is_complement: boolean indicating whether the position represents
                        the complement of the sequence.
 
@@ -78,7 +90,8 @@ class Location(object):
         Returns:
             a 4-tuple with the location type, start position, end
             position and a boolean to indicate whether the feature
-            is located on the complement strand.
+            is located on the complement strand. Returned positions
+            are 0-based.
         Raises:
             ValueError: if the location string is not valid.
         """
@@ -101,7 +114,7 @@ class Location(object):
         else:
             start, end = map(int, regex.match(locstring).groups())
 
-        return re_name, start, end, is_complement
+        return re_name, start - 1, end - 1, is_complement
 
     def overlaps(self, location):
         """Test whether the location overlaps with another location.
