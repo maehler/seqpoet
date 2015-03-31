@@ -24,6 +24,41 @@ def get_probe(fname):
 
     return seqs
 
+def get_single_sequence(fname, genbank_only=False, stop_on_error=False):
+    seq = None
+    genbank_success = False
+    fasta_success = False
+    try:
+        seq = propex.GenBank(fname)
+        genbank_success = True
+    except ValueError:
+        pass
+
+    if not genbank_success and not genbank_only:
+        try:
+            seq = propex.Fasta(fname)
+            fasta_success = True
+        except ValueError:
+            pass
+
+    if not (genbank_success or fasta_success):
+        if genbank_only:
+            if stop_on_error:
+                print('ERROR: file ignored. If you want to perform '
+                    'operon extraction, you need annotations. Currently only '
+                    'GenBank files are supported.', file=sys.stderr)
+                sys.exit(1)
+            print('ignored', file=sys.stderr)
+            return 1
+        else:
+            if stop_on_error:
+                print('ERROR: parsing failed', file=sys.stderr)
+            print('parsing failed', file=sys.stderr)
+            return -1
+    else:
+        print('{0} sequences'.format(len(seq)))
+        return seq
+
 def get_sequences(dirname, genbank_only=False):
     files = filter(os.path.isfile,
         [os.path.join(dirname, x) for x in os.listdir(dirname)])
@@ -35,29 +70,13 @@ def get_sequences(dirname, genbank_only=False):
 
     for fname in files:
         print('\t{0}'.format(fname), file=sys.stderr, end='\t')
-        genbank_success = False
-        fasta_success = False
-        try:
-            seqs.append(propex.GenBank(fname))
-            genbank_success = True
-        except ValueError:
-            pass
-
-        if not genbank_success and not genbank_only:
-            try:
-                seqs.append(propex.Fasta(fname))
-                fasta_success = True
-            except ValueError:
-                pass
-
-        if not (genbank_success or fasta_success):
-            if genbank_only:
-                n_ignore += 1
-                print('ignored', file=sys.stderr)
-            else:
-                print('parsing failed', file=sys.stderr)
+        parse_res = get_single_sequence(fname, genbank_only)
+        if parse_res == -1:
+            continue
+        elif parse_res == 1:
+            n_ignore += 1
         else:
-            print('{0} sequences'.format(len(seqs[-1])))
+            seqs.append(parse_res)
 
     if n_ignore > 0:
         print('WARNING: {0} file{1} ignored. If you want to perform '
@@ -86,7 +105,8 @@ def parse_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('genomedir', help=('directory containing the genome '
-        'files to use (FASTA or GenBank format)'))
+        'files to use (FASTA or GenBank format) or a single GenBank or '
+        'FASTA file'))
     parser.add_argument('probe', help=('FASTA file containing either a '
         'single sequence (probe) or a pair of sequences (primer pair)'))
 
@@ -108,8 +128,7 @@ def parse_args():
     # Check paths
     if not os.path.exists(args.genomedir):
         parser.error('file or directory not found: {}'.format(args.genomedir))
-    if not os.path.isdir(args.genomedir):
-        parser.error('argument genomedir must be a directory')
+    args.isdir = os.path.isdir(args.genomedir)
     if not os.path.exists(args.probe):
         parser.error('file or directory not found: {}'.format(args.probe))
 
@@ -125,7 +144,11 @@ def main():
     probe = get_probe(args.probe)
     is_primer = len(probe) == 2
 
-    seqs = get_sequences(args.genomedir, genbank_only=not args.pcr)
+    if args.isdir:
+        seqs = get_sequences(args.genomedir, genbank_only=not args.pcr)
+    else:
+        seqs = [get_single_sequence(args.genomedir, genbank_only=not args.pcr,
+            stop_on_error=True)]
 
     if is_primer:
         match_primer(probe, seqs, mismatches=args.mismatches)
