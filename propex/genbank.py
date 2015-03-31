@@ -35,13 +35,13 @@ class Location(object):
     locations where the exact position is unknown, but it is one
     of the bases between two positions.
 
-    Class attributes:
-        * locstring: the string representation of the location.
-        * loctype: the type of the location.
-        * start: the start position (0-based, including).
-        * end: the end position (0-based, including).
-        * is_complement: boolean indicating whether the position represents
-                       the complement of the sequence.
+    **Class attributes:**
+        * **locstring:** the string representation of the location.
+        * **loctype:** the type of the location.
+        * **start:** the start position (0-based, including).
+        * **end:** the end position (0-based, including).
+        * **is_complement:** boolean indicating whether the position represents
+          the complement of the sequence.
 
     :param locstring: a GenBank location string.
     """
@@ -135,10 +135,10 @@ class GenBankFeature(object):
 
     """Represent a GenBank feature.
 
-    Class attributes
-        * feature_type: a string with the feature key.
-        * location: a Location object representing the lcoation of the feature.
-        * qualifiers: a dictionary of qualifiers of the feature.
+    **Class attributes:**
+        * **feature_type**: a string with the feature key.
+        * **location**: a Location object representing the lcoation of the feature.
+        * **qualifiers**: a dictionary of qualifiers of the feature.
 
     :param feature_type: name of the feature.
     :param location: a Location object.
@@ -213,9 +213,9 @@ class GenBankLocus(object):
 
     """A simple class representing a GenBank locus.
 
-    Class attributes:
-        * name: locus name.
-        * seq: a Sequence object with the sequence of the locus.
+    **Class attributes:**
+        * **name:** locus name.
+        * **seq:** a Sequence object with the sequence of the locus.
 
     :param name: the name of the locus.
     :param seq: a Sequence object representing the sequence of the locus.
