@@ -56,7 +56,8 @@ def get_single_sequence(fname, genbank_only=False, stop_on_error=False):
             print('parsing failed', file=sys.stderr)
             return -1
     else:
-        print('{0} sequences'.format(len(seq)))
+        print('{0} sequence{1}'.format(len(seq), 's' if len(seq) > 1 else ''),
+            file=sys.stderr)
         return seq
 
 def get_sequences(dirname, genbank_only=False):
