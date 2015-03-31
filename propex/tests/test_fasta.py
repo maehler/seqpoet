@@ -85,8 +85,8 @@ class TestFasta:
         fasta = propex.Fasta(self.valid_index)
         headers = ['seq1', 'seq2', 'aaa', 'bbb']
         for i, record in enumerate(fasta):
-            assert record.header == headers[i], \
-                'header {0} is not {1}'.format(record.header, headers[i])
+            assert record.name == headers[i], \
+                'header {0} is not {1}'.format(record.name, headers[i])
             assert len(record.seq.seq.replace(' ', '')) == len(record.seq), \
                 'spaces in sequence'
 
@@ -132,8 +132,8 @@ class TestFastaWithoutIndex:
         fasta = propex.Fasta(self.valid_noindex)
         headers = ['seq1', 'seq2', 'aaa', 'bbb']
         for i, record in enumerate(fasta):
-            assert record.header == headers[i], \
-                'header {0} is not {1}'.format(record.header, headers[i])
+            assert record.name == headers[i], \
+                'header {0} is not {1}'.format(record.name, headers[i])
             assert len(record.seq.seq.replace(' ', '')) == len(record.seq), \
                 'spaces in sequence'
 
@@ -174,8 +174,8 @@ class TestInvalidFasta:
         fasta = propex.Fasta(self.empty_sequence)
         headers = ['seq1', 'seq2', 'empty', 'aaa', 'bbb']
         for i, record in enumerate(fasta):
-            assert record.header == headers[i], \
-                'header {0} is not {1}'.format(record.header, headers[i])
+            assert record.name == headers[i], \
+                'header {0} is not {1}'.format(record.name, headers[i])
             assert len(record.seq.seq.replace(' ', '')) == len(record.seq), \
                 'spaces in sequence'
 
