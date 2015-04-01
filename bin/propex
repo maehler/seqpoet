@@ -92,6 +92,7 @@ def get_sequences(dirname, genbank_only=False):
     return seqs
 
 def match_probe(probe, seqs, mismatches=2):
+    matches = []
     pl = len(probe)
     for f in seqs:
         for record in f:
@@ -103,13 +104,20 @@ def match_probe(probe, seqs, mismatches=2):
 
             if len(res1) > 0:
                 for start in res1:
-                    print('{file}: {seq}: {pos} (+)'.format(file=f.filename,
-                        seq=record.name, pos=start + 1))
+                    hit_seq = record.seq[start:start + pl]
+                    matches.append([
+                        f.filename, record.name, start + 1,
+                        start + pl, pl, hit_seq, '+'
+                    ])
 
             if len(res2) > 0:
                 for start in res2:
-                    print('{file}: {seq}: {pos} (-)'.format(file=f.filename,
-                        seq=record.name, pos=start + 1))
+                    hit_seq = record.seq[start:start + pl]
+                    matches.append([
+                        f.filename, record.name, start + 1,
+                        start + pl, pl, hit_seq, '-'
+                    ])
+    return matches
 
 
 def match_primer(primers, seqs, mismatches=2):
