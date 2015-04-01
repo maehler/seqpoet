@@ -179,7 +179,8 @@ def write_fasta(matches, filename=sys.stdout):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('genomedir', help=('directory containing the genome '
         'files to use (FASTA or GenBank format) or a single GenBank or '
@@ -234,6 +235,7 @@ def main():
 
     if is_primer and args.pcr:
         write_fasta(matches)
+        exit(0)
 
 if __name__ == '__main__':
     try:
