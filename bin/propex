@@ -132,15 +132,11 @@ def match_primer(primers, seqs, mismatches=2):
                 propex.search.search(str(primers[0]), str(record.seq.revcomp()),
                     mismatches=mismatches)]
 
-            # print(res1_1, res1_2)
-
             res2_1 = propex.search.search(str(primers[1]), str(record.seq),
                 mismatches=mismatches)
             res2_2 = [len(record.seq) - x - pl2 for x in \
                 propex.search.search(str(primers[1]), str(record.seq.revcomp()),
                     mismatches=mismatches)]
-
-            # print(res2_1, res2_2)
 
             # Match res1_1 with res2_2 and res2_1 with res1_2 to get primer
             # pairs. The first position must be smaller than the second
@@ -161,7 +157,6 @@ def match_primer(primers, seqs, mismatches=2):
                     ])
 
             if len(res2_1) > 0 and len(res1_2) > 0:
-                # Match them
                 for start, end in itertools.product(res2_1, res1_2):
                     if start >= end:
                         continue
