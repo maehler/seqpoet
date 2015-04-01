@@ -90,12 +90,26 @@ def get_sequences(dirname, genbank_only=False):
 
     return seqs
 
-
 def match_probe(probe, seqs, mismatches=2):
+    pl = len(probe)
     for f in seqs:
         for record in f:
-            res = propex.search.search(str(probe), str(record.seq),
+            res1 = propex.search.search(str(probe), str(record.seq),
                 mismatches=mismatches)
+            res2 = [len(record.seq) - x - pl for x in \
+                propex.search.search(str(probe), str(record.seq.revcomp()),
+                    mismatches=mismatches)]
+
+            if len(res1) > 0:
+                for start in res1:
+                    print('{file}: {seq}: {pos} (+)'.format(file=f.filename,
+                        seq=record.name, pos=start + 1))
+
+            if len(res2) > 0:
+                for start in res2:
+                    print('{file}: {seq}: {pos} (-)'.format(file=f.filename,
+                        seq=record.name, pos=start + 1))
+
 
 def match_primer(primers, seqs, mismatches=2):
     for f in seqs:
