@@ -113,6 +113,7 @@ def match_probe(probe, seqs, mismatches=2):
 
 
 def match_primer(primers, seqs, mismatches=2):
+    matches = []
     pl1 = len(primers[0])
     pl2 = len(primers[1])
     for f in seqs:
@@ -135,7 +136,8 @@ def match_primer(primers, seqs, mismatches=2):
 
             # Match res1_1 with res2_2 and res2_1 with res1_2 to get primer
             # pairs. The first position must be smaller than the second
-            # position, and the product length must be within the allowed range.
+            # position, and the product length must be within the allowed
+            # range.
 
             if len(res1_1) > 0 and len(res2_2) > 0:
                 # Match them
@@ -143,7 +145,12 @@ def match_primer(primers, seqs, mismatches=2):
                     if start >= end:
                         continue
                     product_length = end - start + pl2
-                    print(start + 1, end + 1, product_length)
+                    hit_seq = record.seq[start:start + product_length]
+                    matches.append([
+                        f.filename, record.name, start + 1,
+                        end + 1, product_length, hit_seq,
+                        '+'
+                    ])
 
             if len(res2_1) > 0 and len(res1_2) > 0:
                 # Match them
@@ -151,7 +158,14 @@ def match_primer(primers, seqs, mismatches=2):
                     if start >= end:
                         continue
                     product_length = end - start + pl1
-                    print(start + 1, end + 1, product_length)
+                    hit_seq = record.seq[start:start + product_length]
+                    matches.append([
+                        f.filename, record.name, start + 1,
+                        end + 1, product_length, hit_seq,
+                        '-'
+                    ])
+    return matches
+
 
 
 def parse_args():
@@ -204,9 +218,9 @@ def main():
             stop_on_error=True)]
 
     if is_primer:
-        match_primer(probe, seqs, mismatches=args.mismatches)
+        matches = match_primer(probe, seqs, mismatches=args.mismatches)
     else:
-        match_probe(probe[0], seqs, mismatches=args.mismatches)
+        matches = match_probe(probe[0], seqs, mismatches=args.mismatches)
 
 
 if __name__ == '__main__':
