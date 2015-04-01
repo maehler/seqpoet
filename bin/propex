@@ -167,6 +167,13 @@ def match_primer(primers, seqs, mismatches=2):
     return matches
 
 
+def write_fasta(matches, filename=sys.stdout):
+    for m in matches:
+        s = propex.fasta.FastaRecord(m[5],
+            '{fname}:{seqname}:{start}:{stop}:{length}'.format(fname=m[0],
+                seqname=m[1], start=m[2], stop=m[3], length=m[4]))
+        print(s, file=filename)
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -222,6 +229,8 @@ def main():
     else:
         matches = match_probe(probe[0], seqs, mismatches=args.mismatches)
 
+    if is_primer and args.pcr:
+        write_fasta(matches)
 
 if __name__ == '__main__':
     try:
