@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function
 import argparse
+import itertools
 import os
 import sys
 
@@ -112,9 +113,46 @@ def match_probe(probe, seqs, mismatches=2):
 
 
 def match_primer(primers, seqs, mismatches=2):
+    pl1 = len(primers[0])
+    pl2 = len(primers[1])
     for f in seqs:
         for record in f:
-            pass
+            res1_1 = propex.search.search(str(primers[0]), str(record.seq),
+                mismatches=mismatches)
+            res1_2 = [len(record.seq) - x - pl1 for x in \
+                propex.search.search(str(primers[0]), str(record.seq.revcomp()),
+                    mismatches=mismatches)]
+
+            # print(res1_1, res1_2)
+
+            res2_1 = propex.search.search(str(primers[1]), str(record.seq),
+                mismatches=mismatches)
+            res2_2 = [len(record.seq) - x - pl2 for x in \
+                propex.search.search(str(primers[1]), str(record.seq.revcomp()),
+                    mismatches=mismatches)]
+
+            # print(res2_1, res2_2)
+
+            # Match res1_1 with res2_2 and res2_1 with res1_2 to get primer
+            # pairs. The first position must be smaller than the second
+            # position, and the product length must be within the allowed range.
+
+            if len(res1_1) > 0 and len(res2_2) > 0:
+                # Match them
+                for start, end in itertools.product(res1_1, res2_2):
+                    if start >= end:
+                        continue
+                    product_length = end - start + pl2
+                    print(start + 1, end + 1, product_length)
+
+            if len(res2_1) > 0 and len(res1_2) > 0:
+                # Match them
+                for start, end in itertools.product(res2_1, res1_2):
+                    if start >= end:
+                        continue
+                    product_length = end - start + pl1
+                    print(start + 1, end + 1, product_length)
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
