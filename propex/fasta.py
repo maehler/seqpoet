@@ -5,6 +5,7 @@ FASTA index files.
 import collections
 import itertools
 import os
+import textwrap
 
 from propex.sequence import Sequence
 
@@ -174,6 +175,10 @@ class FastaRecord(object):
     def __repr__(self):
         return '<FastaRecord {0}: {1} ({2} nt)>'.format(repr(self.name),
             repr(self.seq[:5]), len(self))
+
+    def __str__(self):
+        return '>{header}\n{seq}'.format(header=self.name,
+            seq='\n'.join(textwrap.wrap(str(self.seq), 70)))
 
 class Fasta(object):
     """Represent a FASTA file."""
