@@ -152,7 +152,7 @@ def match_primer(primers, seqs, mismatches=2):
                     hit_seq = record.seq[start:start + product_length]
                     matches.append([
                         f.filename, record.name, start + 1,
-                        end + 1, product_length, hit_seq,
+                        end + pl2, product_length, hit_seq,
                         '+'
                     ])
 
@@ -164,7 +164,7 @@ def match_primer(primers, seqs, mismatches=2):
                     hit_seq = record.seq[start:start + product_length]
                     matches.append([
                         f.filename, record.name, start + 1,
-                        end + 1, product_length, hit_seq,
+                        end + pl1, product_length, hit_seq,
                         '-'
                     ])
     return matches
