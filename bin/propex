@@ -177,6 +177,12 @@ def write_fasta(matches, filename=sys.stdout):
                 seqname=m[1], start=m[2], stop=m[3], length=m[4]))
         print(s, file=filename)
 
+def write_delim(matches, filename=sys.stdout, delim='\t'):
+    print(delim.join(['filename', 'sequence', 'start',
+        'stop', 'length', 'strand']), file=filename)
+    for m in matches:
+        print(delim.join(map(str, m[:5] + [m[6]])))
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -236,6 +242,8 @@ def main():
     if is_primer and args.pcr:
         write_fasta(matches)
         exit(0)
+    elif args.pcr:
+        write_delim(matches)
 
 if __name__ == '__main__':
     try:
