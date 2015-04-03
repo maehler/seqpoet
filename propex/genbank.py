@@ -225,6 +225,7 @@ class GenBankLocus(object):
 
     :param name: the name of the locus.
     :param seq: a Sequence object representing the sequence of the locus.
+    :param features: a dictionary containing features of the locus.
     """
 
     def __init__(self, name, seq, features=None):
@@ -233,9 +234,14 @@ class GenBankLocus(object):
         Args:
             name: the name of the locus.
             seq: a Sequence object representing the sequence of the locus.
+            features: a dictionary containing features of the locus.
         """
         self.name = name
         self.seq = seq
+        if features is None:
+            self.features = {}
+        else:
+            self.features = features
 
 class GenBank(object):
 
