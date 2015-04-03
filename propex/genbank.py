@@ -160,7 +160,10 @@ class GenBankFeature(object):
         self.locus = locus
         self.feature_type = feature_type
         self.location = location
-        self.qualifiers = qualifiers
+        if qualifiers is None:
+            self.qualifiers = []
+        else:
+            self.qualifiers = qualifiers
 
     @classmethod
     def from_string(cls, locus, feature_string):

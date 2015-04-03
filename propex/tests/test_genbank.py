@@ -119,6 +119,11 @@ class TestGenBankFeature:
         gbf = propex.GenBankFeature.from_string('testlocus', feature)
         gbf.get_qualifier('locus_tag')
 
+    def test_empty_qualifiers(self):
+        gbf = propex.GenBankFeature('testlocus', 'CDS', '123..679')
+        assert isinstance(gbf.qualifiers, list)
+        assert len(gbf.qualifiers) == 0
+
 class TestLocationRegex:
 
     def setUp(self):
