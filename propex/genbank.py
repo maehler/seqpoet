@@ -308,6 +308,13 @@ class GenBank(object):
                 if line.strip().split()[0] == 'ORIGIN':
                     indexdicts[-1]['ORIGIN'] = offset + len(line)
                 offset += len(line)
+
+        # Sort the CDS according to start position
+        for s in indexdicts:
+            if 'CDS' not in s:
+                continue
+            s['CDS'] = sorted(s['CDS'], key=lambda x: x['location'].start)
+
         return indexdicts
 
     def get_locus(self, index):
@@ -383,6 +390,88 @@ class GenBank(object):
                                 line = f.readline()
                             features.append(GenBankFeature.from_string(loc['name'], feat_string))
         return features
+
+    def next_upstream(self, feature):
+        """Get a neighboring feature upstream of ``feature``.
+
+        The function will find the next feature upstream of
+        ``feature``. If the feature is on the forward (coding)
+        strand, the function will return the next feature of the
+        same type towards the 5' end of the strand. If the
+        feature is on the reverse (template) strand, the next
+        feature of the same type towards the 3' end will be
+        returned.
+
+        If there is no feature upstream of ``feature``,
+        ``None`` is returned.
+
+        :param feature: a :py:class:`.GenBankFeature` object.
+        :returns: a :py:class:`.GenBankFeature` object or ``None``
+                  if no feature is found.
+        """
+        return self._neighbor(feature, downstream=False)
+
+    def next_downstream(self, feature):
+        """Get a neighboring feature downstream of ``feature``.
+
+        The function will find the next feature downstream of
+        ``feature``. If the feature is on the forward (coding)
+        strand, the function will return the next feature of the
+        same type towards the 3' end of the strand. If the
+        feature is on the reverse (template) strand, the next
+        feature of the same type towards the 5' end will be
+        returned.
+
+        If there is no feature downstream of ``feature``,
+        ``None`` is returned.
+
+        :param feature: a :py:class:`.GenBankFeature` object.
+        :returns: a :py:class:`.GenBankFeature` object or ``None``
+                  if no feature is found.
+        """
+        return self._neighbor(feature, downstream=True)
+
+    def _neighbor(self, feature, downstream=True):
+        loci = self.get_locus_from_name(feature.locus)
+
+        is_complement = feature.location.is_complement
+        ftype = feature.feature_type
+        findex = None
+        found = False
+
+        for locus in loci:
+            if ftype not in locus.features:
+                continue
+            for i, f in enumerate(locus.features[ftype]):
+                if f == feature:
+                    # If the feature is on the opposite strand,
+                    # the direction will be opposite. The same
+                    # is true if we want to look upstream on the
+                    # forward strand.
+                    if (is_complement and downstream) or \
+                            (not is_complement and not downstream):
+                        findex = i - 1
+                    else:
+                        findex = i + 1
+                    found = True
+                    break
+            if found:
+                break
+
+        if not found or findex is None or \
+                findex >= len(locus.features[ftype]) or findex < 0:
+            return None
+
+        # Make sure the feature is on the same strand
+        while locus.features[ftype][findex] \
+                .location.is_complement != is_complement:
+            if (is_complement and downstream) or \
+                    (not is_complement and not downstream):
+                findex -= 1
+            else:
+                findex += 1
+
+        return locus.features[ftype][findex]
 
     def __iter__(self):
         """Iterate over the loci.
