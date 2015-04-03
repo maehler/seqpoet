@@ -124,6 +124,21 @@ class TestGenBankFeature:
         assert isinstance(gbf.qualifiers, list)
         assert len(gbf.qualifiers) == 0
 
+    def test_equality(self):
+        gbf1 = propex.GenBankFeature('testlocus', 'CDS',
+            Location('123..679'), {'name': 'randomname'})
+        gbf2 = propex.GenBankFeature('testlocus', 'CDS',
+            Location('123..679'), {'name': 'randomname'})
+        gbf3 = propex.GenBankFeature('testlocus', 'CDS',
+            Location('123..679'), {'name': 'otherrandomname'})
+        gbf4 = propex.GenBankFeature('testlocus', 'CDS',
+            Location('120..679'), {'name': 'randomname'})
+
+        assert gbf1 == gbf2
+        assert not gbf1 != gbf2
+        assert gbf3 != gbf1 and gbf3 != gbf2
+        assert gbf1 != gbf4 and not gbf1 == gbf4
+
 class TestLocationRegex:
 
     def setUp(self):
@@ -254,3 +269,15 @@ class TestLocation:
     @raises(ValueError)
     def test_invalid_location(self):
         loc = Location('123..noloc')
+
+    def test_equality(self):
+        loc1 = Location('100..200')
+        loc2 = Location('100..200')
+        loc3 = Location('100..201')
+        loc4 = Location('complement(100..200)')
+
+        assert loc1 == loc2
+        assert not loc1 != loc2
+        assert loc1 != loc4
+        assert not loc2 == loc4
+        assert loc1 != loc3

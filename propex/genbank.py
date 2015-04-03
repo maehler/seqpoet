@@ -128,6 +128,12 @@ class Location(object):
     def __str__(self):
         return self.locstring
 
+    def __eq__(self, other):
+        return str(self) == str(other)
+
+    def __ne__(self, other):
+        return not self == other
+
     def __repr__(self):
         return '<Location: {0}>'.format(repr(self.locstring))
 
@@ -164,6 +170,12 @@ class GenBankFeature(object):
             self.qualifiers = []
         else:
             self.qualifiers = qualifiers
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not self == other
 
     @classmethod
     def from_string(cls, locus, feature_string):
