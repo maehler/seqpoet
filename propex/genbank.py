@@ -137,30 +137,33 @@ class GenBankFeature(object):
 
     **Class attributes:**
         * **feature_type**: a string with the feature key.
-        * **location**: a Location object representing the lcoation of the feature.
+        * **location**: a Location object representing the location of the feature.
         * **qualifiers**: a dictionary of qualifiers of the feature.
 
+    :param locus: the name of the locus that the feature belongs to.
     :param feature_type: name of the feature.
     :param location: a Location object.
     :param qualifiers: a dictionary of qualifiers with the qualifier names as
                        keys and the qualifier values as values.
     """
 
-    def __init__(self, feature_type, location, qualifiers=None):
+    def __init__(self, locus, feature_type, location, qualifiers=None):
         """GenBankFeature constructor.
 
         Args:
+            locus: the locus that the feature belongs to.
             feature_type: the key of the feature, e.g. 'CDS' or 'tRNA'.
             location: a Location object representing the location of the feature
             qualifiers: a dictionary of qualifiers with the qualifier names
                         as keys and the qualifier values as values.
         """
+        self.locus = locus
         self.feature_type = feature_type
         self.location = location
         self.qualifiers = qualifiers
 
     @classmethod
-    def from_string(cls, feature_string):
+    def from_string(cls, locus, feature_string):
         """Create a GenBankFeature instance from a string.
 
         :param feature_string: a string representing a GenBank feature.
@@ -194,7 +197,7 @@ class GenBankFeature(object):
                 value = qualifiers[-1][1] + line.strip('"')
                 qualifiers[-1] = (key, value)
 
-        return cls(ftype, Location(location), dict(qualifiers))
+        return cls(locus, ftype, Location(location), dict(qualifiers))
 
     def get_qualifier(self, qualifier_name):
         """Get a feature qualifier.
@@ -202,7 +205,7 @@ class GenBankFeature(object):
         :param qualifier_name: a string representing a qualifier.
         :returns: the value of the qualifier.
         :raises: KeyError if the feature does not have a qualifier called
-                      qualifier_name.
+                      ``qualifier_name``.
         """
         if qualifier_name not in self.qualifiers:
             raise KeyError('{0} is not a qualifier for {1}'
@@ -306,7 +309,7 @@ class GenBank(object):
                     while line[5] == ' ':
                         cds_string += line
                         line = f.readline()
-                    features['CDS'].append(GenBankFeature.from_string(cds_string))
+                    features['CDS'].append(GenBankFeature.from_string(locus_index['name'], cds_string))
 
             # Get the sequence
             f.seek(origin_offset)
@@ -357,7 +360,7 @@ class GenBank(object):
                             while line[5] == ' ':
                                 feat_string += line
                                 line = f.readline()
-                            features.append(GenBankFeature.from_string(feat_string))
+                            features.append(GenBankFeature.from_string(loc['name'], feat_string))
         return features
 
     def __iter__(self):

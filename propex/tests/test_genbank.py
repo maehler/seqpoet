@@ -70,7 +70,7 @@ class TestGenBankFeature:
 
     def test_qualifier_names(self):
         f = {'name': 'lalala'}
-        gbf = propex.GenBankFeature('CDS', '123..679', f)
+        gbf = propex.GenBankFeature('testlocus', 'CDS', '123..679', f)
         assert gbf.get_qualifier('name') == f['name'], \
             'wrong name: {0}'.format(gbf.get_qualifier('name'))
 
@@ -90,7 +90,7 @@ class TestGenBankFeature:
                      LKITYNQNVKTDFSKELLSRQDHDIFRHQTTVGPHRDDLQFFINEINVADFGSQGQQR
                      TVTLSIKLAEIDLIFEETGEYPILLLDDVMSELDNHRQLDLIETSLGKTQTFITTTTL
                      DHLKNLPENLSIFHVTDGTIEKEKE"'''
-        gbf = propex.GenBankFeature.from_string(feature)
+        gbf = propex.GenBankFeature.from_string('testlocus', feature)
 
         assert gbf.feature_type == 'CDS'
         gbf_gene = gbf.get_qualifier('gene')
@@ -106,7 +106,7 @@ class TestGenBankFeature:
                      /locus_tag=
                      /note
                      /random=""'''
-        gbf = propex.GenBankFeature.from_string(feature)
+        gbf = propex.GenBankFeature.from_string('testlocus', feature)
 
         assert gbf.get_qualifier('locus_tag') == ''
         assert gbf.get_qualifier('note') is None
@@ -116,7 +116,7 @@ class TestGenBankFeature:
     def test_missing_qualifier(self):
         feature = '''     CDS             complement(52625..53704)
                      /gene="recF"'''
-        gbf = propex.GenBankFeature.from_string(feature)
+        gbf = propex.GenBankFeature.from_string('testlocus', feature)
         gbf.get_qualifier('locus_tag')
 
 class TestLocationRegex:
