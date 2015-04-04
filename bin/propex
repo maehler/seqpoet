@@ -167,8 +167,66 @@ def match_primer(primers, seqs, mismatches=2):
                         end + pl1, product_length, hit_seq,
                         '-'
                     ])
+
     return matches
 
+def find_operon(matches, seqs, max_distance=500):
+    match_operon = []
+    for m in matches:
+        gb = seqs[m[0]]
+        loc = propex.genbank.Location.from_int(m[2], m[3])
+        features = gb.features_at_location(loc, locus=m[1])
+        if len(features) == 0:
+            print('WARNING: no gene for match in locus {0}'.format(m[1]),
+                file=sys.stderr)
+            continue
+        operon_genes = []
+        for f in features:
+            # Find upstream genes
+            us = gb.next_upstream(f)
+            while us is not None and \
+                    us.location.min_distance(f.location) < max_distance:
+                operon_genes.append(us)
+                us = gb.next_upstream(us)
+
+            # Add the current feature
+            operon_genes.append(f)
+
+            # Find downstream genes
+            ds = gb.next_downstream(f)
+            while ds is not None and \
+                    ds.location.min_distance(f.location) < max_distance:
+                operon_genes.append(ds)
+                ds = gb.next_downstream(ds)
+
+        if len(operon_genes) == 1:
+            print('WARNING: only one gene found for match in locus '
+                '{0}, not an operon'.format(m[1]), file=sys.stderr)
+
+        operon_genes = sorted(operon_genes, key=lambda x: x.location.start)
+        min_start = operon_genes[0].location.start
+        max_end = operon_genes[-1].location.end
+
+        gb_loci = gb.get_locus_from_name(m[1])
+
+        if len(gb_loci) > 1:
+            print('WARNING: duplicated locus names', file=sys.stderr)
+
+        operon_seq = gb_loci[0].seq[min_start:max_end]
+
+        # Reverse complement matches on minus-strand?
+
+        match_operon.append({
+            'file': m[0],
+            'locus': m[1],
+            'hitstart': m[2],
+            'hitend': m[3],
+            'operon': operon_genes,
+            'strand': m[6],
+            'seq': operon_seq
+        })
+
+    return match_operon
 
 def write_fasta(matches, filename=sys.stdout):
     for m in matches:
