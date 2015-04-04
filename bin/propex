@@ -279,6 +279,10 @@ def parse_args():
         'mismatches allowed when aligning probe/primer to the genome'),
         type=int, default=2, metavar='N')
 
+    parser.add_argument('-d', '--max-distance', help=('the maximum intergenic '
+        'distance allowed when assembling operons'), type=int, default=500,
+        metavar='N')
+
     parser.add_argument('--version', help=('print version and exit'),
         action='version', version='%(prog)s v{0}'.format(propex.__version__))
 
@@ -294,9 +298,11 @@ def parse_args():
     if not os.path.exists(args.probe):
         parser.error('file or directory not found: {}'.format(args.probe))
 
-    # Mismatches should be an integer >= 0
+    # Mismatches and distance should be an integer >= 0
     if args.mismatches < 0:
         parser.error('mismatches must not be negative')
+    if args.max_distance < 0:
+        parser.error('max-distance must not be negative')
 
     return args
 
@@ -336,7 +342,7 @@ def main():
 
     # Operon extraction
     print('Looking for operons', file=sys.stderr)
-    match_features = find_operon(matches, seqs)
+    match_features = find_operon(matches, seqs, max_distance=args.max_distance)
 
     if len(match_features) == 0:
         print('WARNING: no operons found', file=sys.stderr)
