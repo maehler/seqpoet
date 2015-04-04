@@ -346,3 +346,14 @@ class TestLocation:
         assert loc1 != loc4
         assert not loc2 == loc4
         assert loc1 != loc3
+
+    def test_min_distance(self):
+        loc1 = Location('100..200')
+        loc2 = Location('100..200')
+        loc3 = Location('250..300')
+        loc4 = Location('1..50')
+
+        assert loc1.min_distance(loc2) == 0
+        assert loc1.min_distance(loc3) == 50
+        assert loc3.min_distance(loc4) == 200
+        assert loc1.min_distance(loc4) == 50

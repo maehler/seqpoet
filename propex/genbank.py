@@ -125,6 +125,12 @@ class Location(object):
         """
         return self.start <= location.end and location.start <= self.end
 
+    def min_distance(self, other):
+        if self.overlaps(other):
+            return 0
+        else:
+            return min(abs(self.start - other.end), abs(self.end - other.start))
+
     def __str__(self):
         return self.locstring
 
