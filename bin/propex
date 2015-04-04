@@ -334,6 +334,15 @@ def main():
         write_delim(matches)
         exit(0)
 
+    # Operon extraction
+    print('Looking for operons', file=sys.stderr)
+    match_features = find_operon(matches, seqs)
+
+    if len(match_features) == 0:
+        print('WARNING: no operons found', file=sys.stderr)
+        exit(0)
+
+    write_fasta(match_features)
 
 if __name__ == '__main__':
     try:
