@@ -131,6 +131,17 @@ class Location(object):
         else:
             return min(abs(self.start - other.end), abs(self.end - other.start))
 
+    @classmethod
+    def from_int(cls, start, end=None, strand='+'):
+        if end is None:
+            locstring = '{0}'.format(start)
+        else:
+            locstring = '{0}..{1}'.format(start, end)
+        if strand == '+':
+            return cls(locstring)
+        else:
+            return cls('complement({0})'.format(locstring))
+
     def __str__(self):
         return self.locstring
 

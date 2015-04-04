@@ -357,3 +357,9 @@ class TestLocation:
         assert loc1.min_distance(loc3) == 50
         assert loc3.min_distance(loc4) == 200
         assert loc1.min_distance(loc4) == 50
+
+    def test_from_int(self):
+        assert str(Location.from_int(100)) == '100'
+        assert str(Location.from_int(100, 200)) == '100..200'
+        assert str(Location.from_int(100, 200, '-')) == 'complement(100..200)'
+        assert str(Location.from_int(100, strand='-')) == 'complement(100)'
