@@ -248,23 +248,43 @@ def find_operon(matches, seqs, max_distance=500):
     return match_operon
 
 def write_fasta(matches, filename=sys.stdout):
+    if isinstance(filename, file):
+        f = filename
+        close = False
+    else:
+        f = open(filename, 'w')
+        close = True
+
     for m in matches:
         s = propex.fasta.FastaRecord(m['seq'],
             '{filename}:{seqname}:{hitstart}:{hitend}:{length}:{strand}' \
                 .format(**m))
-        print(s, file=filename)
+        print(s, file=f)
+
+    if close:
+        f.close()
 
 def write_delim(matches, filename=sys.stdout, delim='\t'):
+    if isinstance(filename, file):
+        f = filename
+        close = False
+    else:
+        f = open(filename, 'w')
+        close = True
+
     print(delim.join(['filename', 'sequence', 'start',
-        'stop', 'length', 'strand']), file=filename)
+        'stop', 'length', 'strand']), file=f)
     for m in matches:
         print('{delim}'.join(map(str, [m['filename'], m['seqname'],
-            m['hitstart'], m['hitend'], m['length'], m['strand']])).format(delim=delim))
+                m['hitstart'], m['hitend'], m['length'], m['strand']])).format(delim=delim),
+            file=f)
+
+    if close:
+        f.close()
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser()
 
     parser.add_argument('genomedir', help=('directory containing the genome '
         'files to use (FASTA or GenBank format) or a single GenBank or '
@@ -272,16 +292,21 @@ def parse_args():
     parser.add_argument('probe', help=('FASTA file containing either a '
         'single sequence (probe) or a pair of sequences (primer pair)'))
 
-    parser.add_argument('--pcr', help='only perform in silico PCR',
+    parser.add_argument('--pcr', help=('only perform in silico PCR '
+        '(default: perform operon extraction)'),
         action='store_true')
 
     parser.add_argument('-m', '--mismatches', help=('the maximum number of '
-        'mismatches allowed when aligning probe/primer to the genome'),
+        'mismatches allowed when aligning probe/primer to the genome '
+        '(default: %(default)d'),
         type=int, default=2, metavar='N')
 
     parser.add_argument('-d', '--max-distance', help=('the maximum intergenic '
-        'distance allowed when assembling operons'), type=int, default=500,
-        metavar='N')
+        'distance allowed when assembling operons (default: %(default)d)'),
+        type=int, default=500, metavar='N')
+
+    parser.add_argument('-o', '--out', help='file for output (default: stdout)',
+        default=sys.stdout)
 
     parser.add_argument('--version', help=('print version and exit'),
         action='version', version='%(prog)s v{0}'.format(propex.__version__))
@@ -297,6 +322,11 @@ def parse_args():
     args.isdir = os.path.isdir(args.genomedir)
     if not os.path.exists(args.probe):
         parser.error('file or directory not found: {}'.format(args.probe))
+
+    if not isinstance(args.out, file):
+        args.out = os.path.abspath(args.out)
+        if not os.path.exists(os.path.dirname(args.out)):
+            parser.error('file or directory not found: {}'.format(args.out))
 
     # Mismatches and distance should be an integer >= 0
     if args.mismatches < 0:
@@ -334,10 +364,10 @@ def main():
 
     # In silico PCR results
     if is_primer and args.pcr:
-        write_fasta(matches)
+        write_fasta(matches, filename=args.out)
         exit(0)
     elif args.pcr:
-        write_delim(matches)
+        write_delim(matches, filename=args.out)
         exit(0)
 
     # Operon extraction
@@ -348,7 +378,7 @@ def main():
         print('WARNING: no operons found', file=sys.stderr)
         exit(0)
 
-    write_fasta(match_features)
+    write_fasta(match_features, filename=args.out)
 
 if __name__ == '__main__':
     try:
