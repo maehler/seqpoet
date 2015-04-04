@@ -105,18 +105,28 @@ def match_probe(probe, seqs, mismatches=2):
             if len(res1) > 0:
                 for start in res1:
                     hit_seq = record.seq[start:start + pl]
-                    matches.append([
-                        f.filename, record.name, start + 1,
-                        start + pl, pl, hit_seq, '+'
-                    ])
+                    matches.append({
+                        'filename': f.filename,
+                        'seqname': record.name,
+                        'hitstart': start + 1,
+                        'hitend': start + pl,
+                        'length': pl,
+                        'seq': hit_seq,
+                        'strand': '+'
+                    })
 
             if len(res2) > 0:
                 for start in res2:
                     hit_seq = record.seq[start:start + pl]
-                    matches.append([
-                        f.filename, record.name, start + 1,
-                        start + pl, pl, hit_seq, '-'
-                    ])
+                    matches.append({
+                        'filename': f.filename,
+                        'seqname': record.name,
+                        'hitstart': start + 1,
+                        'hitend': start + pl,
+                        'length': pl,
+                        'seq': hit_seq,
+                        'strand': '-'
+                    })
     return matches
 
 
@@ -150,11 +160,15 @@ def match_primer(primers, seqs, mismatches=2):
                         continue
                     product_length = end - start + pl2
                     hit_seq = record.seq[start:start + product_length]
-                    matches.append([
-                        f.filename, record.name, start + 1,
-                        end + pl2, product_length, hit_seq,
-                        '+'
-                    ])
+                    matches.append({
+                        'filename': f.filename,
+                        'seqname': record.name,
+                        'hitstart': start + 1,
+                        'hitend': end + pl1,
+                        'length': product_length,
+                        'seq': hit_seq,
+                        'strand': '+'
+                    })
 
             if len(res2_1) > 0 and len(res1_2) > 0:
                 for start, end in itertools.product(res2_1, res1_2):
@@ -162,20 +176,24 @@ def match_primer(primers, seqs, mismatches=2):
                         continue
                     product_length = end - start + pl1
                     hit_seq = record.seq[start:start + product_length]
-                    matches.append([
-                        f.filename, record.name, start + 1,
-                        end + pl1, product_length, hit_seq,
-                        '-'
-                    ])
+                    matches.append({
+                        'filename': f.filename,
+                        'seqname': record.name,
+                        'hitstart': start + 1,
+                        'hitend': end + pl1,
+                        'length': product_length,
+                        'seq': hit_seq,
+                        'strand': '-'
+                    })
 
     return matches
 
 def find_operon(matches, seqs, max_distance=500):
     match_operon = []
     for m in matches:
-        gb = seqs[m[0]]
-        loc = propex.genbank.Location.from_int(m[2], m[3])
-        features = gb.features_at_location(loc, locus=m[1])
+        gb = seqs[m['filename']]
+        loc = propex.genbank.Location.from_int(m['hitstart'], m['hitend'])
+        features = gb.features_at_location(loc, locus=m['seqname'])
         if len(features) == 0:
             print('WARNING: no gene for match in locus {0}'.format(m[1]),
                 file=sys.stderr)
@@ -201,13 +219,13 @@ def find_operon(matches, seqs, max_distance=500):
 
         if len(operon_genes) == 1:
             print('WARNING: only one gene found for match in locus '
-                '{0}, not an operon'.format(m[1]), file=sys.stderr)
+                '{0}, not an operon'.format(m['seqname']), file=sys.stderr)
 
         operon_genes = sorted(operon_genes, key=lambda x: x.location.start)
         min_start = operon_genes[0].location.start
         max_end = operon_genes[-1].location.end
 
-        gb_loci = gb.get_locus_from_name(m[1])
+        gb_loci = gb.get_locus_from_name(m['seqname'])
 
         if len(gb_loci) > 1:
             print('WARNING: duplicated locus names', file=sys.stderr)
@@ -217,12 +235,13 @@ def find_operon(matches, seqs, max_distance=500):
         # Reverse complement matches on minus-strand?
 
         match_operon.append({
-            'file': m[0],
-            'locus': m[1],
-            'hitstart': m[2],
-            'hitend': m[3],
+            'filename': m['filename'],
+            'seqname': m['seqname'],
+            'hitstart': m['hitstart'],
+            'hitend': m['hitend'],
+            'length': m['length'],
+            'strand': m['strand'],
             'operon': operon_genes,
-            'strand': m[6],
             'seq': operon_seq
         })
 
@@ -230,17 +249,17 @@ def find_operon(matches, seqs, max_distance=500):
 
 def write_fasta(matches, filename=sys.stdout):
     for m in matches:
-        s = propex.fasta.FastaRecord(m[5],
-            '{fname}:{seqname}:{start}:{stop}:{length}:{strand}' \
-                .format(fname=m[0], seqname=m[1], start=m[2],
-                    stop=m[3], length=m[4], strand=m[6]))
+        s = propex.fasta.FastaRecord(m['seq'],
+            '{filename}:{seqname}:{hitstart}:{hitend}:{length}:{strand}' \
+                .format(**m))
         print(s, file=filename)
 
 def write_delim(matches, filename=sys.stdout, delim='\t'):
     print(delim.join(['filename', 'sequence', 'start',
         'stop', 'length', 'strand']), file=filename)
     for m in matches:
-        print(delim.join(map(str, m[:5] + [m[6]])))
+        print('{delim}'.join(map(str, [m['filename'], m['seqname'],
+            m['hitstart'], m['hitend'], m['length'], m['strand']])).format(delim=delim))
 
 
 def parse_args():
@@ -301,7 +320,7 @@ def main():
         matches = match_probe(probe[0], seqs, mismatches=args.mismatches)
 
     print('Found {0} match{1}'.format(len(matches),
-        'es' if len(matches) > 1 else ''))
+        'es' if len(matches) > 1 or len(matches) == 0 else ''))
 
     if len(matches) == 0:
         print('WARNING: no matches found')
