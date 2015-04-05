@@ -293,8 +293,9 @@ def parse_args():
     parser.add_argument('genomedir', help=('directory containing the genome '
         'files to use (FASTA or GenBank format) or a single GenBank or '
         'FASTA file'))
-    parser.add_argument('probe', help=('FASTA file containing either a '
-        'single sequence (probe) or a pair of sequences (primer pair)'))
+    parser.add_argument('probe', help=('file containing either a '
+        'single sequence (probe) or a pair of sequences (primer pair; one '
+        'sequence per line)'))
 
     parser.add_argument('--pcr', help=('only perform in silico PCR '
         '(default: perform operon extraction)'),
