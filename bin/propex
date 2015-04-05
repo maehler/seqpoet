@@ -200,7 +200,7 @@ def find_operon(matches, seqs, max_distance=500):
     match_operon = []
     for m in matches:
         gb = seqs[m['filename']]
-        locus = gb.get_locus(m['seqindex'])
+        locus = gb[m['seqindex']]
         location = propex.genbank.Location.from_int(m['hitstart'], m['hitend'])
         features = locus.features_at_location(location)
         if len(features) == 0:

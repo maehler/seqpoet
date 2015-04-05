@@ -430,7 +430,7 @@ class GenBank(object):
 
         return indexdicts
 
-    def get_locus(self, index):
+    def __getitem__(self, index):
         """Get a specific GenBankLocus object.
 
         :param index: the index of the wanted locus in the index.
@@ -475,14 +475,14 @@ class GenBank(object):
         loci = []
         for i, locus in enumerate(self.index):
             if locus['name'] == name:
-                loci.append(self.get_locus(i))
+                loci.append(self[i])
         return loci
 
     def __iter__(self):
         """Iterate over the loci.
         """
         for i in xrange(len(self)):
-            yield self.get_locus(i)
+            yield self[i]
 
     def __len__(self):
         return len(self.index)

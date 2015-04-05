@@ -28,7 +28,7 @@ class TestGenBank:
 
     def test_sequence_length(self):
         gb = propex.GenBank(self.lmg718)
-        assert len(gb.get_locus(0).seq) == 1522
+        assert len(gb[0].seq) == 1522
 
     def test_iteration(self):
         gb = propex.GenBank(self.lmg718)
