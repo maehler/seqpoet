@@ -99,7 +99,7 @@ def match_probe(probe, seqs, mismatches=2):
     matches = []
     pl = len(probe)
     for f in seqs.itervalues():
-        for record in f:
+        for i, record in enumerate(f):
             res1 = propex.search.search(str(probe), str(record.seq),
                 mismatches=mismatches)
             res2 = [len(record.seq) - x - pl for x in \
@@ -112,6 +112,7 @@ def match_probe(probe, seqs, mismatches=2):
                     matches.append({
                         'filename': f.filename,
                         'seqname': record.name,
+                        'seqindex': i,
                         'hitstart': start + 1,
                         'hitend': start + pl,
                         'length': pl,
@@ -125,6 +126,7 @@ def match_probe(probe, seqs, mismatches=2):
                     matches.append({
                         'filename': f.filename,
                         'seqname': record.name,
+                        'seqindex': i,
                         'hitstart': start + 1,
                         'hitend': start + pl,
                         'length': pl,
@@ -139,7 +141,7 @@ def match_primer(primers, seqs, mismatches=2):
     pl1 = len(primers[0])
     pl2 = len(primers[1])
     for f in seqs.itervalues():
-        for record in f:
+        for i, record in enumerate(f):
             res1_1 = propex.search.search(str(primers[0]), str(record.seq),
                 mismatches=mismatches)
             res1_2 = [len(record.seq) - x - pl1 for x in \
@@ -167,6 +169,7 @@ def match_primer(primers, seqs, mismatches=2):
                     matches.append({
                         'filename': f.filename,
                         'seqname': record.name,
+                        'seqindex': i,
                         'hitstart': start + 1,
                         'hitend': end + pl1,
                         'length': product_length,
@@ -183,6 +186,7 @@ def match_primer(primers, seqs, mismatches=2):
                     matches.append({
                         'filename': f.filename,
                         'seqname': record.name,
+                        'seqindex': i,
                         'hitstart': start + 1,
                         'hitend': end + pl1,
                         'length': product_length,
@@ -196,30 +200,31 @@ def find_operon(matches, seqs, max_distance=500):
     match_operon = []
     for m in matches:
         gb = seqs[m['filename']]
-        loc = propex.genbank.Location.from_int(m['hitstart'], m['hitend'])
-        features = gb.features_at_location(loc, locus=m['seqname'])
+        locus = gb.get_locus(m['seqindex'])
+        location = propex.genbank.Location.from_int(m['hitstart'], m['hitend'])
+        features = locus.features_at_location(location)
         if len(features) == 0:
-            print('WARNING: no gene for match in locus {0}'.format(m[1]),
+            print('WARNING: no gene for match in locus {0}'.format(m['seqname']),
                 file=sys.stderr)
             continue
         operon_genes = []
         for f in features:
             # Find upstream genes
-            us = gb.next_upstream(f)
+            us = locus.next_upstream(f)
             while us is not None and \
                     us.location.min_distance(f.location) < max_distance:
                 operon_genes.append(us)
-                us = gb.next_upstream(us)
+                us = locus.next_upstream(us)
 
             # Add the current feature
             operon_genes.append(f)
 
             # Find downstream genes
-            ds = gb.next_downstream(f)
+            ds = locus.next_downstream(f)
             while ds is not None and \
                     ds.location.min_distance(f.location) < max_distance:
                 operon_genes.append(ds)
-                ds = gb.next_downstream(ds)
+                ds = locus.next_downstream(ds)
 
         if len(operon_genes) == 1:
             print('WARNING: only one gene found for match in locus '
@@ -229,12 +234,7 @@ def find_operon(matches, seqs, max_distance=500):
         min_start = operon_genes[0].location.start
         max_end = operon_genes[-1].location.end
 
-        gb_loci = gb.get_locus_from_name(m['seqname'])
-
-        if len(gb_loci) > 1:
-            print('WARNING: duplicated locus names', file=sys.stderr)
-
-        operon_seq = gb_loci[0].seq[min_start:max_end]
+        operon_seq = locus.seq[min_start:max_end]
 
         # Reverse complement matches on minus-strand?
 

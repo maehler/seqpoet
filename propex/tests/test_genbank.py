@@ -41,15 +41,17 @@ class TestGenBank:
 
     def test_features_at_location(self):
         gb = propex.GenBank(self.lmg718)
-        f = gb.features_at_location(Location('800'), '718_Contig_100_c')
+        locus = gb.get_locus_from_name('718_Contig_100_c')[0]
+        f = locus.features_at_location(Location('800'))
         assert len(f) == 1, 'found {0} features, expected 1'.format(len(f))
         assert f[0].get_qualifier('locus_tag') == 'LMG718_00002'
 
-        f = gb.features_at_location(Location('450..720'), '718_Contig_100_c')
+        f = locus.features_at_location(Location('450..720'))
         assert len(f) == 1, 'found {0} features, expected 1'.format(len(f))
         assert f[0].get_qualifier('locus_tag') == 'LMG718_00001'
 
-        f = gb.features_at_location(Location('8800..8900'), '718_Contig_102_c')
+        locus = gb.get_locus_from_name('718_Contig_102_c')[0]
+        f = locus.features_at_location(Location('8800..8900'))
         assert len(f) == 2, 'found {0} features, expected 2'.format(len(f))
         assert f[0].get_qualifier('locus_tag') == 'LMG718_00019'
         assert f[1].get_qualifier('locus_tag') == 'LMG718_00020'
@@ -67,68 +69,66 @@ class TestGenBank:
 
     def test_next_downstream(self):
         gb = propex.GenBank(self.lmg718)
-        gbf = gb.features_at_location(Location('1355'),
-            locus='718_Contig_10_co')[0]
-        next = gb.next_downstream(gbf)
+        locus = gb.get_locus_from_name('718_Contig_10_co')[0]
+        gbf = locus.features_at_location(Location('1355'))[0]
+        next = locus.next_downstream(gbf)
         assert str(next.location) == '2532..2819'
 
     def test_next_downstream_duplicate_loci(self):
         gb = propex.GenBank(self.lmga18)
-        gbf = gb.features_at_location(Location('301'),
-                locus='LMGA18_Contig_10')[0]
-        next = gb.next_downstream(gbf)
+        locus = gb.get_locus_from_name('LMGA18_Contig_10')[1]
+        gbf = locus.features_at_location(Location('301'))[0]
+        next = locus.next_downstream(gbf)
         assert str(next.location) == '3180..3404'
 
     def test_next_downstream_last(self):
         gb = propex.GenBank(self.lmg718)
-        gbf = gb.features_at_location(Location('9765'),
-            locus='718_Contig_102_c')[0]
-        next = gb.next_downstream(gbf)
+        locus = gb.get_locus_from_name('718_Contig_102_c')[0]
+        gbf = locus.features_at_location(Location('9765'))[0]
+        next = locus.next_downstream(gbf)
         assert next is None
 
     def test_next_downstream_complement(self):
         gb = propex.GenBank(self.lmg718)
-        gbf = gb.features_at_location(Location('7664'),
-            locus='718_Contig_101_c')[0]
-        next = gb.next_downstream(gbf)
+        locus = gb.get_locus_from_name('718_Contig_101_c')[0]
+        gbf = locus.features_at_location(Location('7664'))[0]
+        next = locus.next_downstream(gbf)
         assert str(next.location) == 'complement(7271..7543)'
 
-        gbf = gb.features_at_location(Location('5718'),
-            locus='718_Contig_106_c')[0]
-        next = gb.next_downstream(gbf)
-        assert str(next.location) == 'complement(1945..2496)'
+        gbf = locus.features_at_location(Location('5718'))[0]
+        next = locus.next_downstream(gbf)
+        assert str(next.location) == 'complement(2752..5457)'
 
     def test_next_upstream(self):
         gb = propex.GenBank(self.lmg718)
-        gbf = gb.features_at_location(Location('754'),
-            locus='718_Contig_106_c')[0]
-        next = gb.next_upstream(gbf)
+        locus = gb.get_locus_from_name('718_Contig_106_c')[0]
+        gbf = locus.features_at_location(Location('754'))[0]
+        next = locus.next_upstream(gbf)
         assert str(next.location) == '58..747'
 
     def test_next_upstream_duplicate_loci(self):
         gb = propex.GenBank(self.lmga18)
-        gbf = gb.features_at_location(Location('3180'),
-                locus='LMGA18_Contig_10')[1]
-        next = gb.next_upstream(gbf)
+        locus = gb.get_locus_from_name('LMGA18_Contig_10')[1]
+        gbf = locus.features_at_location(Location('3180'))[0]
+        next = locus.next_upstream(gbf)
         assert str(next.location) == '301..1245'
 
     def test_next_upstream_last(self):
         gb = propex.GenBank(self.lmg718)
-        gbf = gb.features_at_location(Location('58'),
-            locus='718_Contig_106_c')[0]
-        next = gb.next_upstream(gbf)
+        locus = gb.get_locus_from_name('718_Contig_106_c')[0]
+        gbf = locus.features_at_location(Location('58'))[0]
+        next = locus.next_upstream(gbf)
         assert next is None
 
     def test_next_upstream_complement(self):
         gb = propex.GenBank(self.lmg718)
-        gbf = gb.features_at_location(Location('7161'),
-            locus='718_Contig_106_c')[0]
-        next = gb.next_upstream(gbf)
+        locus = gb.get_locus_from_name('718_Contig_106_c')[0]
+        gbf = locus.features_at_location(Location('7161'))[0]
+        next = locus.next_upstream(gbf)
         assert str(next.location) == 'complement(8696..8953)'
 
-        gbf = gb.features_at_location(Location('1945'),
-            locus='718_Contig_106_c')[0]
-        next = gb.next_upstream(gbf)
+        gbf = locus.features_at_location(Location('1945'))[0]
+        next = locus.next_upstream(gbf)
         assert str(next.location) == 'complement(5718..6176)'
 
 class TestGenBankFeature:
