@@ -1,4 +1,5 @@
 from nose.tools import raises
+from nose.plugins.skip import SkipTest
 import os
 
 import propex
@@ -84,8 +85,8 @@ class TestFasta:
         fasta = propex.Fasta(self.valid_index)
         headers = ['seq1', 'seq2', 'aaa', 'bbb']
         for i, record in enumerate(fasta):
-            assert record.header == headers[i], \
-                'header {0} is not {1}'.format(record.header, headers[i])
+            assert record.name == headers[i], \
+                'header {0} is not {1}'.format(record.name, headers[i])
             assert len(record.seq.seq.replace(' ', '')) == len(record.seq), \
                 'spaces in sequence'
 
@@ -131,8 +132,8 @@ class TestFastaWithoutIndex:
         fasta = propex.Fasta(self.valid_noindex)
         headers = ['seq1', 'seq2', 'aaa', 'bbb']
         for i, record in enumerate(fasta):
-            assert record.header == headers[i], \
-                'header {0} is not {1}'.format(record.header, headers[i])
+            assert record.name == headers[i], \
+                'header {0} is not {1}'.format(record.name, headers[i])
             assert len(record.seq.seq.replace(' ', '')) == len(record.seq), \
                 'spaces in sequence'
 
@@ -163,6 +164,8 @@ class TestInvalidFasta:
         testdir = os.path.dirname(__file__)
         self.empty_sequence = os.path.join(testdir, 'data', 'empty_sequence.fasta')
         self.uneven = os.path.join(testdir, 'data', 'uneven.fasta')
+        self.gb = os.path.join(os.path.expanduser('~'), 'Dropbox',
+            'operon_extractor', 'data_genbank', 'LMG718-cremoris.gb')
 
     def test_empty_sequence(self):
         fasta = propex.Fasta(self.empty_sequence)
@@ -171,8 +174,8 @@ class TestInvalidFasta:
         fasta = propex.Fasta(self.empty_sequence)
         headers = ['seq1', 'seq2', 'empty', 'aaa', 'bbb']
         for i, record in enumerate(fasta):
-            assert record.header == headers[i], \
-                'header {0} is not {1}'.format(record.header, headers[i])
+            assert record.name == headers[i], \
+                'header {0} is not {1}'.format(record.name, headers[i])
             assert len(record.seq.seq.replace(' ', '')) == len(record.seq), \
                 'spaces in sequence'
 
@@ -182,6 +185,12 @@ class TestInvalidFasta:
         for i, record in enumerate(fasta):
             assert len(record) == lens[i], \
                 'sequence length ({0}) is not {1}'.format(len(record), lens[i])
+
+    @raises(ValueError)
+    def test_genbank(self):
+        if not os.path.isfile(self.gb):
+            raise SkipTest
+        fasta = propex.Fasta(self.gb)
 
     @raises(ValueError)
     def test_uneven_rows(self):

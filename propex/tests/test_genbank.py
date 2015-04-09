@@ -10,7 +10,7 @@ class TestGenBank:
     def setUp(self):
         self.testdir = os.path.dirname(__file__)
         self.genbankdir = os.path.join(os.path.expanduser('~'), 'Dropbox',
-                                       'operon_extractor', 'data')
+                                       'operon_extractor', 'data_genbank')
 
         if not os.path.isdir(self.genbankdir):
             raise SkipTest
@@ -28,7 +28,7 @@ class TestGenBank:
 
     def test_sequence_length(self):
         gb = propex.GenBank(self.lmg718)
-        assert len(gb.get_locus(0).seq) == 1522
+        assert len(gb[0].seq) == 1522
 
     def test_iteration(self):
         gb = propex.GenBank(self.lmg718)
@@ -41,25 +41,101 @@ class TestGenBank:
 
     def test_features_at_location(self):
         gb = propex.GenBank(self.lmg718)
-        f = gb.features_at_location(Location('800'), '718_Contig_100_c')
+        locus = gb.get_locus_from_name('718_Contig_100_c')[0]
+        f = locus.features_at_location(Location('800'))
         assert len(f) == 1, 'found {0} features, expected 1'.format(len(f))
         assert f[0].get_qualifier('locus_tag') == 'LMG718_00002'
 
-        f = gb.features_at_location(Location('450..720'), '718_Contig_100_c')
+        f = locus.features_at_location(Location('450..720'))
         assert len(f) == 1, 'found {0} features, expected 1'.format(len(f))
         assert f[0].get_qualifier('locus_tag') == 'LMG718_00001'
 
-        f = gb.features_at_location(Location('8800..8900'), '718_Contig_102_c')
+        locus = gb.get_locus_from_name('718_Contig_102_c')[0]
+        f = locus.features_at_location(Location('8800..8900'))
         assert len(f) == 2, 'found {0} features, expected 2'.format(len(f))
         assert f[0].get_qualifier('locus_tag') == 'LMG718_00019'
         assert f[1].get_qualifier('locus_tag') == 'LMG718_00020'
 
+    def test_get_locus_from_name(self):
+        gb = propex.GenBank(self.lmg718)
+        loci = gb.get_locus_from_name('718_Contig_106_c')
+        assert len(loci) > 0
+        assert len(loci[0].seq) == 8967
+
+    @raises(ValueError)
+    def test_parse_fasta(self):
+        gb = propex.GenBank(os.path.join(self.genbankdir, '..', 'data_fasta',
+            'LMG718-cremoris.fasta'))
+
+    def test_next_downstream(self):
+        gb = propex.GenBank(self.lmg718)
+        locus = gb.get_locus_from_name('718_Contig_10_co')[0]
+        gbf = locus.features_at_location(Location('1355'))[0]
+        next = locus.next_downstream(gbf)
+        assert str(next.location) == '2532..2819'
+
+    def test_next_downstream_duplicate_loci(self):
+        gb = propex.GenBank(self.lmga18)
+        locus = gb.get_locus_from_name('LMGA18_Contig_10')[1]
+        gbf = locus.features_at_location(Location('301'))[0]
+        next = locus.next_downstream(gbf)
+        assert str(next.location) == '3180..3404'
+
+    def test_next_downstream_last(self):
+        gb = propex.GenBank(self.lmg718)
+        locus = gb.get_locus_from_name('718_Contig_102_c')[0]
+        gbf = locus.features_at_location(Location('9765'))[0]
+        next = locus.next_downstream(gbf)
+        assert next is None
+
+    def test_next_downstream_complement(self):
+        gb = propex.GenBank(self.lmg718)
+        locus = gb.get_locus_from_name('718_Contig_101_c')[0]
+        gbf = locus.features_at_location(Location('7664'))[0]
+        next = locus.next_downstream(gbf)
+        assert str(next.location) == 'complement(7271..7543)'
+
+        gbf = locus.features_at_location(Location('5718'))[0]
+        next = locus.next_downstream(gbf)
+        assert str(next.location) == 'complement(2752..5457)'
+
+    def test_next_upstream(self):
+        gb = propex.GenBank(self.lmg718)
+        locus = gb.get_locus_from_name('718_Contig_106_c')[0]
+        gbf = locus.features_at_location(Location('754'))[0]
+        next = locus.next_upstream(gbf)
+        assert str(next.location) == '58..747'
+
+    def test_next_upstream_duplicate_loci(self):
+        gb = propex.GenBank(self.lmga18)
+        locus = gb.get_locus_from_name('LMGA18_Contig_10')[1]
+        gbf = locus.features_at_location(Location('3180'))[0]
+        next = locus.next_upstream(gbf)
+        assert str(next.location) == '301..1245'
+
+    def test_next_upstream_last(self):
+        gb = propex.GenBank(self.lmg718)
+        locus = gb.get_locus_from_name('718_Contig_106_c')[0]
+        gbf = locus.features_at_location(Location('58'))[0]
+        next = locus.next_upstream(gbf)
+        assert next is None
+
+    def test_next_upstream_complement(self):
+        gb = propex.GenBank(self.lmg718)
+        locus = gb.get_locus_from_name('718_Contig_106_c')[0]
+        gbf = locus.features_at_location(Location('7161'))[0]
+        next = locus.next_upstream(gbf)
+        assert str(next.location) == 'complement(8696..8953)'
+
+        gbf = locus.features_at_location(Location('1945'))[0]
+        next = locus.next_upstream(gbf)
+        assert str(next.location) == 'complement(5718..6176)'
 
 class TestGenBankFeature:
 
     def test_qualifier_names(self):
         f = {'name': 'lalala'}
-        gbf = propex.GenBankFeature('CDS', '123..679', f)
+        gbf = propex.GenBankFeature('testlocus', 'CDS', '123..679', f)
         assert gbf.get_qualifier('name') == f['name'], \
             'wrong name: {0}'.format(gbf.get_qualifier('name'))
 
@@ -79,7 +155,7 @@ class TestGenBankFeature:
                      LKITYNQNVKTDFSKELLSRQDHDIFRHQTTVGPHRDDLQFFINEINVADFGSQGQQR
                      TVTLSIKLAEIDLIFEETGEYPILLLDDVMSELDNHRQLDLIETSLGKTQTFITTTTL
                      DHLKNLPENLSIFHVTDGTIEKEKE"'''
-        gbf = propex.GenBankFeature.from_string(feature)
+        gbf = propex.GenBankFeature.from_string('testlocus', feature)
 
         assert gbf.feature_type == 'CDS'
         gbf_gene = gbf.get_qualifier('gene')
@@ -95,7 +171,7 @@ class TestGenBankFeature:
                      /locus_tag=
                      /note
                      /random=""'''
-        gbf = propex.GenBankFeature.from_string(feature)
+        gbf = propex.GenBankFeature.from_string('testlocus', feature)
 
         assert gbf.get_qualifier('locus_tag') == ''
         assert gbf.get_qualifier('note') is None
@@ -105,8 +181,28 @@ class TestGenBankFeature:
     def test_missing_qualifier(self):
         feature = '''     CDS             complement(52625..53704)
                      /gene="recF"'''
-        gbf = propex.GenBankFeature.from_string(feature)
+        gbf = propex.GenBankFeature.from_string('testlocus', feature)
         gbf.get_qualifier('locus_tag')
+
+    def test_empty_qualifiers(self):
+        gbf = propex.GenBankFeature('testlocus', 'CDS', '123..679')
+        assert isinstance(gbf.qualifiers, list)
+        assert len(gbf.qualifiers) == 0
+
+    def test_equality(self):
+        gbf1 = propex.GenBankFeature('testlocus', 'CDS',
+            Location('123..679'), {'name': 'randomname'})
+        gbf2 = propex.GenBankFeature('testlocus', 'CDS',
+            Location('123..679'), {'name': 'randomname'})
+        gbf3 = propex.GenBankFeature('testlocus', 'CDS',
+            Location('123..679'), {'name': 'otherrandomname'})
+        gbf4 = propex.GenBankFeature('testlocus', 'CDS',
+            Location('120..679'), {'name': 'randomname'})
+
+        assert gbf1 == gbf2
+        assert not gbf1 != gbf2
+        assert gbf3 != gbf1 and gbf3 != gbf2
+        assert gbf1 != gbf4 and not gbf1 == gbf4
 
 class TestLocationRegex:
 
@@ -180,46 +276,46 @@ class TestLocation:
 
     def test_single(self):
         loc = Location(self.single)
-        assert loc.start == 467
-        assert loc.stop == 467
+        assert loc.start == 466
+        assert loc.end == 466
         assert not loc.is_complement
 
     def test_range(self):
         loc = Location(self.range)
-        assert loc.start == 340
-        assert loc.stop == 565
+        assert loc.start == 339
+        assert loc.end == 564
         assert not loc.is_complement
 
     def test_lower_unknown(self):
         loc = Location(self.lower_unknown)
-        assert loc.start == 345
-        assert loc.stop == 500
+        assert loc.start == 344
+        assert loc.end == 499
         assert not loc.is_complement
         loc = Location(self.lower_unknown2)
-        assert loc.start == 1
-        assert loc.stop == 888
+        assert loc.start == 0
+        assert loc.end == 887
         assert not loc.is_complement
 
     def test_upper_unknown(self):
         loc = Location(self.upper_unknown)
-        assert loc.start == 1
-        assert loc.stop == 888
+        assert loc.start == 0
+        assert loc.end == 887
         assert not loc.is_complement
 
     def test_one_of(self):
         loc = Location(self.one_of)
-        assert loc.start == 102
-        assert loc.stop == 110
+        assert loc.start == 101
+        assert loc.end == 109
         assert not loc.is_complement
 
     def test_complement(self):
         loc = Location(self.complement)
-        assert loc.start == 340
-        assert loc.stop == 565
+        assert loc.start == 339
+        assert loc.end == 564
         assert loc.is_complement
         loc = Location(self.complement2)
-        assert loc.start == 467
-        assert loc.stop == 467
+        assert loc.start == 466
+        assert loc.end == 466
         assert loc.is_complement
 
     def test_overlap(self):
@@ -238,3 +334,32 @@ class TestLocation:
     @raises(ValueError)
     def test_invalid_location(self):
         loc = Location('123..noloc')
+
+    def test_equality(self):
+        loc1 = Location('100..200')
+        loc2 = Location('100..200')
+        loc3 = Location('100..201')
+        loc4 = Location('complement(100..200)')
+
+        assert loc1 == loc2
+        assert not loc1 != loc2
+        assert loc1 != loc4
+        assert not loc2 == loc4
+        assert loc1 != loc3
+
+    def test_min_distance(self):
+        loc1 = Location('100..200')
+        loc2 = Location('100..200')
+        loc3 = Location('250..300')
+        loc4 = Location('1..50')
+
+        assert loc1.min_distance(loc2) == 0
+        assert loc1.min_distance(loc3) == 50
+        assert loc3.min_distance(loc4) == 200
+        assert loc1.min_distance(loc4) == 50
+
+    def test_from_int(self):
+        assert str(Location.from_int(100)) == '100'
+        assert str(Location.from_int(100, 200)) == '100..200'
+        assert str(Location.from_int(100, 200, '-')) == 'complement(100..200)'
+        assert str(Location.from_int(100, strand='-')) == 'complement(100)'

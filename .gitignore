@@ -5,3 +5,5 @@
 /build/
 /cover/
 /.coverage
+/docs/_build
+/data
