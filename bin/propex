@@ -268,25 +268,6 @@ def write_fasta(matches, filename=sys.stdout):
     if close:
         f.close()
 
-def write_delim(matches, filename=sys.stdout, delim='\t'):
-    if isinstance(filename, file):
-        f = filename
-        close = False
-    else:
-        f = open(filename, 'w')
-        close = True
-
-    print(delim.join(['filename', 'sequence', 'start',
-        'stop', 'length', 'strand']), file=f)
-    for m in matches:
-        print('{delim}'.join(map(str, [m['filename'], m['seqname'],
-                m['hitstart'], m['hitend'], m['length'], m['strand']])).format(delim=delim),
-            file=f)
-
-    if close:
-        f.close()
-
-
 def parse_args():
     parser = argparse.ArgumentParser()
 
@@ -297,13 +278,13 @@ def parse_args():
         'single sequence (probe) or a pair of sequences (primer pair; one '
         'sequence per line)'))
 
-    parser.add_argument('--pcr', help=('only perform in silico PCR '
-        '(default: perform operon extraction)'),
-        action='store_true')
+    parser.add_argument('--pcr', help=('only perform in silico PCR. Requires '
+        'that the probe file contains a primer pair (default: perform '
+        'operon extraction)'), action='store_true')
 
     parser.add_argument('-m', '--mismatches', help=('the maximum number of '
         'mismatches allowed when aligning probe/primer to the genome '
-        '(default: %(default)d'),
+        '(default: %(default)d)'),
         type=int, default=2, metavar='N')
 
     parser.add_argument('-d', '--max-distance', help=('the maximum intergenic '
@@ -347,6 +328,11 @@ def main():
     probe = get_probe(args.probe)
     is_primer = len(probe) == 2
 
+    if args.pcr and not is_primer:
+        print('ERROR: --pcr requires a primer pair, not a single probe',
+            file=sys.stderr)
+        exit(1)
+
     if args.isdir:
         seqs = get_sequences(args.genomedir, genbank_only=not args.pcr)
     else:
@@ -370,9 +356,6 @@ def main():
     # In silico PCR results
     if is_primer and args.pcr:
         write_fasta(matches, filename=args.out)
-        exit(0)
-    elif args.pcr:
-        write_delim(matches, filename=args.out)
         exit(0)
 
     # Operon extraction
