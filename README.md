@@ -5,13 +5,10 @@ and operon extraction in prokaryotes. The secondary purpose of propex is to be
 a Python package that can be used for handling sequence data in the form of
 FASTA and GenBank files.
 
->Currently the master branch is not stable. To get the latest updates, check
->out the develop branch. At the first release the master can be considered
->stable.
-
 ## Requirements
 
-Currently, the only requirement is Python >= 2.7.
+Currently, the only requirement is Python >= 2.7, but Python 3 is not supported
+at the moment.
 
 ## Installation
 
