@@ -260,6 +260,7 @@ def write_fasta(matches, filename=sys.stdout):
         close = True
 
     for m in matches:
+        m['filename'] = os.path.basename(m['filename'])
         s = propex.fasta.FastaRecord(m['seq'],
             '{filename}:{seqname}:{hitstart}:{hitend}:{length}:{strand}' \
                 .format(**m))
