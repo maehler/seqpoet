@@ -136,7 +136,8 @@ def match_probe(probe, seqs, mismatches=2):
     return matches
 
 
-def match_primer(primers, seqs, mismatches=2):
+def match_primer(primers, seqs, mismatches=2,
+        min_product=0, max_product=3000):
     matches = []
     pl1 = len(primers[0])
     pl2 = len(primers[1])
@@ -165,6 +166,9 @@ def match_primer(primers, seqs, mismatches=2):
                     if start >= end:
                         continue
                     product_length = end - start + pl2
+                    if product_length < min_product or \
+                            product_length > max_product:
+                        continue
                     hit_seq = record.seq[start:start + product_length]
                     matches.append({
                         'filename': f.filename,
@@ -182,6 +186,9 @@ def match_primer(primers, seqs, mismatches=2):
                     if start >= end:
                         continue
                     product_length = end - start + pl1
+                    if product_length < min_product or \
+                            product_length > max_product:
+                        continue
                     hit_seq = record.seq[start:start + product_length]
                     matches.append({
                         'filename': f.filename,
@@ -292,6 +299,14 @@ def parse_args():
         'distance allowed when assembling operons (default: %(default)d)'),
         type=int, default=500, metavar='N')
 
+    parser.add_argument('--min-product', help=('minimum PCR product length '
+        'to consider (default: %(default)d)'), type=int, default=0,
+        metavar='N')
+
+    parser.add_argument('--max-product', help=('maximum PCR product length '
+        'to consider (default: %(default)d)'), type=int, default=3000,
+        metavar='N')
+
     parser.add_argument('-o', '--out', help='file for output (default: stdout)',
         default=sys.stdout)
 
@@ -315,11 +330,15 @@ def parse_args():
         if not os.path.exists(os.path.dirname(args.out)):
             parser.error('file or directory not found: {}'.format(args.out))
 
-    # Mismatches and distance should be an integer >= 0
+    # Mismatches, distance and max/min product length should be integers >= 0
     if args.mismatches < 0:
         parser.error('mismatches must not be negative')
     if args.max_distance < 0:
         parser.error('max-distance must not be negative')
+    if args.min_product < 0:
+        parser.error('minimum product length must not be negative')
+    if args.max_product < 0:
+        parser.error('maximum product length must not be negative')
 
     return args
 
@@ -343,7 +362,8 @@ def main():
     print('Finding {0} matches'.format('primer' if is_primer else 'probe'),
         file=sys.stderr)
     if is_primer:
-        matches = match_primer(probe, seqs, mismatches=args.mismatches)
+        matches = match_primer(probe, seqs, mismatches=args.mismatches,
+            min_product=args.min_product, max_product=args.max_product)
     else:
         matches = match_probe(probe[0], seqs, mismatches=args.mismatches)
 
