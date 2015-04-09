@@ -34,15 +34,25 @@ def find_version(*file_paths):
     raise RuntimeError("Unable to find version string.")
 
 setup(name='propex',
-      version=find_version('propex/__init__.py'),
-      description='Prokaryotic Operon Extractor',
-      url='',
-      author='Niklas Mähler',
-      author_email='niklas.mahler@gmail.com',
-      license='MIT',
-      packages=['propex'],
-      zip_safe=False,
-      test_suite='nose.collector',
-      tests_require=['nose'],
-      scripts=['bin/propex']
+    version=find_version('propex/__init__.py'),
+    description='In silico PCR and operon extraction',
+    url='https://github.com/maehler/propex',
+    author='Niklas Mähler',
+    author_email='niklas.mahler@gmail.com',
+    maintainer='Niklas Mähler',
+    maintainer_email='niklas.mahler@gmail.com',
+    license='MIT',
+    packages=['propex'],
+    zip_safe=False,
+    test_suite='nose.collector',
+    tests_require=['nose'],
+    scripts=['bin/propex'],
+    classifiers=[
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 2 :: Only',
+        'Programming Language :: Python :: 2.7',
+        'Topic :: Scientific/Engineering :: Bio-Informatics'
+    ]
 )
