@@ -361,10 +361,10 @@ def main():
         matches = match_probe(probe[0], seqs, mismatches=args.mismatches)
 
     print('Found {0} match{1}'.format(len(matches),
-        'es' if len(matches) > 1 or len(matches) == 0 else ''))
+        'es' if len(matches) > 1 or len(matches) == 0 else ''), file=sys.stderr)
 
     if len(matches) == 0:
-        print('WARNING: no matches found')
+        print('WARNING: no matches found', file=sys.stderr)
         exit(0)
 
     # In silico PCR results
