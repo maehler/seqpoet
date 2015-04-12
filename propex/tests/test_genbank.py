@@ -62,7 +62,7 @@ class TestGenBank:
         assert len(loci) > 0
         assert len(loci[0].seq) == 8967
 
-    @raises(ValueError)
+    @raises(propex.genbank.ParsingError)
     def test_parse_fasta(self):
         gb = propex.GenBank(os.path.join(self.genbankdir, '..', 'data_fasta',
             'LMG718-cremoris.fasta'))
@@ -331,7 +331,7 @@ class TestLocation:
         assert not loc4.overlaps(loc3)
         assert not loc1.overlaps(loc5)
 
-    @raises(ValueError)
+    @raises(propex.genbank.LocationError)
     def test_invalid_location(self):
         loc = Location('123..noloc')
 

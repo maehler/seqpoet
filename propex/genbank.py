@@ -10,6 +10,9 @@ import re
 
 from propex.sequence import Sequence
 
+class LocationError(Exception):
+    pass
+
 class Location(object):
 
     """Represent a GenBank feature location.
@@ -93,7 +96,7 @@ class Location(object):
             is located on the complement strand. Returned positions
             are 0-based.
         Raises:
-            ValueError: if the location string is not valid.
+            LocationError: if the location string is not valid.
         """
         locstring = self.locstring
         re_name = None
@@ -107,7 +110,7 @@ class Location(object):
                 re_name = name
                 regex = r
         if re_name is None:
-            raise ValueError('unknown location string: {0}'.format(self.locstring))
+            raise LocationError('unknown location string: {0}'.format(self.locstring))
 
         if re_name == 'single':
             start = end = int(regex.match(locstring).group(1))
@@ -366,6 +369,9 @@ class GenBankLocus(object):
 
         return self.features[ftype][findex]
 
+class ParsingError(Exception):
+    pass
+
 class GenBank(object):
 
     """Represent a GenBank file.
@@ -375,7 +381,7 @@ class GenBank(object):
         * index: a list of dictionaries representing an index of the file.
 
     :param fname: filename of the GenBank file.
-    :raises: ValueError if parsing fails.
+    :raises: :py:exc:`.ParsingError` if parsing fails.
     """
 
     def __init__(self, fname):
@@ -401,7 +407,7 @@ class GenBank(object):
             offset = 0
             for lineno, line in enumerate(f):
                 if lineno == 0 and not line.strip().startswith('LOCUS'):
-                    raise ValueError('does not look like a GenBank file: {0}' \
+                    raise ParsingError('does not look like a GenBank file: {0}' \
                         .format(self.filename))
                 if line.strip().split()[0] == 'LOCUS':
                     current_locus = line.strip().split()[1]
