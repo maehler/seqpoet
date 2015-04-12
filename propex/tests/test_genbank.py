@@ -10,10 +10,22 @@ class TestGenBank:
     def setUp(self):
         self.testdir = os.path.dirname(__file__)
         self.sc = os.path.join(self.testdir, 'data', 'U49845.gb')
+        self.gb = propex.GenBank(self.sc)
 
     def test_sequence_length(self):
-        gb = propex.GenBank(self.sc)
-        assert len(gb[0].seq) == 5028
+        assert len(self.gb[0].seq) == 5028
+
+    def test_mRNA(self):
+        assert len(self.gb[0].features['mRNA']) == 3
+
+    def test_next_downstream(self):
+        locus = self.gb[0]
+        gbf = locus.features['mRNA'][0]
+        assert gbf is not None
+        assert str(gbf.location) == '<1..>206'
+        next = locus.next_downstream(gbf)
+        assert next is not None
+        assert str(next.location) == '<687..>3158'
 
 class TestGenBankLocal:
 

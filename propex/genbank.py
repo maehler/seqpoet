@@ -289,6 +289,11 @@ class GenBankLocus(object):
         """
         features = []
         for feat in self.features.iterkeys():
+            # Skip the source feature since it always will
+            # overlap (assuming that the feature location
+            # is within the sequence boundaries).
+            if feat == 'source':
+                continue
             for feature in self.features[feat]:
                 if feature.location.overlaps(location):
                     features.append(feature)
@@ -452,20 +457,21 @@ class GenBank(object):
         locus_index = self.index[index]
         locus_offset = locus_index['offset']
         origin_offset = locus_index['ORIGIN']
-        features = {'CDS': []}
+        features = collections.defaultdict(list)
         with open(self.filename) as f:
-            # Get the CDSs
-            if 'CDS' in locus_index:
-                for cds in locus_index['CDS']:
-                    f.seek(cds['offset'])
-                    cds_string = f.readline()
+            for ftype in self.features:
+                if ftype not in locus_index:
+                    continue
+                for feature in locus_index[ftype]:
+                    f.seek(feature['offset'])
+                    feature_string = f.readline()
                     line = f.readline()
                     while line[5] == ' ':
-                        cds_string += line
+                        feature_string += line
                         line = f.readline()
-                    features['CDS'].append(
+                    features[ftype].append(
                         GenBankFeature.from_string(locus_index['name'],
-                            cds_string))
+                            feature_string))
 
             # Get the sequence
             f.seek(origin_offset)
