@@ -411,6 +411,8 @@ class GenBank(object):
                 if lineno == 0 and not line.strip().startswith('LOCUS'):
                     raise ParsingError('does not look like a GenBank file: {0}' \
                         .format(self.filename))
+                if len(line.strip()) == 0:
+                    continue
                 if line.strip().split()[0] == 'LOCUS':
                     current_locus = line.strip().split()[1]
                     indexdicts.append({})
