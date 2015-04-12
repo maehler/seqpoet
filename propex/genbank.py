@@ -59,6 +59,8 @@ class Location(object):
     _re_lower_unknown = re.compile(r'^<(\d+)\.\.(\d+)$')
     #: Regular expression for locations with unknown upper boundary.
     _re_upper_unknown = re.compile(r'^(\d+)\.\.>(\d+)$')
+    #: Regular expression for locations with unknown upper and lower boundary.
+    _re_lower_upper_unknown = re.compile(r'^<(\d+)\.\.>(\d+)$')
     #: Regular expression for single base locations within a range.
     _re_one_of = re.compile(r'^(\d+)\.(\d+)$')
 
@@ -83,6 +85,7 @@ class Location(object):
             'range': Location._re_range,
             'upper_unknown': Location._re_lower_unknown,
             'lower_unknown': Location._re_upper_unknown,
+            'lower_upper_unkown': Location._re_lower_upper_unknown,
             'one_of': Location._re_one_of
         }
 

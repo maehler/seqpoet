@@ -213,6 +213,7 @@ class TestLocationRegex:
         self.lower_unknown = '<345..500'
         self.lower_unknown2 = '<1..888'
         self.upper_unknown = '1..>888'
+        self.lower_upper_unkown = '<1..>888'
         self.one_of = '102.110'
         self.complement = 'complement(340..565)'
         self.complement2 = 'complement(467)'
@@ -251,6 +252,12 @@ class TestLocationRegex:
 
     def test_upper_unknown(self):
         match = Location._re_upper_unknown.match(self.upper_unknown)
+        assert match
+        assert match.group(1) == '1'
+        assert match.group(2) == '888'
+
+    def test_lower_upper_unknown(self):
+        match = Location._re_lower_upper_unknown.match(self.lower_upper_unkown)
         assert match
         assert match.group(1) == '1'
         assert match.group(2) == '888'
