@@ -283,9 +283,7 @@ class GenBankLocus(object):
                   overlapping the location.
         """
         features = []
-        for feat in GenBank.features:
-            if feat not in self.features:
-                continue
+        for feat in self.features.iterkeys():
             for feature in self.features[feat]:
                 if feature.location.overlaps(location):
                     features.append(feature)
@@ -380,9 +378,6 @@ class GenBank(object):
     :raises: ValueError if parsing fails.
     """
 
-    #: List of supported features.
-    features = ['CDS']
-
     def __init__(self, fname):
         """GenBank constructor.
 
@@ -390,7 +385,7 @@ class GenBank(object):
             fname: filename of the GenBank file.
         """
         self.filename = fname
-        self.index = self._index()
+        self.index, self.features = self._index()
 
     def _index(self):
         """Create and index of a the GenBank object.
@@ -399,7 +394,9 @@ class GenBank(object):
             a list of dictionaries where each element in the list
             represents a locus.
         """
+        features = set()
         indexdicts = []
+        in_features = False
         with open(self.filename) as f:
             offset = 0
             for lineno, line in enumerate(f):
@@ -411,24 +408,30 @@ class GenBank(object):
                     indexdicts.append({})
                     indexdicts[-1]['name'] = current_locus
                     indexdicts[-1]['offset'] = offset
-                if line.strip().split()[0] == 'CDS':
-                    if 'CDS' not in indexdicts[-1]:
-                        indexdicts[-1]['CDS'] = []
-                    indexdicts[-1]['CDS'].append({
+                if line.strip().split()[0] == 'ORIGIN':
+                    indexdicts[-1]['ORIGIN'] = offset + len(line)
+                    in_features = False
+                if in_features and line[5] != ' ':
+                    feature = line.strip().split()[0]
+                    features.add(feature)
+                    if feature not in indexdicts[-1]:
+                        indexdicts[-1][feature] = []
+                    indexdicts[-1][feature].append({
                         'offset': offset,
                         'location': Location(line.strip().split()[1])
                     })
-                if line.strip().split()[0] == 'ORIGIN':
-                    indexdicts[-1]['ORIGIN'] = offset + len(line)
+                if line.startswith('FEATURES'):
+                    in_features = True
                 offset += len(line)
 
-        # Sort the CDS according to start position
-        for s in indexdicts:
-            if 'CDS' not in s:
-                continue
-            s['CDS'] = sorted(s['CDS'], key=lambda x: x['location'].start)
+        # Sort the features according to start position
+        for f in features:
+            for s in indexdicts:
+                if f not in s:
+                    continue
+                s[f] = sorted(s[f], key=lambda x: x['location'].start)
 
-        return indexdicts
+        return indexdicts, features
 
     def __getitem__(self, index):
         """Get a specific GenBankLocus object.
