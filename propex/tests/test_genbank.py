@@ -9,6 +9,16 @@ class TestGenBank:
 
     def setUp(self):
         self.testdir = os.path.dirname(__file__)
+        self.sc = os.path.join(self.testdir, 'data', 'U49845.gb')
+
+    def test_sequence_length(self):
+        gb = propex.GenBank(self.sc)
+        assert len(gb[0].seq) == 5028
+
+class TestGenBankLocal:
+
+    def setUp(self):
+        self.testdir = os.path.dirname(__file__)
         self.genbankdir = os.path.join(os.path.expanduser('~'), 'Dropbox',
                                        'operon_extractor', 'data_genbank')
 
