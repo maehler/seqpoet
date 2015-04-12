@@ -21,7 +21,7 @@ class Location(object):
     http://www.insdc.org/files/feature_table.html#3.4
 
     Location (and GenBank files) are using 1-based positions. To make
-    location-bases string handling easier, the Location class represents
+    location-based string handling easier, the Location class represents
     the locations internally as 0-based::
 
         >>> loc = Location('42..84')
@@ -50,18 +50,17 @@ class Location(object):
     """
 
     #: Regular expression for finding complement locations.
-    loc_complement = re.compile(r'^complement\((.+)\)$')
-
+    _re_complement = re.compile(r'^complement\((.+)\)$')
     #: Regular expression for single base locations.
-    loc_single = re.compile(r'^(\d+)$')
+    _re_single = re.compile(r'^(\d+)$')
     #: Regular expression for range locations,
-    loc_range = re.compile(r'^(\d+)\.\.(\d+)$')
+    _re_range = re.compile(r'^(\d+)\.\.(\d+)$')
     #: Regular expression for locations with unknown lower boundary.
-    loc_lower_unknown = re.compile(r'^<(\d+)\.\.(\d+)$')
+    _re_lower_unknown = re.compile(r'^<(\d+)\.\.(\d+)$')
     #: Regular expression for locations with unknown upper boundary.
-    loc_upper_unknown = re.compile(r'^(\d+)\.\.>(\d+)$')
+    _re_upper_unknown = re.compile(r'^(\d+)\.\.>(\d+)$')
     #: Regular expression for single base locations within a range.
-    loc_one_of = re.compile(r'^(\d+)\.(\d+)$')
+    _re_one_of = re.compile(r'^(\d+)\.(\d+)$')
 
     def __init__(self, locstring):
         """Location constructor.
@@ -80,11 +79,11 @@ class Location(object):
             expression.
         """
         return {
-            'single': Location.loc_single,
-            'range': Location.loc_range,
-            'upper_unknown': Location.loc_lower_unknown,
-            'lower_unknown': Location.loc_upper_unknown,
-            'one_of': Location.loc_one_of
+            'single': Location._re_single,
+            'range': Location._re_range,
+            'upper_unknown': Location._re_lower_unknown,
+            'lower_unknown': Location._re_upper_unknown,
+            'one_of': Location._re_one_of
         }
 
     def _parse(self):
@@ -102,9 +101,9 @@ class Location(object):
         re_name = None
         regex = None
         is_complement = False
-        if Location.loc_complement.match(locstring):
+        if Location._re_complement.match(locstring):
             is_complement = True
-            locstring = Location.loc_complement.match(locstring).group(1)
+            locstring = Location._re_complement.match(locstring).group(1)
         for name, r in self._regex_dict().iteritems():
             if r.match(locstring) is not None:
                 re_name = name

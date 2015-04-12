@@ -218,30 +218,30 @@ class TestLocationRegex:
         self.complement2 = 'complement(467)'
 
     def test_complement(self):
-        match = Location.loc_complement.match(self.complement)
+        match = Location._re_complement.match(self.complement)
         assert match
         assert match.group(1) == '340..565'
-        match = Location.loc_complement.match(self.complement2)
+        match = Location._re_complement.match(self.complement2)
         assert match
         assert match.group(1) == '467'
-        match = Location.loc_complement.match(self.one_of)
+        match = Location._re_complement.match(self.one_of)
         assert match is None
 
     def test_range_regex(self):
-        match = Location.loc_range.match(self.range)
-        assert Location.loc_one_of.match(self.range) is None
+        match = Location._re_range.match(self.range)
+        assert Location._re_one_of.match(self.range) is None
         assert match
         assert match.group(1) == '340'
         assert match.group(2) == '565'
 
     def test_single_regex(self):
-        match = Location.loc_single.match(self.single)
+        match = Location._re_single.match(self.single)
         assert match
         assert match.group(1) == '467'
 
     def test_lower_unknown(self):
-        match1 = Location.loc_lower_unknown.match(self.lower_unknown)
-        match2 = Location.loc_lower_unknown.match(self.lower_unknown2)
+        match1 = Location._re_lower_unknown.match(self.lower_unknown)
+        match2 = Location._re_lower_unknown.match(self.lower_unknown2)
         assert match1
         assert match1.group(1) == '345'
         assert match1.group(2) == '500'
@@ -250,13 +250,13 @@ class TestLocationRegex:
         assert match2.group(2) == '888'
 
     def test_upper_unknown(self):
-        match = Location.loc_upper_unknown.match(self.upper_unknown)
+        match = Location._re_upper_unknown.match(self.upper_unknown)
         assert match
         assert match.group(1) == '1'
         assert match.group(2) == '888'
 
     def test_one_of(self):
-        match = Location.loc_one_of.match(self.one_of)
+        match = Location._re_one_of.match(self.one_of)
         assert match
         assert match.group(1) == '102'
         assert match.group(2) == '110'
