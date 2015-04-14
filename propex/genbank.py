@@ -407,6 +407,7 @@ class GenBank(object):
                     raise ValueError('does not look like a GenBank file: {0}' \
                         .format(self.filename))
                 if len(line.strip()) == 0:
+                    offset += len(line)
                     continue
                 if line.strip().split()[0] == 'LOCUS':
                     current_locus = line.strip().split()[1]
