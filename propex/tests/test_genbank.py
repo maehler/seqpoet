@@ -59,7 +59,8 @@ class TestGenBankLocal:
 
     def test_load_directory(self):
         gbs = [propex.GenBank(os.path.join(self.genbankdir, x)) \
-            for x in os.listdir(self.genbankdir)]
+            for x in os.listdir(self.genbankdir) \
+            if os.path.isfile(os.path.join(self.genbankdir, x))]
 
     def test_features_at_location(self):
         gb = propex.GenBank(self.lmg718)
