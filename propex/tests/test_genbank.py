@@ -27,6 +27,21 @@ class TestGenBank:
         assert next is not None
         assert str(next.location) == '<687..>3158'
 
+    def test_header(self):
+        header = self.gb[0].header
+
+        assert all(x in header for x in ['LOCUS', 'DEFINITION',
+            'ACCESSION', 'VERSION', 'KEYWORDS', 'SOURCE', 'REFERENCE'])
+
+        assert header['LOCUS']['molecule'] == 'DNA'
+
+        assert header['ACCESSION'] == 'U49845'
+
+        assert len(header['REFERENCE']) == 2
+        assert header['REFERENCE'][0][0] == '1  (bases 1 to 5028)'
+        assert all(x in header['REFERENCE'][0][1] for x in ['AUTHORS',
+            'TITLE', 'JOURNAL', 'PUBMED'])
+
 class TestGenBankLocal:
 
     def setUp(self):

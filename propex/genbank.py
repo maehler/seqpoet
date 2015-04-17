@@ -267,7 +267,7 @@ class GenBankLocus(object):
     :param features: a dictionary containing features of the locus.
     """
 
-    def __init__(self, name, seq, features=None):
+    def __init__(self, name, seq, features=None, header=None):
         """GenBankLocus constructor.
 
         Args:
@@ -281,6 +281,10 @@ class GenBankLocus(object):
             self.features = {}
         else:
             self.features = features
+        if header is None:
+            self.header = {}
+        else:
+            self.header = header
 
     def features_at_location(self, location):
         """Get features at a location.
@@ -573,7 +577,8 @@ class GenBank(object):
                 line = f.readline()
                 seq += ''.join(line.strip().split()[1:])
 
-        return GenBankLocus(locus_index['name'], Sequence(seq), features)
+        return GenBankLocus(locus_index['name'], Sequence(seq), features,
+            head_data)
 
     def get_locus_from_name(self, name):
         """Get a specific GenBankLocus object from the locus name.
