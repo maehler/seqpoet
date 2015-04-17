@@ -449,6 +449,78 @@ class GenBank(object):
 
         return indexdicts, features
 
+    def _parse_header(self, hstring):
+        """Parse a GenBank header string into a nested dictionary.
+        """
+        head_data = collections.OrderedDict()
+
+        header_lines = iter(hstring.splitlines(True))
+
+        line = header_lines.next()
+
+        header = line.strip().split()
+
+        name = header[1]
+        length = ' '.join(header[2:4])
+        molecule = header[4]
+        molecule_type = header[5]
+
+        if len(header) == 8:
+            division = header[6]
+            date = header[7]
+        elif len(header) == 7:
+            division = ''
+            date = header[6]
+
+        head_data['LOCUS'] = {
+            'name': name,
+            'length': length,
+            'molecule': molecule,
+            'molecule_type': molecule_type,
+            'genbank_division': division,
+            'modification_data': date
+        }
+
+        last_key = None
+        line = header_lines.next()
+        while True:
+            if line[0] != ' ':
+                key = line[:11].strip()
+                last_key = key
+                if key in head_data:
+                    old_entry = head_data[key]
+                    if not isinstance(old_entry, list):
+                        head_data[key] = [(old_entry,
+                            collections.OrderedDict())]
+                    head_data[key].append((line[11:].strip(),
+                        collections.OrderedDict()))
+                else:
+                    head_data[key] = line[11:].strip()
+            elif len(line[:11].strip()) != 0:
+                sub_key = line[:11].strip()
+                old_entry = head_data[last_key]
+                if not isinstance(old_entry, list):
+                    head_data[last_key] = [(old_entry,
+                        collections.OrderedDict())]
+                old_entry = head_data[key][-1]
+                old_entry[1][sub_key] = line[11:].strip()
+                head_data[key][-1] = (old_entry[0], old_entry[1])
+            else:
+                if isinstance(head_data[last_key], list):
+                    sub_key = head_data[last_key][-1][1].keys()[-1]
+                    head_data[last_key][-1][1][sub_key] = \
+                        '\n'.join([head_data[last_key][-1][1][sub_key],
+                            line.strip()])
+                else:
+                    head_data[last_key] = '\n'.join([head_data[last_key],
+                        line.strip()])
+            try:
+                line = header_lines.next()
+            except StopIteration:
+                break
+
+        return head_data
+
     def __getitem__(self, index):
         """Get a specific GenBankLocus object.
 
@@ -459,7 +531,20 @@ class GenBank(object):
         locus_offset = locus_index['offset']
         origin_offset = locus_index['ORIGIN']
         features = collections.defaultdict(list)
+
+        headstring = ''
+
         with open(self.filename) as f:
+            f.seek(locus_offset)
+            headstring += f.readline()
+
+            line = f.readline()
+            while not line.startswith('FEATURES'):
+                headstring += line
+                line = f.readline()
+
+            head_data = self._parse_header(headstring)
+
             for ftype in self.features:
                 if ftype not in locus_index:
                     continue
