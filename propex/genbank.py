@@ -112,7 +112,8 @@ class Location(object):
                 re_name = name
                 regex = r
         if re_name is None:
-            raise LocationError('unknown location string: {0}'.format(self.locstring))
+            raise LocationError('unknown location string: {0}' \
+                .format(self.locstring))
 
         if re_name == 'single':
             start = end = int(regex.match(locstring).group(1))
@@ -134,7 +135,8 @@ class Location(object):
         if self.overlaps(other):
             return 0
         else:
-            return min(abs(self.start - other.end), abs(self.end - other.start))
+            return min(abs(self.start - other.end),
+                abs(self.end - other.start))
 
     @classmethod
     def from_int(cls, start, end=None, strand='+'):
@@ -165,7 +167,8 @@ class GenBankFeature(object):
 
     **Class attributes:**
         * **feature_type**: a string with the feature key.
-        * **location**: a Location object representing the location of the feature.
+        * **location**: a Location object representing the location of
+                        the feature.
         * **qualifiers**: a dictionary of qualifiers of the feature.
 
     :param locus: the name of the locus that the feature belongs to.
@@ -181,7 +184,8 @@ class GenBankFeature(object):
         Args:
             locus: the locus that the feature belongs to.
             feature_type: the key of the feature, e.g. 'CDS' or 'tRNA'.
-            location: a Location object representing the location of the feature
+            location: a Location object representing the location of the
+                      feature
             qualifiers: a dictionary of qualifiers with the qualifier names
                         as keys and the qualifier values as values.
         """
@@ -362,7 +366,8 @@ class GenBankLocus(object):
                 break
 
 
-        if findex is None or findex >= len(self.features[ftype]) or findex < 0:
+        if findex is None or findex >= len(self.features[ftype]) or \
+                findex < 0:
             return None
 
         # Make sure the feature is on the same strand
@@ -414,8 +419,9 @@ class GenBank(object):
             offset = 0
             for lineno, line in enumerate(f):
                 if lineno == 0 and not line.strip().startswith('LOCUS'):
-                    raise ParsingError('does not look like a GenBank file: {0}' \
-                        .format(self.filename))
+                    raise ParsingError(
+                        'does not look like a GenBank file: {0}' \
+                            .format(self.filename))
                 if len(line.strip()) == 0:
                     offset += len(line)
                     continue
