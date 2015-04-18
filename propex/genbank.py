@@ -6,12 +6,127 @@
 """
 
 import collections
+import itertools
 import re
 
 from propex.sequence import Sequence
 
 class LocationError(Exception):
     pass
+
+def parse_location(locstring):
+    """Parse a location string and return a :py:class:`.Location`
+    or :py:class:`.JoinLocation` object.
+
+    :param locstring: a GenBank location string.
+    :raises: :py:class:`.LocationError` if parsing fails.
+    """
+    if locstring.startswith('join') or \
+            locstring.startswith('complement(join'):
+        return JoinLocation(locstring)
+    else:
+        return Location(locstring)
+
+class JoinLocation(object):
+
+    """Represent a "join" GenBank feature location.
+
+    For more information on locations, see
+    http://www.insdc.org/files/feature_table.html#3.4
+
+    For information on how locations work, see :py:class:`.Location`.
+
+    :param locstring: a GenBank location string.
+    :raises: :py:class:`.LocationError` if parsing fails.
+    """
+
+    def __init__(self, locstring):
+        self.locstring = locstring
+        self.loctype = 'join'
+        self.locations, self.start, self.end, self.is_complement = \
+            self._get_locations()
+
+    def _get_locations(self):
+        complement_wrap = False
+        if self.locstring.startswith('complement'):
+            compmatch = re.match(r'^complement\((join\(.+\))\)$', self.locstring)
+            if compmatch is None:
+                raise LocationError('invalid join location: {0}' \
+                    .format(self.locstring))
+            locstring = compmatch.group(1)
+            complement_wrap = True
+        else:
+            locstring = self.locstring
+
+        match = re.match(r'^join\((.+)\)$', locstring)
+        if match is None:
+            raise LocationError('invalid join location: {0}' \
+                .format(self.locstring))
+        locstring = match.group(1)
+        locations = [Location(x.strip()) for x in locstring.split(',')]
+        if len(set(x.is_complement for x in locations)) != 1:
+            raise LocationError('joint location is located on both strands')
+        start = min(x.start for x in locations)
+        end = max(x.end for x in locations)
+        if not complement_wrap:
+            is_complement = locations[0].is_complement
+        else:
+            is_complement = True
+        return locations, start, end, is_complement
+
+    def overlaps(self, other):
+        """Test whether the location overlaps with another location.
+
+        :param other: a :py:class:`.Location` or :py:class:`.JoinLocation`
+            object.
+        :returns: True if the locations overlap with at least one base,
+            otherwise False.
+        """
+        if isinstance(other, JoinLocation):
+            for loc1, loc2 in itertools.product(self.locations,
+                    other.locations):
+                if loc1.overlaps(loc2):
+                    return True
+        else:
+            for loc in self.locations:
+                if loc.overlaps(other):
+                    return True
+        return False
+
+    def min_distance(self, other):
+        """Get the minimum distance to another location.
+
+        :param other: a :py:class:`.Location` or :py:class:`.JoinLocation`
+            object.
+        :returns: the minimum distance between the locations.
+        """
+        min_acc = []
+        if isinstance(other, JoinLocation):
+            for loc1, loc2 in itertools.product(self.locations,
+                    other.locations):
+                d = loc1.min_distance(loc2)
+                if d == 0:
+                    return 0
+                min_acc.append(d)
+        else:
+            for loc in self.locations:
+                d = loc.min_distance(other)
+                if d == 0:
+                    return 0
+                min_acc.append(d)
+        return min(min_acc)
+
+    def __str__(self):
+        return self.locstring
+
+    def __eq__(self, other):
+        return str(self) == str(other)
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __repr__(self):
+        return '<JoinLocation: {0}>'.format(repr(self.locstring))
 
 class Location(object):
 
@@ -47,6 +162,7 @@ class Location(object):
           the complement of the sequence.
 
     :param locstring: a GenBank location string.
+    :raises: :py:class:`.LocationError` if parsing fails.
     """
 
     #: Regular expression for finding complement locations.
@@ -77,7 +193,7 @@ class Location(object):
 
         Returns:
             a dictionary where the keys correspond to the type of
-            location and the values are the correpsponding regular
+            location and the values are the corresponding regular
             expression.
         """
         return {
@@ -122,16 +238,27 @@ class Location(object):
 
         return re_name, start - 1, end - 1, is_complement
 
-    def overlaps(self, location):
+    def overlaps(self, other):
         """Test whether the location overlaps with another location.
 
-        :param location: a Location object.
+        :param other: a :py:class:`.Location` or :py:class:`.JoinLocation`
+            object.
         :returns: True if the locations overlap with at least one base,
             otherwise False.
         """
-        return self.start <= location.end and location.start <= self.end
+        if isinstance(other, JoinLocation):
+            return other.overlaps(self)
+        return self.start <= other.end and other.start <= self.end
 
     def min_distance(self, other):
+        """Get the minimum distance to another location.
+
+        :param other: a :py:class:`.Location` or :py:class:`.JoinLocation`
+            object.
+        :returns: the minimum distance between the locations.
+        """
+        if isinstance(other, JoinLocation):
+            return other.min_distance(self)
         if self.overlaps(other):
             return 0
         else:
@@ -238,14 +365,14 @@ class GenBankFeature(object):
                 value = qualifiers[-1][1] + line.strip('"')
                 qualifiers[-1] = (key, value)
 
-        return cls(locus, ftype, Location(location), dict(qualifiers))
+        return cls(locus, ftype, parse_location(location), dict(qualifiers))
 
     def get_qualifier(self, qualifier_name):
         """Get a feature qualifier.
 
         :param qualifier_name: a string representing a qualifier.
         :returns: the value of the qualifier.
-        :raises: KeyError if the feature does not have a qualifier called
+        :raises: :py:class:`KeyError` if the feature does not have a qualifier called
                       ``qualifier_name``.
         """
         if qualifier_name not in self.qualifiers:
@@ -444,7 +571,7 @@ class GenBank(object):
                         indexdicts[-1][feature] = []
                     indexdicts[-1][feature].append({
                         'offset': offset,
-                        'location': Location(line.strip().split()[1])
+                        'location': parse_location(line.strip().split()[1])
                     })
                 if line.startswith('FEATURES'):
                     in_features = True

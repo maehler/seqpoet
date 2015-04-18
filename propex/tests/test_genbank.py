@@ -3,7 +3,7 @@ from nose.plugins.skip import SkipTest
 import os
 
 import propex
-from propex.genbank import Location
+from propex.genbank import Location, JoinLocation
 
 class TestGenBank:
 
@@ -202,6 +202,20 @@ class TestGenBankFeature:
         assert len(gbf_inference) == 2
         assert gbf_inference == ['ab initio prediction:Prodigal:2.60',
                                  'similar to AA sequence:UniProtKB:Q9RVE0']
+
+    def test_feature_join_location(self):
+        feature = '''     CDS             join(52625..53704,54000..55000)
+                     /gene="recF"
+                     /locus_tag="LMG718_02589"
+                     /inference="ab initio prediction:Prodigal:2.60"
+                     /inference="similar to AA sequence:UniProtKB:Q9RVE0"
+                     /codon_start=1
+                     /transl_table=11'''
+        gbf = propex.GenBankFeature.from_string('testlocus', feature)
+
+        assert gbf.feature_type == 'CDS'
+        assert gbf.get_qualifier('gene') == 'recF'
+        assert len(gbf.get_qualifier('inference')) == 2
 
     def test_empty_qualifiers(self):
         feature = '''     CDS             complement(52625..53704)
@@ -408,3 +422,77 @@ class TestLocation:
         assert str(Location.from_int(100, 200)) == '100..200'
         assert str(Location.from_int(100, 200, '-')) == 'complement(100..200)'
         assert str(Location.from_int(100, strand='-')) == 'complement(100)'
+
+class TestJoinLocation:
+
+    def setUp(self):
+        self.jloc1 = JoinLocation('join(1..200,300..400)')
+        self.jloc2 = JoinLocation('join(1..100, 200..300)')
+        self.jloc3 = JoinLocation('join(150..175,180..190,310..320)')
+        self.jloc4 = JoinLocation('join(complement(100),complement(200))')
+
+    def test_instance(self):
+        assert isinstance(self.jloc1, JoinLocation)
+        assert isinstance(self.jloc2, JoinLocation)
+
+    @raises(propex.genbank.LocationError)
+    def test_invalid_location(self):
+        jloc = JoinLocation('join(1..200,300..400')
+
+    @raises(propex.genbank.LocationError)
+    def test_invalid_strands(self):
+        jloc = JoinLocation('join(complement(100),200)')
+
+    @raises(propex.genbank.LocationError)
+    def test_messed_up_location(self):
+        jloc = JoinLocation('complement(join(687..700,800..900,1000..1100))mRNA            <687..>3158')
+
+    def test_start(self):
+        # Remember, 0-indexed
+        assert self.jloc1.start == 0
+        assert self.jloc2.start == 0
+        assert self.jloc3.start == 149
+
+    def test_end(self):
+        assert self.jloc1.end == 399
+        assert self.jloc2.end == 299
+        assert self.jloc3.end == 319
+
+    def test_loctype(self):
+        assert self.jloc1.loctype == 'join'
+        assert self.jloc2.loctype == 'join'
+        assert self.jloc3.loctype == 'join'
+
+    def test_complement(self):
+        assert not self.jloc1.is_complement
+        assert self.jloc4.is_complement
+
+    def test_complement_wrap(self):
+        jloc = JoinLocation('complement(join(380844..381260,382591..382872))')
+        assert isinstance(jloc, JoinLocation)
+        assert jloc.is_complement
+        assert jloc.start == 380843
+        assert jloc.end == 382871
+
+    def test_overlap(self):
+        assert self.jloc1.overlaps(self.jloc2)
+        assert self.jloc1.overlaps(Location('200..300'))
+        assert self.jloc1.overlaps(Location('150..250'))
+        assert not self.jloc3.overlaps(self.jloc2)
+        assert self.jloc3.overlaps(self.jloc1)
+        assert Location('150..250').overlaps(self.jloc1)
+
+    def test_str(self):
+        assert str(self.jloc1) == 'join(1..200,300..400)'
+        assert str(self.jloc2) == 'join(1..100, 200..300)'
+
+    def test_repr(self):
+        assert repr(self.jloc1) == '<JoinLocation: \'join(1..200,300..400)\'>'
+        assert repr(self.jloc2) == '<JoinLocation: \'join(1..100, 200..300)\'>'
+
+    def test_min_distance(self):
+        assert self.jloc1.min_distance(self.jloc2) == 0
+        assert self.jloc1.min_distance(self.jloc3) == 0
+        assert self.jloc2.min_distance(self.jloc3) == 10
+        assert self.jloc1.min_distance(Location('250')) == 50
+        assert Location('250').min_distance(self.jloc1) == 50
