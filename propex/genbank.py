@@ -6,9 +6,127 @@
 """
 
 import collections
+import itertools
 import re
 
 from propex.sequence import Sequence
+
+class LocationError(Exception):
+    pass
+
+def parse_location(locstring):
+    """Parse a location string and return a :py:class:`.Location`
+    or :py:class:`.JoinLocation` object.
+
+    :param locstring: a GenBank location string.
+    :raises: :py:class:`.LocationError` if parsing fails.
+    """
+    if locstring.startswith('join') or \
+            locstring.startswith('complement(join'):
+        return JoinLocation(locstring)
+    else:
+        return Location(locstring)
+
+class JoinLocation(object):
+
+    """Represent a "join" GenBank feature location.
+
+    For more information on locations, see
+    http://www.insdc.org/files/feature_table.html#3.4
+
+    For information on how locations work, see :py:class:`.Location`.
+
+    :param locstring: a GenBank location string.
+    :raises: :py:class:`.LocationError` if parsing fails.
+    """
+
+    def __init__(self, locstring):
+        self.locstring = locstring
+        self.loctype = 'join'
+        self.locations, self.start, self.end, self.is_complement = \
+            self._get_locations()
+
+    def _get_locations(self):
+        complement_wrap = False
+        if self.locstring.startswith('complement'):
+            compmatch = re.match(r'^complement\((join\(.+\))\)$', self.locstring)
+            if compmatch is None:
+                raise LocationError('invalid join location: {0}' \
+                    .format(self.locstring))
+            locstring = compmatch.group(1)
+            complement_wrap = True
+        else:
+            locstring = self.locstring
+
+        match = re.match(r'^join\((.+)\)$', locstring)
+        if match is None:
+            raise LocationError('invalid join location: {0}' \
+                .format(self.locstring))
+        locstring = match.group(1)
+        locations = [Location(x.strip()) for x in locstring.split(',')]
+        if len(set(x.is_complement for x in locations)) != 1:
+            raise LocationError('joint location is located on both strands')
+        start = min(x.start for x in locations)
+        end = max(x.end for x in locations)
+        if not complement_wrap:
+            is_complement = locations[0].is_complement
+        else:
+            is_complement = True
+        return locations, start, end, is_complement
+
+    def overlaps(self, other):
+        """Test whether the location overlaps with another location.
+
+        :param other: a :py:class:`.Location` or :py:class:`.JoinLocation`
+            object.
+        :returns: True if the locations overlap with at least one base,
+            otherwise False.
+        """
+        if isinstance(other, JoinLocation):
+            for loc1, loc2 in itertools.product(self.locations,
+                    other.locations):
+                if loc1.overlaps(loc2):
+                    return True
+        else:
+            for loc in self.locations:
+                if loc.overlaps(other):
+                    return True
+        return False
+
+    def min_distance(self, other):
+        """Get the minimum distance to another location.
+
+        :param other: a :py:class:`.Location` or :py:class:`.JoinLocation`
+            object.
+        :returns: the minimum distance between the locations.
+        """
+        min_acc = []
+        if isinstance(other, JoinLocation):
+            for loc1, loc2 in itertools.product(self.locations,
+                    other.locations):
+                d = loc1.min_distance(loc2)
+                if d == 0:
+                    return 0
+                min_acc.append(d)
+        else:
+            for loc in self.locations:
+                d = loc.min_distance(other)
+                if d == 0:
+                    return 0
+                min_acc.append(d)
+        return min(min_acc)
+
+    def __str__(self):
+        return self.locstring
+
+    def __eq__(self, other):
+        return str(self) == str(other)
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __repr__(self):
+        return '<JoinLocation: {0}>'.format(repr(self.locstring))
 
 class Location(object):
 
@@ -18,7 +136,7 @@ class Location(object):
     http://www.insdc.org/files/feature_table.html#3.4
 
     Location (and GenBank files) are using 1-based positions. To make
-    location-bases string handling easier, the Location class represents
+    location-based string handling easier, the Location class represents
     the locations internally as 0-based::
 
         >>> loc = Location('42..84')
@@ -44,21 +162,23 @@ class Location(object):
           the complement of the sequence.
 
     :param locstring: a GenBank location string.
+    :raises: :py:class:`.LocationError` if parsing fails.
     """
 
     #: Regular expression for finding complement locations.
-    loc_complement = re.compile(r'^complement\((.+)\)$')
-
+    _re_complement = re.compile(r'^complement\((.+)\)$')
     #: Regular expression for single base locations.
-    loc_single = re.compile(r'^(\d+)$')
+    _re_single = re.compile(r'^(\d+)$')
     #: Regular expression for range locations,
-    loc_range = re.compile(r'^(\d+)\.\.(\d+)$')
+    _re_range = re.compile(r'^(\d+)\.\.(\d+)$')
     #: Regular expression for locations with unknown lower boundary.
-    loc_lower_unknown = re.compile(r'^<(\d+)\.\.(\d+)$')
+    _re_lower_unknown = re.compile(r'^<(\d+)\.\.(\d+)$')
     #: Regular expression for locations with unknown upper boundary.
-    loc_upper_unknown = re.compile(r'^(\d+)\.\.>(\d+)$')
+    _re_upper_unknown = re.compile(r'^(\d+)\.\.>(\d+)$')
+    #: Regular expression for locations with unknown upper and lower boundary.
+    _re_lower_upper_unknown = re.compile(r'^<(\d+)\.\.>(\d+)$')
     #: Regular expression for single base locations within a range.
-    loc_one_of = re.compile(r'^(\d+)\.(\d+)$')
+    _re_one_of = re.compile(r'^(\d+)\.(\d+)$')
 
     def __init__(self, locstring):
         """Location constructor.
@@ -73,15 +193,16 @@ class Location(object):
 
         Returns:
             a dictionary where the keys correspond to the type of
-            location and the values are the correpsponding regular
+            location and the values are the corresponding regular
             expression.
         """
         return {
-            'single': Location.loc_single,
-            'range': Location.loc_range,
-            'upper_unknown': Location.loc_lower_unknown,
-            'lower_unknown': Location.loc_upper_unknown,
-            'one_of': Location.loc_one_of
+            'single': Location._re_single,
+            'range': Location._re_range,
+            'upper_unknown': Location._re_lower_unknown,
+            'lower_unknown': Location._re_upper_unknown,
+            'lower_upper_unkown': Location._re_lower_upper_unknown,
+            'one_of': Location._re_one_of
         }
 
     def _parse(self):
@@ -93,21 +214,22 @@ class Location(object):
             is located on the complement strand. Returned positions
             are 0-based.
         Raises:
-            ValueError: if the location string is not valid.
+            LocationError: if the location string is not valid.
         """
         locstring = self.locstring
         re_name = None
         regex = None
         is_complement = False
-        if Location.loc_complement.match(locstring):
+        if Location._re_complement.match(locstring):
             is_complement = True
-            locstring = Location.loc_complement.match(locstring).group(1)
+            locstring = Location._re_complement.match(locstring).group(1)
         for name, r in self._regex_dict().iteritems():
             if r.match(locstring) is not None:
                 re_name = name
                 regex = r
         if re_name is None:
-            raise ValueError('unknown location string: {0}'.format(self.locstring))
+            raise LocationError('unknown location string: {0}' \
+                .format(self.locstring))
 
         if re_name == 'single':
             start = end = int(regex.match(locstring).group(1))
@@ -116,20 +238,32 @@ class Location(object):
 
         return re_name, start - 1, end - 1, is_complement
 
-    def overlaps(self, location):
+    def overlaps(self, other):
         """Test whether the location overlaps with another location.
 
-        :param location: a Location object.
+        :param other: a :py:class:`.Location` or :py:class:`.JoinLocation`
+            object.
         :returns: True if the locations overlap with at least one base,
             otherwise False.
         """
-        return self.start <= location.end and location.start <= self.end
+        if isinstance(other, JoinLocation):
+            return other.overlaps(self)
+        return self.start <= other.end and other.start <= self.end
 
     def min_distance(self, other):
+        """Get the minimum distance to another location.
+
+        :param other: a :py:class:`.Location` or :py:class:`.JoinLocation`
+            object.
+        :returns: the minimum distance between the locations.
+        """
+        if isinstance(other, JoinLocation):
+            return other.min_distance(self)
         if self.overlaps(other):
             return 0
         else:
-            return min(abs(self.start - other.end), abs(self.end - other.start))
+            return min(abs(self.start - other.end),
+                abs(self.end - other.start))
 
     @classmethod
     def from_int(cls, start, end=None, strand='+'):
@@ -160,7 +294,8 @@ class GenBankFeature(object):
 
     **Class attributes:**
         * **feature_type**: a string with the feature key.
-        * **location**: a Location object representing the location of the feature.
+        * **location**: a Location object representing the location of
+                        the feature.
         * **qualifiers**: a dictionary of qualifiers of the feature.
 
     :param locus: the name of the locus that the feature belongs to.
@@ -176,7 +311,8 @@ class GenBankFeature(object):
         Args:
             locus: the locus that the feature belongs to.
             feature_type: the key of the feature, e.g. 'CDS' or 'tRNA'.
-            location: a Location object representing the location of the feature
+            location: a Location object representing the location of the
+                      feature
             qualifiers: a dictionary of qualifiers with the qualifier names
                         as keys and the qualifier values as values.
         """
@@ -203,10 +339,20 @@ class GenBankFeature(object):
         """
         lines = [x.strip() for x in feature_string.splitlines()]
         ftype, location = lines[0].strip().split()
+        # Multiline location string
+        i = 1
+        line = lines[i]
+        while not line.startswith('/'):
+            i += 1
+            location += line
+            try:
+                line = lines[i]
+            except IndexError:
+                break
 
         qualifiers = []
 
-        for line in lines[1:]:
+        for line in lines[i:]:
             if line.startswith('/'):
                 # New qualifier
                 i = line.find('=')
@@ -220,23 +366,30 @@ class GenBankFeature(object):
 
                 if len(qualifiers) > 0 and key == qualifiers[-1][0]:
                     # Multiple qualifiers with the same key
-                    qualifiers[-1] = (key, [qualifiers[-1][1], value])
+                    if isinstance(qualifiers[-1][1], list):
+                        qualifiers[-1][1].append(value)
+                    else:
+                        qualifiers[-1] = (key, [qualifiers[-1][1], value])
                 else:
                     qualifiers.append((key, value))
             else:
                 # Continuation of qualifier
                 key = qualifiers[-1][0]
-                value = qualifiers[-1][1] + line.strip('"')
+                if isinstance(qualifiers[-1][1], list):
+                    value = qualifiers[-1][1]
+                    value[-1] += ' ' + line.strip('"')
+                else:
+                    value = qualifiers[-1][1] + ' ' + line.strip('"')
                 qualifiers[-1] = (key, value)
 
-        return cls(locus, ftype, Location(location), dict(qualifiers))
+        return cls(locus, ftype, parse_location(location), dict(qualifiers))
 
     def get_qualifier(self, qualifier_name):
         """Get a feature qualifier.
 
         :param qualifier_name: a string representing a qualifier.
         :returns: the value of the qualifier.
-        :raises: KeyError if the feature does not have a qualifier called
+        :raises: :py:class:`KeyError` if the feature does not have a qualifier called
                       ``qualifier_name``.
         """
         if qualifier_name not in self.qualifiers:
@@ -258,7 +411,7 @@ class GenBankLocus(object):
     :param features: a dictionary containing features of the locus.
     """
 
-    def __init__(self, name, seq, features=None):
+    def __init__(self, name, seq, features=None, header=None):
         """GenBankLocus constructor.
 
         Args:
@@ -272,6 +425,10 @@ class GenBankLocus(object):
             self.features = {}
         else:
             self.features = features
+        if header is None:
+            self.header = {}
+        else:
+            self.header = header
 
     def features_at_location(self, location):
         """Get features at a location.
@@ -283,8 +440,11 @@ class GenBankLocus(object):
                   overlapping the location.
         """
         features = []
-        for feat in GenBank.features:
-            if feat not in self.features:
+        for feat in self.features.iterkeys():
+            # Skip the source feature since it always will
+            # overlap (assuming that the feature location
+            # is within the sequence boundaries).
+            if feat == 'source':
                 continue
             for feature in self.features[feat]:
                 if feature.location.overlaps(location):
@@ -354,7 +514,8 @@ class GenBankLocus(object):
                 break
 
 
-        if findex is None or findex >= len(self.features[ftype]) or findex < 0:
+        if findex is None or findex >= len(self.features[ftype]) or \
+                findex < 0:
             return None
 
         # Make sure the feature is on the same strand
@@ -368,6 +529,9 @@ class GenBankLocus(object):
 
         return self.features[ftype][findex]
 
+class ParsingError(Exception):
+    pass
+
 class GenBank(object):
 
     """Represent a GenBank file.
@@ -377,11 +541,8 @@ class GenBank(object):
         * index: a list of dictionaries representing an index of the file.
 
     :param fname: filename of the GenBank file.
-    :raises: ValueError if parsing fails.
+    :raises: :py:exc:`.ParsingError` if parsing fails.
     """
-
-    #: List of supported features.
-    features = ['CDS']
 
     def __init__(self, fname):
         """GenBank constructor.
@@ -390,7 +551,7 @@ class GenBank(object):
             fname: filename of the GenBank file.
         """
         self.filename = fname
-        self.index = self._index()
+        self.index, self.features = self._index()
 
     def _index(self):
         """Create and index of a the GenBank object.
@@ -399,13 +560,16 @@ class GenBank(object):
             a list of dictionaries where each element in the list
             represents a locus.
         """
+        features = set()
         indexdicts = []
+        in_features = False
         with open(self.filename) as f:
             offset = 0
             for lineno, line in enumerate(f):
                 if lineno == 0 and not line.strip().startswith('LOCUS'):
-                    raise ValueError('does not look like a GenBank file: {0}' \
-                        .format(self.filename))
+                    raise ParsingError(
+                        'does not look like a GenBank file: {0}' \
+                            .format(self.filename))
                 if len(line.strip()) == 0:
                     offset += len(line)
                     continue
@@ -414,24 +578,117 @@ class GenBank(object):
                     indexdicts.append({})
                     indexdicts[-1]['name'] = current_locus
                     indexdicts[-1]['offset'] = offset
-                if line.strip().split()[0] == 'CDS':
-                    if 'CDS' not in indexdicts[-1]:
-                        indexdicts[-1]['CDS'] = []
-                    indexdicts[-1]['CDS'].append({
-                        'offset': offset,
-                        'location': Location(line.strip().split()[1])
-                    })
                 if line.strip().split()[0] == 'ORIGIN':
                     indexdicts[-1]['ORIGIN'] = offset + len(line)
+                    in_features = False
+                if in_features and line[5] != ' ':
+                    feature = line.strip().split()[0]
+                    features.add(feature)
+                    if feature not in indexdicts[-1]:
+                        indexdicts[-1][feature] = []
+
+                    locstring = line.strip().split()[1]
+
+                    nl = f.next()
+                    loc_offset = offset + len(line)
+                    while len(nl[:21].strip()) == 0 and not nl.strip().startswith('/'):
+                        locstring += nl.strip()
+                        loc_offset += len(nl)
+                        nl = f.next()
+
+                    f.seek(loc_offset)
+
+                    indexdicts[-1][feature].append({
+                        'offset': offset,
+                        'location': parse_location(locstring)
+                    })
+
+                    offset = loc_offset
+                    continue
+                if line.startswith('FEATURES'):
+                    in_features = True
                 offset += len(line)
 
-        # Sort the CDS according to start position
-        for s in indexdicts:
-            if 'CDS' not in s:
-                continue
-            s['CDS'] = sorted(s['CDS'], key=lambda x: x['location'].start)
+        # Sort the features according to start position
+        for f in features:
+            for s in indexdicts:
+                if f not in s:
+                    continue
+                s[f] = sorted(s[f], key=lambda x: x['location'].start)
 
-        return indexdicts
+        return indexdicts, features
+
+    def _parse_header(self, hstring):
+        """Parse a GenBank header string into a nested dictionary.
+        """
+        head_data = collections.OrderedDict()
+
+        header_lines = iter(hstring.splitlines(True))
+
+        line = header_lines.next()
+
+        header = line.strip().split()
+
+        name = header[1]
+        length = ' '.join(header[2:4])
+        molecule = header[4]
+        molecule_type = header[5]
+
+        if len(header) == 8:
+            division = header[6]
+            date = header[7]
+        elif len(header) == 7:
+            division = ''
+            date = header[6]
+
+        head_data['LOCUS'] = {
+            'name': name,
+            'length': length,
+            'molecule': molecule,
+            'molecule_type': molecule_type,
+            'genbank_division': division,
+            'modification_data': date
+        }
+
+        last_key = None
+        line = header_lines.next()
+        while True:
+            if line[0] != ' ':
+                key = line[:11].strip()
+                last_key = key
+                if key in head_data:
+                    old_entry = head_data[key]
+                    if not isinstance(old_entry, list):
+                        head_data[key] = [(old_entry,
+                            collections.OrderedDict())]
+                    head_data[key].append((line[11:].strip(),
+                        collections.OrderedDict()))
+                else:
+                    head_data[key] = line[11:].strip()
+            elif len(line[:11].strip()) != 0:
+                sub_key = line[:11].strip()
+                old_entry = head_data[last_key]
+                if not isinstance(old_entry, list):
+                    head_data[last_key] = [(old_entry,
+                        collections.OrderedDict())]
+                old_entry = head_data[key][-1]
+                old_entry[1][sub_key] = line[11:].strip()
+                head_data[key][-1] = (old_entry[0], old_entry[1])
+            else:
+                if isinstance(head_data[last_key], list):
+                    sub_key = head_data[last_key][-1][1].keys()[-1]
+                    head_data[last_key][-1][1][sub_key] = \
+                        '\n'.join([head_data[last_key][-1][1][sub_key],
+                            line.strip()])
+                else:
+                    head_data[last_key] = '\n'.join([head_data[last_key],
+                        line.strip()])
+            try:
+                line = header_lines.next()
+            except StopIteration:
+                break
+
+        return head_data
 
     def __getitem__(self, index):
         """Get a specific GenBankLocus object.
@@ -442,20 +699,38 @@ class GenBank(object):
         locus_index = self.index[index]
         locus_offset = locus_index['offset']
         origin_offset = locus_index['ORIGIN']
-        features = {'CDS': []}
+        features = collections.defaultdict(list)
+
+        headstring = ''
+
         with open(self.filename) as f:
-            # Get the CDSs
-            if 'CDS' in locus_index:
-                for cds in locus_index['CDS']:
-                    f.seek(cds['offset'])
-                    cds_string = f.readline()
+            f.seek(locus_offset)
+            headstring += f.readline()
+
+            line = f.readline()
+            while not line.startswith('FEATURES'):
+                headstring += line
+                line = f.readline()
+
+            head_data = self._parse_header(headstring)
+
+            for ftype in self.features:
+                if ftype not in locus_index:
+                    continue
+                for feature in locus_index[ftype]:
+                    f.seek(feature['offset'])
+                    feature_string = f.readline()
                     line = f.readline()
-                    while line[5] == ' ':
-                        cds_string += line
+                    while len(line) < 6:
                         line = f.readline()
-                    features['CDS'].append(
+                    while line[5] == ' ':
+                        feature_string += line
+                        line = f.readline()
+                        while len(line) < 6:
+                            line = f.readline()
+                    features[ftype].append(
                         GenBankFeature.from_string(locus_index['name'],
-                            cds_string))
+                            feature_string))
 
             # Get the sequence
             f.seek(origin_offset)
@@ -465,7 +740,8 @@ class GenBank(object):
                 line = f.readline()
                 seq += ''.join(line.strip().split()[1:])
 
-        return GenBankLocus(locus_index['name'], Sequence(seq), features)
+        return GenBankLocus(locus_index['name'], Sequence(seq), features,
+            head_data)
 
     def get_locus_from_name(self, name):
         """Get a specific GenBankLocus object from the locus name.
