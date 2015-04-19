@@ -217,6 +217,19 @@ class TestGenBankFeature:
         assert gbf.get_qualifier('gene') == 'recF'
         assert len(gbf.get_qualifier('inference')) == 2
 
+    def test_multiline_location(self):
+        feature = '''     CDS             complement(join(1294426..1294992,1294992..1295141,
+                     1295140..1295322))
+                     /gene="insZ"
+                     /locus_tag="b4573"'''
+        gbf = propex.GenBankFeature.from_string('testlocus', feature)
+
+        assert gbf.feature_type == 'CDS'
+        assert isinstance(gbf.location, JoinLocation)
+        assert len(gbf.location.locations) == 3
+        assert gbf.get_qualifier('gene') == 'insZ'
+        assert gbf.get_qualifier('locus_tag') == 'b4573'
+
     def test_empty_qualifiers(self):
         feature = '''     CDS             complement(52625..53704)
                      /gene="recF"

@@ -339,10 +339,20 @@ class GenBankFeature(object):
         """
         lines = [x.strip() for x in feature_string.splitlines()]
         ftype, location = lines[0].strip().split()
+        # Multiline location string
+        i = 1
+        line = lines[i]
+        while not line.startswith('/'):
+            i += 1
+            location += line
+            try:
+                line = lines[i]
+            except IndexError:
+                break
 
         qualifiers = []
 
-        for line in lines[1:]:
+        for line in lines[i:]:
             if line.startswith('/'):
                 # New qualifier
                 i = line.find('=')
@@ -569,10 +579,25 @@ class GenBank(object):
                     features.add(feature)
                     if feature not in indexdicts[-1]:
                         indexdicts[-1][feature] = []
+
+                    locstring = line.strip().split()[1]
+
+                    nl = f.next()
+                    loc_offset = offset + len(line)
+                    while len(nl[:21].strip()) == 0 and not nl.strip().startswith('/'):
+                        locstring += nl.strip()
+                        loc_offset += len(nl)
+                        nl = f.next()
+
+                    f.seek(loc_offset)
+
                     indexdicts[-1][feature].append({
                         'offset': offset,
-                        'location': parse_location(line.strip().split()[1])
+                        'location': parse_location(locstring)
                     })
+
+                    offset = loc_offset
+                    continue
                 if line.startswith('FEATURES'):
                     in_features = True
                 offset += len(line)
