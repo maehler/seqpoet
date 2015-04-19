@@ -714,9 +714,13 @@ class GenBank(object):
                     f.seek(feature['offset'])
                     feature_string = f.readline()
                     line = f.readline()
+                    while len(line) < 6:
+                        line = f.readline()
                     while line[5] == ' ':
                         feature_string += line
                         line = f.readline()
+                        while len(line) < 6:
+                            line = f.readline()
                     features[ftype].append(
                         GenBankFeature.from_string(locus_index['name'],
                             feature_string))
