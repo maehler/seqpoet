@@ -366,13 +366,20 @@ class GenBankFeature(object):
 
                 if len(qualifiers) > 0 and key == qualifiers[-1][0]:
                     # Multiple qualifiers with the same key
-                    qualifiers[-1] = (key, [qualifiers[-1][1], value])
+                    if isinstance(qualifiers[-1][1], list):
+                        qualifiers[-1][1].append(value)
+                    else:
+                        qualifiers[-1] = (key, [qualifiers[-1][1], value])
                 else:
                     qualifiers.append((key, value))
             else:
                 # Continuation of qualifier
                 key = qualifiers[-1][0]
-                value = qualifiers[-1][1] + line.strip('"')
+                if isinstance(qualifiers[-1][1], list):
+                    value = qualifiers[-1][1]
+                    value[-1] += ' ' + line.strip('"')
+                else:
+                    value = qualifiers[-1][1] + ' ' + line.strip('"')
                 qualifiers[-1] = (key, value)
 
         return cls(locus, ftype, parse_location(location), dict(qualifiers))

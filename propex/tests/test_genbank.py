@@ -203,6 +203,34 @@ class TestGenBankFeature:
         assert gbf_inference == ['ab initio prediction:Prodigal:2.60',
                                  'similar to AA sequence:UniProtKB:Q9RVE0']
 
+    def test_multiple_qualifiers(self):
+        feature = '''     ncRNA           476448..476561
+                     /ncRNA_class="SRP_RNA"
+                     /gene="ffs"
+                     /locus_tag="b0455"
+                     /gene_synonym="ECK0449"
+                     /gene_synonym="JWR0009"
+                     /product="4.5S sRNA component of Signal Recognition
+                     Particle (SRP)"
+                     /note="4.5S RNA; component of ribonucleoprotein particle;
+                     works with the Ffh protein;
+                     adjusted endpoints to reflect the mature 4.5S RNA (114
+                     nt)"
+                     /function="2.2.6 information transfer; RNA related; rRNA,
+                     stable RNA"
+                     /function="2.3.2 information transfer; protein related;
+                     translation"
+                     /function="7.1 location of gene products; cytoplasm"
+                     /function="component of Signal Recognition Particle (SRP)
+                     with the Ffh protein; involved in co-translational
+                     targeting of proteins to membranes"
+                     /function="RNA; Ribosomal and stable RNAs"
+                     /db_xref="ASAP:ABE-0001579"
+                     /db_xref="EcoGene:EG30027"'''
+        gbf = propex.GenBankFeature.from_string('testlocus', feature)
+        func = gbf.get_qualifier('function')
+        assert len(func) == 5
+
     def test_feature_join_location(self):
         feature = '''     CDS             join(52625..53704,54000..55000)
                      /gene="recF"
