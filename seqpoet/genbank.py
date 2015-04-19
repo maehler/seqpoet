@@ -9,7 +9,7 @@ import collections
 import itertools
 import re
 
-from propex.sequence import Sequence
+from seqpoet.sequence import Sequence
 
 class LocationError(Exception):
     pass

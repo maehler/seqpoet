@@ -2,7 +2,7 @@ from nose.tools import raises
 from nose.plugins.skip import SkipTest
 import os
 
-import propex
+import seqpoet
 
 class TestFastaIndex:
 
@@ -13,61 +13,61 @@ class TestFastaIndex:
         self.empty_index = os.path.join(testdir, 'data', 'empty.fasta.fai')
 
     def test_faidx_length(self):
-        faidx = propex.FastaIndex(self.valid_index)
+        faidx = seqpoet.FastaIndex(self.valid_index)
         assert len(faidx) == 4
 
     def test_faidx_order(self):
-        faidx = propex.FastaIndex(self.valid_index)
+        faidx = seqpoet.FastaIndex(self.valid_index)
         assert faidx[0]['name'] == 'seq1'
         assert faidx[1]['name'] == 'seq2'
         assert faidx[2]['name'] == 'aaa'
         assert faidx[3]['name'] == 'bbb'
 
     def test_str(self):
-        faidx = propex.FastaIndex(self.valid_index)
+        faidx = seqpoet.FastaIndex(self.valid_index)
         assert str(faidx) == '\n'.join(['seq1\t78\t6\t28\t29',
                                         'seq2\t28\t93\t28\t29',
                                         'aaa\t44\t127\t28\t29',
                                         'bbb\t73\t178\t28\t29'])
 
     def test_keys(self):
-        faidx = propex.FastaIndex(self.valid_index)
+        faidx = seqpoet.FastaIndex(self.valid_index)
         assert faidx.keys() == ['seq1', 'seq2', 'aaa', 'bbb']
 
     def test_iter(self):
-        faidx = propex.FastaIndex(self.valid_index)
+        faidx = seqpoet.FastaIndex(self.valid_index)
         for k, v in faidx:
             pass
 
     def test_repr(self):
-        faidx = propex.FastaIndex(self.valid_index)
+        faidx = seqpoet.FastaIndex(self.valid_index)
         assert repr(faidx) == '<FastaIndex for {0}>' \
             .format(os.path.splitext(self.valid_index)[0])
 
     @raises(ValueError)
     def test_nonexisting_index(self):
-        faidx = propex.FastaIndex(self.invalid_index)
+        faidx = seqpoet.FastaIndex(self.invalid_index)
 
     @raises(ValueError)
     def test_empty_index(self):
-        faidx = propex.FastaIndex(self.empty_index)
+        faidx = seqpoet.FastaIndex(self.empty_index)
 
     @raises(ValueError)
     def test_incorrect_filetype(self):
-        faidx = propex.FastaIndex(os.path.splitext(self.invalid_index)[0])
+        faidx = seqpoet.FastaIndex(os.path.splitext(self.invalid_index)[0])
 
 class TestFastaRecord:
 
     def test_string_sequence(self):
-        fr = propex.FastaRecord('accaggata', 'test')
+        fr = seqpoet.FastaRecord('accaggata', 'test')
 
     @raises(ValueError)
     def test_invalid_sequence(self):
-        fr = propex.FastaRecord('thisisnotdna', 'test')
+        fr = seqpoet.FastaRecord('thisisnotdna', 'test')
 
     @raises(TypeError)
     def test_wrong_sequence_type(self):
-        fr = propex.FastaRecord(['a', 'c', 'g', 't'], 'test')
+        fr = seqpoet.FastaRecord(['a', 'c', 'g', 't'], 'test')
 
 class TestFasta:
 
@@ -78,11 +78,11 @@ class TestFasta:
         self.dups_fname = os.path.join(testdir, 'data', 'dups.fasta')
 
     def test_fasta_length(self):
-        fasta = propex.Fasta(self.valid_index)
+        fasta = seqpoet.Fasta(self.valid_index)
         assert len(fasta) == 4, 'unexpected number of sequences'
 
     def test_fasta_headers(self):
-        fasta = propex.Fasta(self.valid_index)
+        fasta = seqpoet.Fasta(self.valid_index)
         headers = ['seq1', 'seq2', 'aaa', 'bbb']
         for i, record in enumerate(fasta):
             assert record.name == headers[i], \
@@ -91,14 +91,14 @@ class TestFasta:
                 'spaces in sequence'
 
     def test_sequence_length(self):
-        fasta = propex.Fasta(self.valid_index)
+        fasta = seqpoet.Fasta(self.valid_index)
         lens = [78, 28, 44, 73]
         for i, record in enumerate(fasta):
             assert len(record) == lens[i], \
                 'sequence length ({0}) is not {1}'.format(len(record), lens[i])
 
     def test_indexing(self):
-        fasta = propex.Fasta(self.valid_index)
+        fasta = seqpoet.Fasta(self.valid_index)
         assert len(fasta[1]) == 28
         assert fasta[1].seq == 'cacaggaggatagaccagatgacagata'
         assert repr(fasta[1]) == '<FastaRecord \'seq2\': <Sequence: cacag...> (28 nt)>', \
@@ -106,12 +106,12 @@ class TestFasta:
 
     @raises(IndexError)
     def test_invalid_index(self):
-        fasta = propex.Fasta(self.valid_index)
+        fasta = seqpoet.Fasta(self.valid_index)
         fasta[4]
 
     @raises(ValueError)
     def test_parse_duplicate_fasta(self):
-        fasta = propex.Fasta(self.dups_fname)
+        fasta = seqpoet.Fasta(self.dups_fname)
 
 class TestFastaWithoutIndex:
 
@@ -125,11 +125,11 @@ class TestFastaWithoutIndex:
             os.unlink(self.valid_noindex + '.fai')
 
     def test_fasta_length(self):
-        fasta = propex.Fasta(self.valid_noindex)
+        fasta = seqpoet.Fasta(self.valid_noindex)
         assert len(fasta) == 4, 'found {0} seqs, expected 4'.format(len(fasta))
 
     def test_fasta_headers(self):
-        fasta = propex.Fasta(self.valid_noindex)
+        fasta = seqpoet.Fasta(self.valid_noindex)
         headers = ['seq1', 'seq2', 'aaa', 'bbb']
         for i, record in enumerate(fasta):
             assert record.name == headers[i], \
@@ -138,14 +138,14 @@ class TestFastaWithoutIndex:
                 'spaces in sequence'
 
     def test_sequence_length(self):
-        fasta = propex.Fasta(self.valid_noindex)
+        fasta = seqpoet.Fasta(self.valid_noindex)
         lens = [78, 28, 44, 73]
         for i, record in enumerate(fasta):
             assert len(record) == lens[i], \
                 'sequence length ({0}) is not {1}'.format(len(record), lens[i])
 
     def test_record_repr(self):
-        fasta = propex.Fasta(self.valid_noindex)
+        fasta = seqpoet.Fasta(self.valid_noindex)
         headers = ['seq1', 'seq2', 'aaa', 'bbb']
         seqs = ['actaa', 'cacag', 'actga', 'acatc']
         lens = [78, 28, 44, 73]
@@ -156,7 +156,7 @@ class TestFastaWithoutIndex:
 
     @raises(ValueError)
     def test_duplicate_headers(self):
-        fasta = propex.Fasta(self.dups_noindex)
+        fasta = seqpoet.Fasta(self.dups_noindex)
 
 class TestInvalidFasta:
 
@@ -168,10 +168,10 @@ class TestInvalidFasta:
             'operon_extractor', 'data_genbank', 'LMG718-cremoris.gb')
 
     def test_empty_sequence(self):
-        fasta = propex.Fasta(self.empty_sequence)
+        fasta = seqpoet.Fasta(self.empty_sequence)
 
     def test_fasta_headers(self):
-        fasta = propex.Fasta(self.empty_sequence)
+        fasta = seqpoet.Fasta(self.empty_sequence)
         headers = ['seq1', 'seq2', 'empty', 'aaa', 'bbb']
         for i, record in enumerate(fasta):
             assert record.name == headers[i], \
@@ -180,7 +180,7 @@ class TestInvalidFasta:
                 'spaces in sequence'
 
     def test_sequence_length(self):
-        fasta = propex.Fasta(self.empty_sequence)
+        fasta = seqpoet.Fasta(self.empty_sequence)
         lens = [78, 28, 0, 44, 73]
         for i, record in enumerate(fasta):
             assert len(record) == lens[i], \
@@ -190,8 +190,8 @@ class TestInvalidFasta:
     def test_genbank(self):
         if not os.path.isfile(self.gb):
             raise SkipTest
-        fasta = propex.Fasta(self.gb)
+        fasta = seqpoet.Fasta(self.gb)
 
     @raises(ValueError)
     def test_uneven_rows(self):
-        fasta = propex.Fasta(self.uneven)
+        fasta = seqpoet.Fasta(self.uneven)

@@ -5,12 +5,12 @@ import itertools
 import os
 import sys
 
-import propex
+import seqpoet
 
 def get_probe(fname):
     with open(fname) as f:
         try:
-            seqs = [propex.sequence.Sequence(line.strip()) for line in f \
+            seqs = [seqpoet.sequence.Sequence(line.strip()) for line in f \
                 if len(line.strip()) > 0]
         except ValueError:
             print('ERROR: probe file does not contain valid sequences',
@@ -30,14 +30,14 @@ def get_single_sequence(fname, genbank_only=False, stop_on_error=False):
     genbank_success = False
     fasta_success = False
     try:
-        seq = propex.GenBank(fname)
+        seq = seqpoet.GenBank(fname)
         genbank_success = True
-    except propex.genbank.ParsingError:
+    except seqpoet.genbank.ParsingError:
         pass
 
     if not genbank_success and not genbank_only:
         try:
-            seq = propex.Fasta(fname)
+            seq = seqpoet.Fasta(fname)
             fasta_success = True
         except ValueError:
             pass
@@ -100,10 +100,10 @@ def match_probe(probe, seqs, mismatches=2):
     pl = len(probe)
     for f in seqs.itervalues():
         for i, record in enumerate(f):
-            res1 = propex.search.search(str(probe), str(record.seq),
+            res1 = seqpoet.search.search(str(probe), str(record.seq),
                 mismatches=mismatches)
             res2 = [len(record.seq) - x - pl for x in \
-                propex.search.search(str(probe), str(record.seq.revcomp()),
+                seqpoet.search.search(str(probe), str(record.seq.revcomp()),
                     mismatches=mismatches)]
 
             if len(res1) > 0:
@@ -143,16 +143,16 @@ def match_primer(primers, seqs, mismatches=2,
     pl2 = len(primers[1])
     for f in seqs.itervalues():
         for i, record in enumerate(f):
-            res1_1 = propex.search.search(str(primers[0]), str(record.seq),
+            res1_1 = seqpoet.search.search(str(primers[0]), str(record.seq),
                 mismatches=mismatches)
             res1_2 = [len(record.seq) - x - pl1 for x in \
-                propex.search.search(str(primers[0]), str(record.seq.revcomp()),
+                seqpoet.search.search(str(primers[0]), str(record.seq.revcomp()),
                     mismatches=mismatches)]
 
-            res2_1 = propex.search.search(str(primers[1]), str(record.seq),
+            res2_1 = seqpoet.search.search(str(primers[1]), str(record.seq),
                 mismatches=mismatches)
             res2_2 = [len(record.seq) - x - pl2 for x in \
-                propex.search.search(str(primers[1]), str(record.seq.revcomp()),
+                seqpoet.search.search(str(primers[1]), str(record.seq.revcomp()),
                     mismatches=mismatches)]
 
             # Match res1_1 with res2_2 and res2_1 with res1_2 to get primer
@@ -208,7 +208,7 @@ def find_operon(matches, seqs, max_distance=500):
     for m in matches:
         gb = seqs[m['filename']]
         locus = gb[m['seqindex']]
-        location = propex.genbank.Location.from_int(m['hitstart'], m['hitend'])
+        location = seqpoet.genbank.Location.from_int(m['hitstart'], m['hitend'])
         features = locus.features_at_location(location)
         if len(features) == 0:
             print('WARNING: no gene for match in locus {0}'.format(m['seqname']),
@@ -268,7 +268,7 @@ def write_fasta(matches, filename=sys.stdout):
 
     for m in matches:
         m['filename'] = os.path.basename(m['filename'])
-        s = propex.fasta.FastaRecord(m['seq'],
+        s = seqpoet.fasta.FastaRecord(m['seq'],
             '{filename}:{seqname}:{hitstart}:{hitend}:{length}:{strand}' \
                 .format(**m))
         print(s, file=f)
@@ -311,7 +311,7 @@ def parse_args():
         default=sys.stdout)
 
     parser.add_argument('--version', help=('print version and exit'),
-        action='version', version='%(prog)s v{0}'.format(propex.__version__))
+        action='version', version='%(prog)s v{0}'.format(seqpoet.__version__))
 
     args = parser.parse_args()
 

@@ -7,7 +7,7 @@ import itertools
 import os
 import textwrap
 
-from propex.sequence import Sequence
+from seqpoet.sequence import Sequence
 
 class FastaIndex(object):
     """Represents an index for a FASTA file.

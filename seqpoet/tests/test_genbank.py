@@ -2,15 +2,15 @@ from nose.tools import raises
 from nose.plugins.skip import SkipTest
 import os
 
-import propex
-from propex.genbank import Location, JoinLocation
+import seqpoet
+from seqpoet.genbank import Location, JoinLocation
 
 class TestGenBank:
 
     def setUp(self):
         self.testdir = os.path.dirname(__file__)
         self.sc = os.path.join(self.testdir, 'data', 'U49845.gb')
-        self.gb = propex.GenBank(self.sc)
+        self.gb = seqpoet.GenBank(self.sc)
 
     def test_sequence_length(self):
         assert len(self.gb[0].seq) == 5028
@@ -56,29 +56,29 @@ class TestGenBankLocal:
         self.lmga18 = os.path.join(self.genbankdir, 'LMGA18-cremoris.gb')
 
     def test_index_length(self):
-        gb = propex.GenBank(self.lmg718)
+        gb = seqpoet.GenBank(self.lmg718)
         assert len(gb) == 251, 'unexpected number of loci: {0}'.format(len(gb))
 
     def test_duplicate_locus_length(self):
-        gb = propex.GenBank(self.lmga18)
+        gb = seqpoet.GenBank(self.lmga18)
         assert len(gb) == 231, 'unexpected number of loci: {0}'.format(len(gb))
 
     def test_sequence_length(self):
-        gb = propex.GenBank(self.lmg718)
+        gb = seqpoet.GenBank(self.lmg718)
         assert len(gb[0].seq) == 1522
 
     def test_iteration(self):
-        gb = propex.GenBank(self.lmg718)
+        gb = seqpoet.GenBank(self.lmg718)
         for locus in gb:
             pass
 
     def test_load_directory(self):
-        gbs = [propex.GenBank(os.path.join(self.genbankdir, x)) \
+        gbs = [seqpoet.GenBank(os.path.join(self.genbankdir, x)) \
             for x in os.listdir(self.genbankdir) \
             if os.path.isfile(os.path.join(self.genbankdir, x))]
 
     def test_features_at_location(self):
-        gb = propex.GenBank(self.lmg718)
+        gb = seqpoet.GenBank(self.lmg718)
         locus = gb.get_locus_from_name('718_Contig_100_c')[0]
         f = locus.features_at_location(Location('800'))
         assert len(f) == 1, 'found {0} features, expected 1'.format(len(f))
@@ -95,39 +95,39 @@ class TestGenBankLocal:
         assert f[1].get_qualifier('locus_tag') == 'LMG718_00020'
 
     def test_get_locus_from_name(self):
-        gb = propex.GenBank(self.lmg718)
+        gb = seqpoet.GenBank(self.lmg718)
         loci = gb.get_locus_from_name('718_Contig_106_c')
         assert len(loci) > 0
         assert len(loci[0].seq) == 8967
 
-    @raises(propex.genbank.ParsingError)
+    @raises(seqpoet.genbank.ParsingError)
     def test_parse_fasta(self):
-        gb = propex.GenBank(os.path.join(self.genbankdir, '..', 'data_fasta',
+        gb = seqpoet.GenBank(os.path.join(self.genbankdir, '..', 'data_fasta',
             'LMG718-cremoris.fasta'))
 
     def test_next_downstream(self):
-        gb = propex.GenBank(self.lmg718)
+        gb = seqpoet.GenBank(self.lmg718)
         locus = gb.get_locus_from_name('718_Contig_10_co')[0]
         gbf = locus.features_at_location(Location('1355'))[0]
         next = locus.next_downstream(gbf)
         assert str(next.location) == '2532..2819'
 
     def test_next_downstream_duplicate_loci(self):
-        gb = propex.GenBank(self.lmga18)
+        gb = seqpoet.GenBank(self.lmga18)
         locus = gb.get_locus_from_name('LMGA18_Contig_10')[1]
         gbf = locus.features_at_location(Location('301'))[0]
         next = locus.next_downstream(gbf)
         assert str(next.location) == '3180..3404'
 
     def test_next_downstream_last(self):
-        gb = propex.GenBank(self.lmg718)
+        gb = seqpoet.GenBank(self.lmg718)
         locus = gb.get_locus_from_name('718_Contig_102_c')[0]
         gbf = locus.features_at_location(Location('9765'))[0]
         next = locus.next_downstream(gbf)
         assert next is None
 
     def test_next_downstream_complement(self):
-        gb = propex.GenBank(self.lmg718)
+        gb = seqpoet.GenBank(self.lmg718)
         locus = gb.get_locus_from_name('718_Contig_101_c')[0]
         gbf = locus.features_at_location(Location('7664'))[0]
         next = locus.next_downstream(gbf)
@@ -138,28 +138,28 @@ class TestGenBankLocal:
         assert str(next.location) == 'complement(2752..5457)'
 
     def test_next_upstream(self):
-        gb = propex.GenBank(self.lmg718)
+        gb = seqpoet.GenBank(self.lmg718)
         locus = gb.get_locus_from_name('718_Contig_106_c')[0]
         gbf = locus.features_at_location(Location('754'))[0]
         next = locus.next_upstream(gbf)
         assert str(next.location) == '58..747'
 
     def test_next_upstream_duplicate_loci(self):
-        gb = propex.GenBank(self.lmga18)
+        gb = seqpoet.GenBank(self.lmga18)
         locus = gb.get_locus_from_name('LMGA18_Contig_10')[1]
         gbf = locus.features_at_location(Location('3180'))[0]
         next = locus.next_upstream(gbf)
         assert str(next.location) == '301..1245'
 
     def test_next_upstream_last(self):
-        gb = propex.GenBank(self.lmg718)
+        gb = seqpoet.GenBank(self.lmg718)
         locus = gb.get_locus_from_name('718_Contig_106_c')[0]
         gbf = locus.features_at_location(Location('58'))[0]
         next = locus.next_upstream(gbf)
         assert next is None
 
     def test_next_upstream_complement(self):
-        gb = propex.GenBank(self.lmg718)
+        gb = seqpoet.GenBank(self.lmg718)
         locus = gb.get_locus_from_name('718_Contig_106_c')[0]
         gbf = locus.features_at_location(Location('7161'))[0]
         next = locus.next_upstream(gbf)
@@ -173,7 +173,7 @@ class TestGenBankFeature:
 
     def test_qualifier_names(self):
         f = {'name': 'lalala'}
-        gbf = propex.GenBankFeature('testlocus', 'CDS', '123..679', f)
+        gbf = seqpoet.GenBankFeature('testlocus', 'CDS', '123..679', f)
         assert gbf.get_qualifier('name') == f['name'], \
             'wrong name: {0}'.format(gbf.get_qualifier('name'))
 
@@ -193,7 +193,7 @@ class TestGenBankFeature:
                      LKITYNQNVKTDFSKELLSRQDHDIFRHQTTVGPHRDDLQFFINEINVADFGSQGQQR
                      TVTLSIKLAEIDLIFEETGEYPILLLDDVMSELDNHRQLDLIETSLGKTQTFITTTTL
                      DHLKNLPENLSIFHVTDGTIEKEKE"'''
-        gbf = propex.GenBankFeature.from_string('testlocus', feature)
+        gbf = seqpoet.GenBankFeature.from_string('testlocus', feature)
 
         assert gbf.feature_type == 'CDS'
         gbf_gene = gbf.get_qualifier('gene')
@@ -227,7 +227,7 @@ class TestGenBankFeature:
                      /function="RNA; Ribosomal and stable RNAs"
                      /db_xref="ASAP:ABE-0001579"
                      /db_xref="EcoGene:EG30027"'''
-        gbf = propex.GenBankFeature.from_string('testlocus', feature)
+        gbf = seqpoet.GenBankFeature.from_string('testlocus', feature)
         func = gbf.get_qualifier('function')
         assert len(func) == 5
 
@@ -239,7 +239,7 @@ class TestGenBankFeature:
                      /inference="similar to AA sequence:UniProtKB:Q9RVE0"
                      /codon_start=1
                      /transl_table=11'''
-        gbf = propex.GenBankFeature.from_string('testlocus', feature)
+        gbf = seqpoet.GenBankFeature.from_string('testlocus', feature)
 
         assert gbf.feature_type == 'CDS'
         assert gbf.get_qualifier('gene') == 'recF'
@@ -250,7 +250,7 @@ class TestGenBankFeature:
                      1295140..1295322))
                      /gene="insZ"
                      /locus_tag="b4573"'''
-        gbf = propex.GenBankFeature.from_string('testlocus', feature)
+        gbf = seqpoet.GenBankFeature.from_string('testlocus', feature)
 
         assert gbf.feature_type == 'CDS'
         assert isinstance(gbf.location, JoinLocation)
@@ -276,7 +276,7 @@ class TestGenBankFeature:
                      /locus_tag=
                      /note
                      /random=""'''
-        gbf = propex.GenBankFeature.from_string('testlocus', feature)
+        gbf = seqpoet.GenBankFeature.from_string('testlocus', feature)
 
         assert gbf.get_qualifier('locus_tag') == ''
         assert gbf.get_qualifier('note') is None
@@ -286,22 +286,22 @@ class TestGenBankFeature:
     def test_missing_qualifier(self):
         feature = '''     CDS             complement(52625..53704)
                      /gene="recF"'''
-        gbf = propex.GenBankFeature.from_string('testlocus', feature)
+        gbf = seqpoet.GenBankFeature.from_string('testlocus', feature)
         gbf.get_qualifier('locus_tag')
 
     def test_empty_qualifiers(self):
-        gbf = propex.GenBankFeature('testlocus', 'CDS', '123..679')
+        gbf = seqpoet.GenBankFeature('testlocus', 'CDS', '123..679')
         assert isinstance(gbf.qualifiers, list)
         assert len(gbf.qualifiers) == 0
 
     def test_equality(self):
-        gbf1 = propex.GenBankFeature('testlocus', 'CDS',
+        gbf1 = seqpoet.GenBankFeature('testlocus', 'CDS',
             Location('123..679'), {'name': 'randomname'})
-        gbf2 = propex.GenBankFeature('testlocus', 'CDS',
+        gbf2 = seqpoet.GenBankFeature('testlocus', 'CDS',
             Location('123..679'), {'name': 'randomname'})
-        gbf3 = propex.GenBankFeature('testlocus', 'CDS',
+        gbf3 = seqpoet.GenBankFeature('testlocus', 'CDS',
             Location('123..679'), {'name': 'otherrandomname'})
-        gbf4 = propex.GenBankFeature('testlocus', 'CDS',
+        gbf4 = seqpoet.GenBankFeature('testlocus', 'CDS',
             Location('120..679'), {'name': 'randomname'})
 
         assert gbf1 == gbf2
@@ -443,7 +443,7 @@ class TestLocation:
         assert not loc4.overlaps(loc3)
         assert not loc1.overlaps(loc5)
 
-    @raises(propex.genbank.LocationError)
+    @raises(seqpoet.genbank.LocationError)
     def test_invalid_location(self):
         loc = Location('123..noloc')
 
@@ -488,15 +488,15 @@ class TestJoinLocation:
         assert isinstance(self.jloc1, JoinLocation)
         assert isinstance(self.jloc2, JoinLocation)
 
-    @raises(propex.genbank.LocationError)
+    @raises(seqpoet.genbank.LocationError)
     def test_invalid_location(self):
         jloc = JoinLocation('join(1..200,300..400')
 
-    @raises(propex.genbank.LocationError)
+    @raises(seqpoet.genbank.LocationError)
     def test_invalid_strands(self):
         jloc = JoinLocation('join(complement(100),200)')
 
-    @raises(propex.genbank.LocationError)
+    @raises(seqpoet.genbank.LocationError)
     def test_messed_up_location(self):
         jloc = JoinLocation('complement(join(687..700,800..900,1000..1100))mRNA            <687..>3158')
 
