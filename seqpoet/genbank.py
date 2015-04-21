@@ -655,7 +655,10 @@ class GenBank(object):
         }
 
         last_key = None
-        line = header_lines.next()
+        try:
+            line = header_lines.next()
+        except StopIteration:
+            return head_data
         while True:
             if line[0] != ' ':
                 key = line[:11].strip()
