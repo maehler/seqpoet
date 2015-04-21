@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# propex documentation build configuration file, created by
-# sphinx-quickstart on Sat Mar 14 20:54:34 2015.
+# seqpoet documentation build configuration file, created by
+# sphinx-quickstart on Tue Apr 21 20:33:27 2015.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -48,7 +48,7 @@ source_suffix = ['.rst']
 master_doc = 'index'
 
 # General information about the project.
-project = u'propex'
+project = u'seqpoet'
 copyright = u'2015, Niklas Mähler'
 author = u'Niklas Mähler'
 
@@ -59,7 +59,7 @@ author = u'Niklas Mähler'
 # The short X.Y version.
 import pkg_resources
 try:
-    release = pkg_resources.get_distribution('propex').version
+    release = pkg_resources.get_distribution('seqpoet').version
 except pkg_resources.DistributionNotFound:
     print 'To build the documentation, The distribution information of sandman'
     print 'Has to be available.  Either install the package into your'
@@ -211,7 +211,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'propexdoc'
+htmlhelp_basename = 'seqpoetdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -233,7 +233,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'propex.tex', u'propex Documentation',
+  (master_doc, 'seqpoet.tex', u'seqpoet Documentation',
    u'Author', 'manual'),
 ]
 
@@ -263,7 +263,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'propex', u'propex Documentation',
+    (master_doc, 'seqpoet', u'seqpoet Documentation',
      [author], 1)
 ]
 
@@ -277,8 +277,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  (master_doc, 'propex', u'propex Documentation',
-   author, 'propex', 'One line description of project.',
+  (master_doc, 'seqpoet', u'seqpoet Documentation',
+   author, 'seqpoet', 'One line description of project.',
    'Miscellaneous'),
 ]
 
