@@ -391,13 +391,16 @@ class GenBankFeature(object):
 
         :param qualifier_name: a string representing a qualifier.
         :returns: the value of the qualifier.
-        :raises: :py:class:`KeyError` if the feature does not have a qualifier called
-                      ``qualifier_name``.
+        :raises: :py:class:`KeyError` if the feature does not have a qualifier
+                 called ``qualifier_name``.
         """
         if qualifier_name not in self.qualifiers:
             raise KeyError('{0} is not a qualifier for {1}'
                 .format(qualifier_name, self))
         return self.qualifiers[qualifier_name]
+
+    def __repr__(self):
+        return '<GenBankFeature on {0} at {1}>'.format(self.locus, self.location)
 
 class GenBankLocus(object):
 
