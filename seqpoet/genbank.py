@@ -528,6 +528,8 @@ class GenBankLocus(object):
                 findex -= 1
             else:
                 findex += 1
+            if findex >= len(self.features[ftype]) or findex < 0:
+                return None
 
         return self.features[ftype][findex]
 

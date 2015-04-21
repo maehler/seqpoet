@@ -1,6 +1,7 @@
 from nose.tools import raises
 from nose.plugins.skip import SkipTest
 import os
+import tempfile
 
 import seqpoet
 from seqpoet.genbank import Location, JoinLocation
@@ -18,7 +19,7 @@ class TestGenBank:
     def test_mRNA(self):
         assert len(self.gb[0].features['mRNA']) == 3
 
-    def test_next_downstream(self):
+    def test_neighbors(self):
         locus = self.gb[0]
         gbf = locus.features['mRNA'][0]
         assert gbf is not None
@@ -26,6 +27,39 @@ class TestGenBank:
         next = locus.next_downstream(gbf)
         assert next is not None
         assert str(next.location) == '<687..>3158'
+
+        # Weird issue of alternating results when selecting next
+        # downstream
+        temp = tempfile.NamedTemporaryFile(delete=False)
+        temp.write('''LOCUS testlocus 5758 bp  DNA linear  12-APR-2015
+FEATURES            Location/qualifiers
+    source          1..5758
+    CDS             7..693
+    CDS             697..3303
+    CDS             complement(3381..4166)
+    CDS             complement(4167..5516)
+    ORIGIN
+//''')
+        temp.close()
+        gbfile = temp.name
+
+        gb = seqpoet.GenBank(gbfile)
+
+        locus = gb[0]
+
+        gbf = locus.features_at_location(Location('4170'))[0]
+        assert gbf.location.is_complement
+        assert str(gbf.location) == 'complement(4167..5516)'
+
+        ds = locus.next_downstream(gbf)
+        assert ds.location.is_complement
+        assert str(ds.location) == 'complement(3381..4166)'
+
+        ds = locus.next_downstream(ds)
+        assert ds is None, 'should be None, found feature at {0}' \
+            .format(ds.location)
+
+        os.unlink(gbfile)
 
     def test_header(self):
         header = self.gb[0].header
