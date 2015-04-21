@@ -339,6 +339,8 @@ class GenBankFeature(object):
         """
         lines = [x.strip() for x in feature_string.splitlines()]
         ftype, location = lines[0].strip().split()
+        if len(lines) == 1:
+            return cls(locus, ftype, parse_location(location), {})
         # Multiline location string
         i = 1
         line = lines[i]

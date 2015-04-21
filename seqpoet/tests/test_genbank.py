@@ -282,6 +282,13 @@ class TestGenBankFeature:
         assert gbf.get_qualifier('note') is None
         assert gbf.get_qualifier('random') == ''
 
+    def test_minimal_feature(self):
+        feature = '     CDS             complement(52625..53704)'
+        gbf = seqpoet.GenBankFeature.from_string('testlocus', feature)
+
+        assert gbf.feature_type == 'CDS'
+        assert str(gbf.location) == 'complement(52625..53704)'
+
     @raises(KeyError)
     def test_missing_qualifier(self):
         feature = '''     CDS             complement(52625..53704)
