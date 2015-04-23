@@ -217,11 +217,15 @@ def find_operon(matches, seqs, max_distance=500, no_revcomp=False,
             location = seqpoet.genbank.Location.from_int(
                 max(1, m['hitstart'] - extend_downstream),
                 m['hitend'] + extend_upstream)
-        features = locus.features_at_location(location)
+
+        features = filter(lambda x: x.location.is_complement == \
+            (m['strand'] == '-'),  locus.features_at_location(location))
+
         if len(features) == 0:
             print('WARNING: no gene for match in locus {0}'.format(m['seqname']),
                 file=sys.stderr)
             continue
+
         operon_genes = []
         for f in features:
             # Find upstream genes
