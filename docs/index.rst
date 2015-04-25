@@ -19,6 +19,7 @@ Contents:
    :maxdepth: 4
 
    installation
+   quickstart
    command_line
    insilico_pcr
    operon_extraction
