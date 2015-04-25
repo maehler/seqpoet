@@ -19,6 +19,7 @@ Contents:
    :maxdepth: 4
 
    installation
+   command_line
    insilico_pcr
    operon_extraction
    seqpoet
