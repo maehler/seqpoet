@@ -11,6 +11,8 @@ PCR and operon extraction for genomic assemblies. The secondary purpose of
 seqpoet is to be a Python package that can be used for handling sequence
 data in the form of FASTA and GenBank files.
 
+To get started quickly, take a look at the guide in `Quick start <quickstart.html>`_.
+
 Source code is hosted on GitHub: https://github.com/maehler/seqpoet.
 
 Contents:
@@ -19,8 +21,8 @@ Contents:
    :maxdepth: 4
 
    installation
-   insilico_pcr
-   operon_extraction
+   quickstart
+   command_line
    seqpoet
 
 

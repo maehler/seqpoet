@@ -154,11 +154,12 @@ class Location(object):
     of the bases between two positions.
 
     **Class attributes:**
-        * **locstring:** the string representation of the location.
-        * **loctype:** the type of the location.
-        * **start:** the start position (0-based, including).
-        * **end:** the end position (0-based, including).
-        * **is_complement:** boolean indicating whether the position represents
+
+        - **locstring:** the string representation of the location.
+        - **loctype:** the type of the location.
+        - **start:** the start position (0-based, including).
+        - **end:** the end position (0-based, including).
+        - **is_complement:** boolean indicating whether the position represents
           the complement of the sequence.
 
     :param locstring: a GenBank location string.
@@ -293,10 +294,11 @@ class GenBankFeature(object):
     """Represent a GenBank feature.
 
     **Class attributes:**
-        * **feature_type**: a string with the feature key.
-        * **location**: a Location object representing the location of
-                        the feature.
-        * **qualifiers**: a dictionary of qualifiers of the feature.
+
+        - **feature_type**: a string with the feature key.
+        - **location**: a Location object representing the location of
+          the feature.
+        - **qualifiers**: a dictionary of qualifiers of the feature.
 
     :param locus: the name of the locus that the feature belongs to.
     :param feature_type: name of the feature.
@@ -407,9 +409,10 @@ class GenBankLocus(object):
     """Represent a GenBank locus.
 
     **Class attributes:**
-        * **name:** locus name.
-        * **seq:** a Sequence object with the sequence of the locus.
-        * **features:** a dictionary containing the features of the locus.
+
+        - **name:** locus name.
+        - **seq:** a Sequence object with the sequence of the locus.
+        - **features:** a dictionary containing the features of the locus.
 
     :param name: the name of the locus.
     :param seq: a Sequence object representing the sequence of the locus.
@@ -543,9 +546,10 @@ class GenBank(object):
 
     """Represent a GenBank file.
 
-    Class attributes:
-        * filename: the filename of the GenBank file.
-        * index: a list of dictionaries representing an index of the file.
+    **Class attributes:**
+
+        - filename: the filename of the GenBank file.
+        - index: a list of dictionaries representing an index of the file.
 
     :param fname: filename of the GenBank file.
     :raises: :py:exc:`.ParsingError` if parsing fails.

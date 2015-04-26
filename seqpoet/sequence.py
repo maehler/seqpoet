@@ -1,4 +1,8 @@
+#-*- encoding: utf-8 -*-
 """Classes and functions for representing DNA sequences.
+
+.. module:: sequence
+.. moduleauthor:: Niklas Mähler <niklas.mahler@gmail.com>
 """
 
 import re

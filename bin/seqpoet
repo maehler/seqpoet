@@ -309,19 +309,19 @@ def parse_args():
     parser.add_argument('-m', '--mismatches', help=('the maximum number of '
         'mismatches allowed when aligning probe/primer to the genome '
         '(default: %(default)d)'),
-        type=int, default=2, metavar='N')
+        type=int, default=2, metavar='int')
 
     parser.add_argument('-d', '--max-distance', help=('the maximum intergenic '
         'distance allowed when assembling operons (default: %(default)d)'),
-        type=int, default=500, metavar='N')
+        type=int, default=500, metavar='int')
 
     parser.add_argument('--min-product', help=('minimum PCR product length '
         'to consider (default: %(default)d)'), type=int, default=0,
-        metavar='N')
+        metavar='int')
 
     parser.add_argument('--max-product', help=('maximum PCR product length '
         'to consider (default: %(default)d)'), type=int, default=3000,
-        metavar='N')
+        metavar='int')
 
     parser.add_argument('--no-revcomp', help=('don\'t reverse complement '
         'results on the minus strand (default: do reverse complementation)'),
@@ -329,14 +329,14 @@ def parse_args():
 
     parser.add_argument('--downstream', help=('extend probe/primer match '
         '%(metavar)s bases downstream for operon finding (default: '
-        '%(default)s)'), metavar='N', default=0, type=int)
+        '%(default)s)'), metavar='int', default=0, type=int)
 
     parser.add_argument('--upstream', help=('extend probe/primer match '
         '%(metavar)s bases upstream for operon finding (default: '
-        '%(default)s)'), metavar='N', default=0, type=int)
+        '%(default)s)'), metavar='int', default=0, type=int)
 
     parser.add_argument('-o', '--out', help='file for output (default: stdout)',
-        default=sys.stdout)
+        default=sys.stdout, metavar='file')
 
     parser.add_argument('--version', help=('print version and exit'),
         action='version', version='%(prog)s v{0}'.format(seqpoet.__version__))
