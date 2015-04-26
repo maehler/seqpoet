@@ -1,3 +1,3 @@
 include README.md
-include propex/tests/*.py
-include propex/tests/data/*
+include seqpoet/tests/*.py
+include seqpoet/tests/data/*
