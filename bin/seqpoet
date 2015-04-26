@@ -203,7 +203,7 @@ def match_primer(primers, seqs, mismatches=2,
 
     return matches
 
-def find_operon(matches, seqs, max_distance=500, no_revcomp=False,
+def find_operon(matches, seqs, max_distance=500,
         extend_downstream=0, extend_upstream=0):
     match_operon = []
     for m in matches:
@@ -254,10 +254,6 @@ def find_operon(matches, seqs, max_distance=500, no_revcomp=False,
         max_end = operon_genes[-1].location.end
 
         operon_seq = locus.seq[min_start:max_end]
-
-        # Reverse complement matches on minus-strand
-        if not no_revcomp and m['strand'] == '-':
-            operon_seq = operon_seq.revcomp()
 
         match_operon.append({
             'filename': m['filename'],
@@ -415,14 +411,13 @@ def main():
     # Operon extraction
     print('Looking for operons', file=sys.stderr)
     match_features = find_operon(matches, seqs, max_distance=args.max_distance,
-        no_revcomp=args.no_revcomp, extend_downstream=args.downstream,
-        extend_upstream=args.upstream)
+        extend_downstream=args.downstream, extend_upstream=args.upstream)
 
     if len(match_features) == 0:
         print('WARNING: no operons found', file=sys.stderr)
         exit(0)
 
-    write_fasta(match_features, filename=args.out)
+    write_fasta(match_features, filename=args.out, no_revcomp=args.no_revcomp)
 
 if __name__ == '__main__':
     try:
