@@ -5,12 +5,12 @@ import itertools
 import os
 import sys
 
-import propex
+import seqpoet
 
 def get_probe(fname):
     with open(fname) as f:
         try:
-            seqs = [propex.sequence.Sequence(line.strip()) for line in f \
+            seqs = [seqpoet.sequence.Sequence(line.strip()) for line in f \
                 if len(line.strip()) > 0]
         except ValueError:
             print('ERROR: probe file does not contain valid sequences',
@@ -30,14 +30,14 @@ def get_single_sequence(fname, genbank_only=False, stop_on_error=False):
     genbank_success = False
     fasta_success = False
     try:
-        seq = propex.GenBank(fname)
+        seq = seqpoet.GenBank(fname)
         genbank_success = True
-    except ValueError:
+    except seqpoet.genbank.ParsingError:
         pass
 
     if not genbank_success and not genbank_only:
         try:
-            seq = propex.Fasta(fname)
+            seq = seqpoet.Fasta(fname)
             fasta_success = True
         except ValueError:
             pass
@@ -100,10 +100,10 @@ def match_probe(probe, seqs, mismatches=2):
     pl = len(probe)
     for f in seqs.itervalues():
         for i, record in enumerate(f):
-            res1 = propex.search.search(str(probe), str(record.seq),
+            res1 = seqpoet.search.search(str(probe), str(record.seq),
                 mismatches=mismatches)
             res2 = [len(record.seq) - x - pl for x in \
-                propex.search.search(str(probe), str(record.seq.revcomp()),
+                seqpoet.search.search(str(probe), str(record.seq.revcomp()),
                     mismatches=mismatches)]
 
             if len(res1) > 0:
@@ -143,16 +143,16 @@ def match_primer(primers, seqs, mismatches=2,
     pl2 = len(primers[1])
     for f in seqs.itervalues():
         for i, record in enumerate(f):
-            res1_1 = propex.search.search(str(primers[0]), str(record.seq),
+            res1_1 = seqpoet.search.search(str(primers[0]), str(record.seq),
                 mismatches=mismatches)
             res1_2 = [len(record.seq) - x - pl1 for x in \
-                propex.search.search(str(primers[0]), str(record.seq.revcomp()),
+                seqpoet.search.search(str(primers[0]), str(record.seq.revcomp()),
                     mismatches=mismatches)]
 
-            res2_1 = propex.search.search(str(primers[1]), str(record.seq),
+            res2_1 = seqpoet.search.search(str(primers[1]), str(record.seq),
                 mismatches=mismatches)
             res2_2 = [len(record.seq) - x - pl2 for x in \
-                propex.search.search(str(primers[1]), str(record.seq.revcomp()),
+                seqpoet.search.search(str(primers[1]), str(record.seq.revcomp()),
                     mismatches=mismatches)]
 
             # Match res1_1 with res2_2 and res2_1 with res1_2 to get primer
@@ -203,17 +203,29 @@ def match_primer(primers, seqs, mismatches=2,
 
     return matches
 
-def find_operon(matches, seqs, max_distance=500):
+def find_operon(matches, seqs, max_distance=500, no_revcomp=False,
+        extend_downstream=0, extend_upstream=0):
     match_operon = []
     for m in matches:
         gb = seqs[m['filename']]
         locus = gb[m['seqindex']]
-        location = propex.genbank.Location.from_int(m['hitstart'], m['hitend'])
-        features = locus.features_at_location(location)
+        if m['strand'] == '+':
+            location = seqpoet.genbank.Location.from_int(
+                max(1, m['hitstart'] - extend_upstream),
+                m['hitend'] + extend_downstream)
+        else:
+            location = seqpoet.genbank.Location.from_int(
+                max(1, m['hitstart'] - extend_downstream),
+                m['hitend'] + extend_upstream)
+
+        features = filter(lambda x: x.location.is_complement == \
+            (m['strand'] == '-'),  locus.features_at_location(location))
+
         if len(features) == 0:
             print('WARNING: no gene for match in locus {0}'.format(m['seqname']),
                 file=sys.stderr)
             continue
+
         operon_genes = []
         for f in features:
             # Find upstream genes
@@ -243,7 +255,9 @@ def find_operon(matches, seqs, max_distance=500):
 
         operon_seq = locus.seq[min_start:max_end]
 
-        # Reverse complement matches on minus-strand?
+        # Reverse complement matches on minus-strand
+        if not no_revcomp and m['strand'] == '-':
+            operon_seq = operon_seq.revcomp()
 
         match_operon.append({
             'filename': m['filename'],
@@ -258,7 +272,7 @@ def find_operon(matches, seqs, max_distance=500):
 
     return match_operon
 
-def write_fasta(matches, filename=sys.stdout):
+def write_fasta(matches, filename=sys.stdout, no_revcomp=False):
     if isinstance(filename, file):
         f = filename
         close = False
@@ -267,8 +281,10 @@ def write_fasta(matches, filename=sys.stdout):
         close = True
 
     for m in matches:
+        if not no_revcomp and m['strand'] == '-':
+            m['seq'] = m['seq'].revcomp()
         m['filename'] = os.path.basename(m['filename'])
-        s = propex.fasta.FastaRecord(m['seq'],
+        s = seqpoet.fasta.FastaRecord(m['seq'],
             '{filename}:{seqname}:{hitstart}:{hitend}:{length}:{strand}' \
                 .format(**m))
         print(s, file=f)
@@ -293,25 +309,37 @@ def parse_args():
     parser.add_argument('-m', '--mismatches', help=('the maximum number of '
         'mismatches allowed when aligning probe/primer to the genome '
         '(default: %(default)d)'),
-        type=int, default=2, metavar='N')
+        type=int, default=2, metavar='int')
 
     parser.add_argument('-d', '--max-distance', help=('the maximum intergenic '
         'distance allowed when assembling operons (default: %(default)d)'),
-        type=int, default=500, metavar='N')
+        type=int, default=500, metavar='int')
 
     parser.add_argument('--min-product', help=('minimum PCR product length '
         'to consider (default: %(default)d)'), type=int, default=0,
-        metavar='N')
+        metavar='int')
 
     parser.add_argument('--max-product', help=('maximum PCR product length '
         'to consider (default: %(default)d)'), type=int, default=3000,
-        metavar='N')
+        metavar='int')
+
+    parser.add_argument('--no-revcomp', help=('don\'t reverse complement '
+        'results on the minus strand (default: do reverse complementation)'),
+        action='store_true')
+
+    parser.add_argument('--downstream', help=('extend probe/primer match '
+        '%(metavar)s bases downstream for operon finding (default: '
+        '%(default)s)'), metavar='int', default=0, type=int)
+
+    parser.add_argument('--upstream', help=('extend probe/primer match '
+        '%(metavar)s bases upstream for operon finding (default: '
+        '%(default)s)'), metavar='int', default=0, type=int)
 
     parser.add_argument('-o', '--out', help='file for output (default: stdout)',
-        default=sys.stdout)
+        default=sys.stdout, metavar='file')
 
     parser.add_argument('--version', help=('print version and exit'),
-        action='version', version='%(prog)s v{0}'.format(propex.__version__))
+        action='version', version='%(prog)s v{0}'.format(seqpoet.__version__))
 
     args = parser.parse_args()
 
@@ -330,7 +358,8 @@ def parse_args():
         if not os.path.exists(os.path.dirname(args.out)):
             parser.error('file or directory not found: {}'.format(args.out))
 
-    # Mismatches, distance and max/min product length should be integers >= 0
+    # Mismatches, distance, max/min product length and upstream/downstream
+    # should be integers >= 0
     if args.mismatches < 0:
         parser.error('mismatches must not be negative')
     if args.max_distance < 0:
@@ -339,6 +368,10 @@ def parse_args():
         parser.error('minimum product length must not be negative')
     if args.max_product < 0:
         parser.error('maximum product length must not be negative')
+    if args.downstream < 0:
+        parser.error('downstream extension must not be negative')
+    if args.upstream < 0:
+        parser.error('upstream extension must not be negative')
 
     return args
 
@@ -376,12 +409,14 @@ def main():
 
     # In silico PCR results
     if is_primer and args.pcr:
-        write_fasta(matches, filename=args.out)
+        write_fasta(matches, filename=args.out, no_revcomp=args.no_revcomp)
         exit(0)
 
     # Operon extraction
     print('Looking for operons', file=sys.stderr)
-    match_features = find_operon(matches, seqs, max_distance=args.max_distance)
+    match_features = find_operon(matches, seqs, max_distance=args.max_distance,
+        no_revcomp=args.no_revcomp, extend_downstream=args.downstream,
+        extend_upstream=args.upstream)
 
     if len(match_features) == 0:
         print('WARNING: no operons found', file=sys.stderr)

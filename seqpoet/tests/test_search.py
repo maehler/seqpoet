@@ -4,10 +4,10 @@ import os
 from nose.tools import raises
 from nose.plugins.skip import SkipTest
 
-from propex.search import search, hamming_distance
-from propex import Sequence
-from propex import GenBank
-from propex.genbank import Location
+from seqpoet.search import search, hamming_distance
+from seqpoet import Sequence
+from seqpoet import GenBank
+from seqpoet.genbank import Location
 
 class TestHammingDistance:
 

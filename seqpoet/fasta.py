@@ -1,5 +1,9 @@
+#-*- encoding: utf-8 -*-
 """The FASTA module contains classes for accessing FASTA files and
 FASTA index files.
+
+.. module:: fasta
+.. moduleauthor:: Niklas Mähler <niklas.mahler@gmail.com>
 """
 
 import collections
@@ -7,7 +11,7 @@ import itertools
 import os
 import textwrap
 
-from propex.sequence import Sequence
+from seqpoet.sequence import Sequence
 
 class FastaIndex(object):
     """Represents an index for a FASTA file.
@@ -34,11 +38,11 @@ class FastaIndex(object):
             an OrderedDict with sequence names (headers) as keys and
             dicts as values. The value dicts have the following members:
 
-            name:    the sequence name (FASTA header line)
-            length:  sequence length
-            offset:  the byte offset of the first base of the sequence
-            nbase:   number of bases per line of sequence
-            linelen: number of bytes per line of sequence
+            - name:    the sequence name (FASTA header line)
+            - length:  sequence length
+            - offset:  the byte offset of the first base of the sequence
+            - nbase:   number of bases per line of sequence
+            - linelen: number of bytes per line of sequence
         :raises:
             ValueError if the file cannot be parsed, if the file contains
             duplicated headers or if the file is empty.
