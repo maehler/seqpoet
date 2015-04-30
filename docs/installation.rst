@@ -1,14 +1,20 @@
 Installation and requirements
 =============================
 
+.. highlight:: bash
+
 The only requirement is Python 2.7. Unfortunately Python 3 is not supported.
 
-Currently, the easiest way of installing seqpoet is to clone the GitHub
-repository and install it manually::
+Currently, the easiest way of installing seqpoet is to download the `latest
+release from GitHub <https://github.com/maehler/seqpoet/releases/latest>`_
+and install it manually::
 
-    > git clone https://github.com/maehler/seqpoet.git
-    > cd seqpoet
+    > unzip seqpoet-0.3.1.zip # or tar zxvf seqpoet-0.3.1.tar.gz
+    > cd seqpoet-0.3.1
     > python setup.py install
+
+If you want the cutting edge version (potentially unstable), you can clone
+the GitHub repository and install the package from the develop branch.
 
 Eventually the package will be submitted to
 `PyPI <https://pypi.python.org/pypi>`_.
