@@ -7,3 +7,8 @@
     max-width: 100%;
     overflow: visible;
 }
+
+.wy-table-responsive .option-list td,
+.wy-table-responsive .option-list th {
+	white-space: pre-wrap;
+}

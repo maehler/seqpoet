@@ -22,6 +22,12 @@ is the only supported format for this. The FASTA file ``output.fa`` will
 contain the extracted sequences. If the ``--out`` argument is not supplied,
 the results are written to stdout.
 
+The parameter that could have the largest impact on the results is the
+``--max-distance`` parameter. It specifies how large intergenic distances
+are allowed within the operon. The default is 500 bases.
+
+See `Command line arguments`_ for more options.
+
 *In silico* PCR
 ---------------
 
@@ -35,6 +41,8 @@ For *in silico* PCR, only primer pairs are supported, but the sequence input
 can be either FASTA or GenBank. The FASTA file ``output.fa`` will contain the
 predicted PCR products. If the ``--out`` argument is not supplied,
 the results are written to stdout.
+
+See `Command line arguments`_ for more options.
 
 Output
 ------
@@ -56,3 +64,7 @@ and will look something like this:
   result sequence
 - ``28``: the length of the original match
 - ``+``: the sequence was found on the plus strand (otherwise ``-``)
+
+By default, all results are reported in 5'-3' direction.
+
+.. _Command line arguments: command_line.html

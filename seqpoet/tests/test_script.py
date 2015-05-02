@@ -50,14 +50,12 @@ class TestFindOperon:
 
 	def test_operon_find(self):
 		res = seqpoet_script.find_operon(self.matches, self.seqs,
-			max_distance=500, no_revcomp=False, extend_downstream=0,
-			extend_upstream=0)
+			max_distance=500, extend_downstream=0, extend_upstream=0)
 		assert len(res) == 0
 
 	def test_operon_find_extend_upstream(self):
 		res = seqpoet_script.find_operon(self.matches, self.seqs,
-			max_distance=500, no_revcomp=False, extend_downstream=0,
-			extend_upstream=10)
+			max_distance=500, extend_downstream=0, extend_upstream=10)
 		assert len(res) == 1, 'expected 1 result, got {0}'.format(len(res))
 		assert len(res[0]['operon']) == 2
 
@@ -66,26 +64,22 @@ class TestFindOperon:
 
 	def test_operon_find_extend_downstream(self):
 		res = seqpoet_script.find_operon(self.matches, self.seqs,
-			max_distance=500, no_revcomp=False, extend_downstream=100,
-			extend_upstream=0)
+			max_distance=500, extend_downstream=100, extend_upstream=0)
 		assert len(res) == 0, 'expected no results, got {0}'.format(len(res))
 
 	def test_revcomp_operon_find(self):
 		res = seqpoet_script.find_operon(self.matches, self.seqs,
-			max_distance=500, no_revcomp=False, extend_downstream=0,
-			extend_upstream=0)
+			max_distance=500, extend_downstream=0, extend_upstream=0)
 		assert len(res) == 0
 
 	def test_revcomp_operon_find_extend_downstream(self):
 		res = seqpoet_script.find_operon(self.minus_matches, self.seqs,
-			max_distance=500, no_revcomp=False, extend_downstream=100,
-			extend_upstream=0)
+			max_distance=500, extend_downstream=100, extend_upstream=0)
 		assert len(res) == 0
 
 	def test_revcomp_operon_find_extend_upstream(self):
 		res = seqpoet_script.find_operon(self.minus_matches, self.seqs,
-			max_distance=500, no_revcomp=False, extend_downstream=0,
-			extend_upstream=100)
+			max_distance=500, extend_downstream=0, extend_upstream=100)
 		assert len(res) == 1
 		assert len(res[0]['operon']) == 2
 

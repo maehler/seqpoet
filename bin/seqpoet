@@ -95,7 +95,7 @@ def get_sequences(dirname, genbank_only=False):
 
     return seqs
 
-def match_probe(probe, seqs, mismatches=2):
+def match_probe(probe, seqs, mismatches=2, minus_revcomp=True):
     matches = []
     pl = len(probe)
     for f in seqs.itervalues():
@@ -123,6 +123,8 @@ def match_probe(probe, seqs, mismatches=2):
             if len(res2) > 0:
                 for start in res2:
                     hit_seq = record.seq[start:start + pl]
+                    if minus_revcomp:
+                        hit_seq = hit_seq.revcomp()
                     matches.append({
                         'filename': f.filename,
                         'seqname': record.name,
@@ -136,7 +138,7 @@ def match_probe(probe, seqs, mismatches=2):
     return matches
 
 
-def match_primer(primers, seqs, mismatches=2,
+def match_primer(primers, seqs, mismatches=2, minus_revcomp=True,
         min_product=0, max_product=3000):
     matches = []
     pl1 = len(primers[0])
@@ -190,6 +192,8 @@ def match_primer(primers, seqs, mismatches=2,
                             product_length > max_product:
                         continue
                     hit_seq = record.seq[start:start + product_length]
+                    if minus_revcomp:
+                        hit_seq = hit_seq.revcomp()
                     matches.append({
                         'filename': f.filename,
                         'seqname': record.name,
@@ -203,7 +207,7 @@ def match_primer(primers, seqs, mismatches=2,
 
     return matches
 
-def find_operon(matches, seqs, max_distance=500, no_revcomp=False,
+def find_operon(matches, seqs, max_distance=500, minus_revcomp=True,
         extend_downstream=0, extend_upstream=0):
     match_operon = []
     for m in matches:
@@ -255,8 +259,7 @@ def find_operon(matches, seqs, max_distance=500, no_revcomp=False,
 
         operon_seq = locus.seq[min_start:max_end]
 
-        # Reverse complement matches on minus-strand
-        if not no_revcomp and m['strand'] == '-':
+        if minus_revcomp and m['strand'] == '-':
             operon_seq = operon_seq.revcomp()
 
         match_operon.append({
@@ -272,7 +275,7 @@ def find_operon(matches, seqs, max_distance=500, no_revcomp=False,
 
     return match_operon
 
-def write_fasta(matches, filename=sys.stdout, no_revcomp=False):
+def write_fasta(matches, filename=sys.stdout):
     if isinstance(filename, file):
         f = filename
         close = False
@@ -281,8 +284,6 @@ def write_fasta(matches, filename=sys.stdout, no_revcomp=False):
         close = True
 
     for m in matches:
-        if not no_revcomp and m['strand'] == '-':
-            m['seq'] = m['seq'].revcomp()
         m['filename'] = os.path.basename(m['filename'])
         s = seqpoet.fasta.FastaRecord(m['seq'],
             '{filename}:{seqname}:{hitstart}:{hitend}:{length}:{strand}' \
@@ -325,7 +326,7 @@ def parse_args():
 
     parser.add_argument('--no-revcomp', help=('don\'t reverse complement '
         'results on the minus strand (default: do reverse complementation)'),
-        action='store_true')
+        action='store_false', dest='minus_revcomp')
 
     parser.add_argument('--downstream', help=('extend probe/primer match '
         '%(metavar)s bases downstream for operon finding (default: '
@@ -396,9 +397,11 @@ def main():
         file=sys.stderr)
     if is_primer:
         matches = match_primer(probe, seqs, mismatches=args.mismatches,
-            min_product=args.min_product, max_product=args.max_product)
+            min_product=args.min_product, max_product=args.max_product,
+            minus_revcomp=args.minus_revcomp)
     else:
-        matches = match_probe(probe[0], seqs, mismatches=args.mismatches)
+        matches = match_probe(probe[0], seqs, mismatches=args.mismatches,
+            minus_revcomp=args.minus_revcomp)
 
     print('Found {0} match{1}'.format(len(matches),
         'es' if len(matches) > 1 or len(matches) == 0 else ''), file=sys.stderr)
@@ -409,14 +412,14 @@ def main():
 
     # In silico PCR results
     if is_primer and args.pcr:
-        write_fasta(matches, filename=args.out, no_revcomp=args.no_revcomp)
+        write_fasta(matches, filename=args.out)
         exit(0)
 
     # Operon extraction
     print('Looking for operons', file=sys.stderr)
     match_features = find_operon(matches, seqs, max_distance=args.max_distance,
-        no_revcomp=args.no_revcomp, extend_downstream=args.downstream,
-        extend_upstream=args.upstream)
+        extend_downstream=args.downstream, extend_upstream=args.upstream,
+        minus_revcomp=args.minus_revcomp)
 
     if len(match_features) == 0:
         print('WARNING: no operons found', file=sys.stderr)
