@@ -36,15 +36,15 @@ class TestGenBank:
 
         # Weird issue of alternating results when selecting next
         # downstream
-        gbstring = '''LOCUS testlocus 5758 bp  DNA linear  12-APR-2015
-FEATURES            Location/qualifiers
-    source          1..5758
-    CDS             7..693
-    CDS             697..3303
-    CDS             complement(3381..4166)
-    CDS             complement(4167..5516)
-    ORIGIN
-//'''
+        gbstring = '\n'.join(['LOCUS testlocus 5758 bp  DNA linear  12-APR-2015',
+            'FEATURES            Location/qualifiers',
+            '    source          1..5758',
+            '    CDS             7..693',
+            '    CDS             697..3303',
+            '    CDS             complement(3381..4166)',
+            '    CDS             complement(4167..5516)',
+            'ORIGIN',
+            '//'])
 
         gbfile = temp_gbfile(gbstring)
 
@@ -80,6 +80,44 @@ FEATURES            Location/qualifiers
         assert header['REFERENCE'][0][0] == '1  (bases 1 to 5028)'
         assert all(x in header['REFERENCE'][0][1] for x in ['AUTHORS',
             'TITLE', 'JOURNAL', 'PUBMED'])
+
+    def test_parse_header(self):
+        '''Parse malformed locus line'''
+        gbstring = '\n'.join(['LOCUS       NODE_18 673 bp   DNA linear',
+            '03-FEB-2015',
+            'FEATURES             Location/Qualifiers',
+            'ORIGIN',
+            '//'])
+
+        gbfile = temp_gbfile(gbstring)
+
+        gb = seqpoet.GenBank(gbfile)
+
+        header = gb[0].header
+
+        assert header['LOCUS']['name'] == 'NODE_18'
+        assert header['LOCUS']['length'] == '673 bp'
+
+        os.unlink(gbfile)
+
+    @raises(seqpoet.genbank.ParsingError)
+    def test_invalid_header(self):
+        '''Invalid LOCUS line raises seqpoet.genbank.ParsingError'''
+        gbstring = '\n'.join(['LOCUS       NODE_18 673',
+            'FEATURES             Location/Qualifiers',
+            'ORIGIN',
+            '//'])
+
+        gbfile = temp_gbfile(gbstring)
+
+        gb = seqpoet.GenBank(gbfile)
+
+        try:
+            locus = gb[0]
+        except seqpoet.genbank.ParsingError:
+            raise
+        finally:
+            os.unlink(gbfile)
 
 class TestGenBankLocal:
 
