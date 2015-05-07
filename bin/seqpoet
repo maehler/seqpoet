@@ -98,43 +98,48 @@ def get_sequences(dirname, genbank_only=False):
 def match_probe(probe, seqs, mismatches=2, minus_revcomp=True):
     matches = []
     pl = len(probe)
-    for f in seqs.itervalues():
-        for i, record in enumerate(f):
-            res1 = seqpoet.search.search(str(probe), str(record.seq),
-                mismatches=mismatches)
-            res2 = [len(record.seq) - x - pl for x in \
-                seqpoet.search.search(str(probe), str(record.seq.revcomp()),
-                    mismatches=mismatches)]
+    for fname, f in seqs.iteritems():
+        try:
+            for i, record in enumerate(f):
+                res1 = seqpoet.search.search(str(probe), str(record.seq),
+                    mismatches=mismatches)
+                res2 = [len(record.seq) - x - pl for x in \
+                    seqpoet.search.search(str(probe), str(record.seq.revcomp()),
+                        mismatches=mismatches)]
 
-            if len(res1) > 0:
-                for start in res1:
-                    hit_seq = record.seq[start:start + pl]
-                    matches.append({
-                        'filename': f.filename,
-                        'seqname': record.name,
-                        'seqindex': i,
-                        'hitstart': start + 1,
-                        'hitend': start + pl,
-                        'length': pl,
-                        'seq': hit_seq,
-                        'strand': '+'
-                    })
+                if len(res1) > 0:
+                    for start in res1:
+                        hit_seq = record.seq[start:start + pl]
+                        matches.append({
+                            'filename': f.filename,
+                            'seqname': record.name,
+                            'seqindex': i,
+                            'hitstart': start + 1,
+                            'hitend': start + pl,
+                            'length': pl,
+                            'seq': hit_seq,
+                            'strand': '+'
+                        })
 
-            if len(res2) > 0:
-                for start in res2:
-                    hit_seq = record.seq[start:start + pl]
-                    if minus_revcomp:
-                        hit_seq = hit_seq.revcomp()
-                    matches.append({
-                        'filename': f.filename,
-                        'seqname': record.name,
-                        'seqindex': i,
-                        'hitstart': start + 1,
-                        'hitend': start + pl,
-                        'length': pl,
-                        'seq': hit_seq,
-                        'strand': '-'
-                    })
+                if len(res2) > 0:
+                    for start in res2:
+                        hit_seq = record.seq[start:start + pl]
+                        if minus_revcomp:
+                            hit_seq = hit_seq.revcomp()
+                        matches.append({
+                            'filename': f.filename,
+                            'seqname': record.name,
+                            'seqindex': i,
+                            'hitstart': start + 1,
+                            'hitend': start + pl,
+                            'length': pl,
+                            'seq': hit_seq,
+                            'strand': '-'
+                        })
+        except seqpoet.genbank.ParsingError as pe:
+            print('ERROR: parsing failed in {0}: {1}'.format(fname, pe.message))
+            sys.exit(1)
+
     return matches
 
 
@@ -143,67 +148,71 @@ def match_primer(primers, seqs, mismatches=2, minus_revcomp=True,
     matches = []
     pl1 = len(primers[0])
     pl2 = len(primers[1])
-    for f in seqs.itervalues():
-        for i, record in enumerate(f):
-            res1_1 = seqpoet.search.search(str(primers[0]), str(record.seq),
-                mismatches=mismatches)
-            res1_2 = [len(record.seq) - x - pl1 for x in \
-                seqpoet.search.search(str(primers[0]), str(record.seq.revcomp()),
-                    mismatches=mismatches)]
+    for fname, f in seqs.iteritems():
+        try:
+            for i, record in enumerate(f):
+                res1_1 = seqpoet.search.search(str(primers[0]), str(record.seq),
+                    mismatches=mismatches)
+                res1_2 = [len(record.seq) - x - pl1 for x in \
+                    seqpoet.search.search(str(primers[0]), str(record.seq.revcomp()),
+                        mismatches=mismatches)]
 
-            res2_1 = seqpoet.search.search(str(primers[1]), str(record.seq),
-                mismatches=mismatches)
-            res2_2 = [len(record.seq) - x - pl2 for x in \
-                seqpoet.search.search(str(primers[1]), str(record.seq.revcomp()),
-                    mismatches=mismatches)]
+                res2_1 = seqpoet.search.search(str(primers[1]), str(record.seq),
+                    mismatches=mismatches)
+                res2_2 = [len(record.seq) - x - pl2 for x in \
+                    seqpoet.search.search(str(primers[1]), str(record.seq.revcomp()),
+                        mismatches=mismatches)]
 
-            # Match res1_1 with res2_2 and res2_1 with res1_2 to get primer
-            # pairs. The first position must be smaller than the second
-            # position, and the product length must be within the allowed
-            # range.
+                # Match res1_1 with res2_2 and res2_1 with res1_2 to get primer
+                # pairs. The first position must be smaller than the second
+                # position, and the product length must be within the allowed
+                # range.
 
-            if len(res1_1) > 0 and len(res2_2) > 0:
-                # Match them
-                for start, end in itertools.product(res1_1, res2_2):
-                    if start >= end:
-                        continue
-                    product_length = end - start + pl2
-                    if product_length < min_product or \
-                            product_length > max_product:
-                        continue
-                    hit_seq = record.seq[start:start + product_length]
-                    matches.append({
-                        'filename': f.filename,
-                        'seqname': record.name,
-                        'seqindex': i,
-                        'hitstart': start + 1,
-                        'hitend': end + pl1,
-                        'length': product_length,
-                        'seq': hit_seq,
-                        'strand': '+'
-                    })
+                if len(res1_1) > 0 and len(res2_2) > 0:
+                    # Match them
+                    for start, end in itertools.product(res1_1, res2_2):
+                        if start >= end:
+                            continue
+                        product_length = end - start + pl2
+                        if product_length < min_product or \
+                                product_length > max_product:
+                            continue
+                        hit_seq = record.seq[start:start + product_length]
+                        matches.append({
+                            'filename': f.filename,
+                            'seqname': record.name,
+                            'seqindex': i,
+                            'hitstart': start + 1,
+                            'hitend': end + pl1,
+                            'length': product_length,
+                            'seq': hit_seq,
+                            'strand': '+'
+                        })
 
-            if len(res2_1) > 0 and len(res1_2) > 0:
-                for start, end in itertools.product(res2_1, res1_2):
-                    if start >= end:
-                        continue
-                    product_length = end - start + pl1
-                    if product_length < min_product or \
-                            product_length > max_product:
-                        continue
-                    hit_seq = record.seq[start:start + product_length]
-                    if minus_revcomp:
-                        hit_seq = hit_seq.revcomp()
-                    matches.append({
-                        'filename': f.filename,
-                        'seqname': record.name,
-                        'seqindex': i,
-                        'hitstart': start + 1,
-                        'hitend': end + pl1,
-                        'length': product_length,
-                        'seq': hit_seq,
-                        'strand': '-'
-                    })
+                if len(res2_1) > 0 and len(res1_2) > 0:
+                    for start, end in itertools.product(res2_1, res1_2):
+                        if start >= end:
+                            continue
+                        product_length = end - start + pl1
+                        if product_length < min_product or \
+                                product_length > max_product:
+                            continue
+                        hit_seq = record.seq[start:start + product_length]
+                        if minus_revcomp:
+                            hit_seq = hit_seq.revcomp()
+                        matches.append({
+                            'filename': f.filename,
+                            'seqname': record.name,
+                            'seqindex': i,
+                            'hitstart': start + 1,
+                            'hitend': end + pl1,
+                            'length': product_length,
+                            'seq': hit_seq,
+                            'strand': '-'
+                        })
+        except seqpoet.genbank.ParsingError as pe:
+            print('ERROR: parsing failed in {0}: {1}'.format(fname, pe.message))
+            sys.exit(1)
 
     return matches
 
