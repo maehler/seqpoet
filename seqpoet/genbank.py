@@ -666,7 +666,7 @@ class GenBank(object):
             name = header[1]
             length = ' '.join(header[2:4])
         else:
-            raise ParsingError('Invalid LOCUS line:\n{0}'.format(line.rstrip()))
+            raise ParsingError('Invalid LOCUS line: {0}'.format(repr(line.rstrip())))
 
         head_data['LOCUS'] = {
             'name': name,
