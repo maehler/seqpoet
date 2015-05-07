@@ -6,6 +6,12 @@ import tempfile
 import seqpoet
 from seqpoet.genbank import Location, JoinLocation
 
+def temp_gbfile(gbstring):
+    with tempfile.NamedTemporaryFile(delete=False) as temp:
+        temp.write(gbstring)
+
+    return temp.name
+
 class TestGenBank:
 
     def setUp(self):
@@ -30,8 +36,7 @@ class TestGenBank:
 
         # Weird issue of alternating results when selecting next
         # downstream
-        temp = tempfile.NamedTemporaryFile(delete=False)
-        temp.write('''LOCUS testlocus 5758 bp  DNA linear  12-APR-2015
+        gbstring = '''LOCUS testlocus 5758 bp  DNA linear  12-APR-2015
 FEATURES            Location/qualifiers
     source          1..5758
     CDS             7..693
@@ -39,9 +44,9 @@ FEATURES            Location/qualifiers
     CDS             complement(3381..4166)
     CDS             complement(4167..5516)
     ORIGIN
-//''')
-        temp.close()
-        gbfile = temp.name
+//'''
+
+        gbfile = temp_gbfile(gbstring)
 
         gb = seqpoet.GenBank(gbfile)
 
