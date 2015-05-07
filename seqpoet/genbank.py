@@ -658,7 +658,7 @@ class GenBank(object):
             'molecule': molecule,
             'molecule_type': molecule_type,
             'genbank_division': division,
-            'modification_data': date
+            'modification_date': date
         }
 
         last_key = None
