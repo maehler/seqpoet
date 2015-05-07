@@ -640,17 +640,33 @@ class GenBank(object):
 
         header = line.strip().split()
 
-        name = header[1]
-        length = ' '.join(header[2:4])
-        molecule = header[4]
-        molecule_type = header[5]
+        molecule = None
+        molecule_type = None
+        division = None
+        date = None
 
-        if len(header) == 8:
+        if len(header) == 8 and header[3] in ('bp', 'aa'):
+            # Seemingly complete header line
+            name = header[1]
+            length = ' '.join(header[2:4])
+            molecule = header[4]
+            molecule_type = header[5]
             division = header[6]
             date = header[7]
-        elif len(header) == 7:
-            division = ''
+        elif len(header) == 7 and header[3] in ('bp', 'aa'):
+            # Assume missing division
+            name = header[1]
+            length = ' '.join(header[2:4])
+            molecule = header[4]
+            molecule_type = header[5]
             date = header[6]
+        elif len(header) >= 4 and header[3] in ('bp', 'aa'):
+            # Seemingly invalid header line, just try to get
+            # the name and sequence length
+            name = header[1]
+            length = ' '.join(header[2:4])
+        else:
+            raise ParsingError('Invalid LOCUS line: {0}'.format(repr(line.rstrip())))
 
         head_data['LOCUS'] = {
             'name': name,
@@ -658,7 +674,7 @@ class GenBank(object):
             'molecule': molecule,
             'molecule_type': molecule_type,
             'genbank_division': division,
-            'modification_data': date
+            'modification_date': date
         }
 
         last_key = None

@@ -3,4 +3,4 @@ from genbank import GenBank, GenBankLocus, GenBankFeature
 from sequence import Sequence
 import search
 
-__version__ = '0.3.2'
+__version__ = '0.3.3'
