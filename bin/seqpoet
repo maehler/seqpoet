@@ -364,6 +364,9 @@ def parse_args():
     if not os.path.exists(args.probe):
         parser.error('file or directory not found: {}'.format(args.probe))
 
+    if not os.path.isfile(args.probe):
+        parser.error('probe is not a file: {}'. format(args.probe))
+
     if not isinstance(args.out, file):
         args.out = os.path.abspath(args.out)
         if not os.path.exists(os.path.dirname(args.out)):
