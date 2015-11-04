@@ -214,6 +214,9 @@ def match_primer(primers, seqs, mismatches=2, minus_revcomp=True,
         except seqpoet.genbank.ParsingError as pe:
             print('ERROR: parsing failed in {0}: {1}'.format(fname, pe.message))
             sys.exit(1)
+        except ValueError as ve:
+            print('ERROR: parsing failed in {0}: {1}'.format(fname, ve.message))
+            sys.exit(1)
 
     return matches
 

@@ -33,8 +33,8 @@ class Sequence(object):
         """
         self.seq = seq.lower()
         if not re.match(r'^[acgtn]*$', self.seq):
-            raise ValueError('illegal characters in sequence, currently ',
-                             'only supports DNA sequences')
+            raise ValueError('illegal characters in sequence, '
+                'currently only supports DNA sequences')
 
     def revcomp(self):
         """Get the reverse complement of the sequence.
