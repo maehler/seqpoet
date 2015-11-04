@@ -240,6 +240,8 @@ def find_operon(matches, seqs, max_distance=500, minus_revcomp=True,
                 file=sys.stderr)
             continue
 
+        upstream_edge = False
+        downstream_edge = False
         operon_genes = []
         for f in features:
             # Find upstream genes
@@ -248,6 +250,10 @@ def find_operon(matches, seqs, max_distance=500, minus_revcomp=True,
                     us.location.min_distance(f.location) < max_distance:
                 operon_genes.append(us)
                 us = locus.next_upstream(us)
+
+            if us is None:
+                # We hit the edge of the sequence.
+                upstream_edge = True
 
             # Add the current feature
             operon_genes.append(f)
@@ -258,6 +264,9 @@ def find_operon(matches, seqs, max_distance=500, minus_revcomp=True,
                     ds.location.min_distance(f.location) < max_distance:
                 operon_genes.append(ds)
                 ds = locus.next_downstream(ds)
+
+            if ds is None:
+                downstream_edge = True
 
         if len(operon_genes) == 1:
             print('WARNING: only one gene found for match in locus '
@@ -279,6 +288,8 @@ def find_operon(matches, seqs, max_distance=500, minus_revcomp=True,
             'hitend': m['hitend'],
             'length': m['length'],
             'strand': m['strand'],
+            'upstream_edge': upstream_edge,
+            'downstream_edge': downstream_edge,
             'operon': operon_genes,
             'seq': operon_seq
         })
@@ -437,6 +448,18 @@ def main():
     if len(match_features) == 0:
         print('WARNING: no operons found', file=sys.stderr)
         exit(0)
+
+    # Some statistics
+    edges_upstream = sum(x['upstream_edge'] for x in match_features)
+    edges_downstream = sum(x['downstream_edge'] for x in match_features)
+
+    print('Found {0} operon{1} in {2} file{3}'.format(
+        len(match_features), 's' if len(match_features) != 1 else '',
+        len(seqs), 's' if len(seqs) != 1 else ''), file=sys.stderr)
+    print('{0} operon{1} reached the sequence edge upstream of the match'.format(
+        edges_upstream, 's' if edges_upstream != 1 else ''), file=sys.stderr)
+    print('{0} operon{1} reached the sequence edge downstream of the match'.format(
+        edges_downstream, 's' if edges_downstream != 1 else ''), file=sys.stderr)
 
     write_fasta(match_features, filename=args.out)
 
