@@ -430,12 +430,15 @@ def main():
         matches = match_probe(probe[0], seqs, mismatches=args.mismatches,
             minus_revcomp=args.minus_revcomp)
 
-    print('Found {0} match{1}'.format(len(matches),
-        'es' if len(matches) > 1 or len(matches) == 0 else ''), file=sys.stderr)
-
     if len(matches) == 0:
         print('WARNING: no matches found', file=sys.stderr)
         exit(0)
+
+    match_files = set([x['filename'] for x in matches])
+
+    print('Found {0} match{1} in {2} file{3}'.format(len(matches),
+        'es' if len(matches) > 1 or len(matches) == 0 else '',
+        len(match_files), 's' if len(match_files) > 1 else ''), file=sys.stderr)
 
     # In silico PCR results
     if is_primer and args.pcr:
@@ -463,6 +466,32 @@ def main():
         edges_upstream, 's' if edges_upstream != 1 else ''), file=sys.stderr)
     print('{0} operon{1} reached the sequence edge downstream of the match'.format(
         edges_downstream, 's' if edges_downstream != 1 else ''), file=sys.stderr)
+
+    operon_files = set([x['filename'] for x in match_features])
+    for s in seqs.itervalues():
+        fname = s.filename
+        if fname in match_files:
+            n_matches = sum([x['filename'] == fname for x in matches])
+            print('{0}:'.format(os.path.basename(fname)), file=sys.stderr)
+            print('\t{1} match{2}'.format(fname, n_matches,
+                'es' if n_matches > 1 else ''), file=sys.stderr)
+            if fname in operon_files:
+                operons = [x for x in match_features if x['filename'] == fname]
+                n_operons = len(operons)
+                print('\t{0} operon{1}'.format(n_operons,
+                    's' if n_operons > 1 else ''), file=sys.stderr)
+                for o in operons:
+                    if o['upstream_edge']:
+                        print('operon in {0} hit upstream edge'.format(
+                            o['seqname']), file=sys.stderr)
+                    if o['downstream_edge']:
+                        print('\toperon in {0} hit downstream edge'.format(
+                            o['seqname']), file=sys.stderr)
+            else:
+                print('\t0 operons', file=sys.stderr)
+        else:
+            print('{0}:\n\tno matches'.format(os.path.basename(fname)),
+                file=sys.stderr)
 
     write_fasta(match_features, filename=args.out)
 
