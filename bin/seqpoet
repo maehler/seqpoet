@@ -318,7 +318,8 @@ def write_fasta(matches, filename=sys.stdout):
         f.close()
 
 def parse_args():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description='For more detailed '
+        'documentation, see http://seqpoet.readthedocs.org')
 
     parser.add_argument('genomedir', help=('directory containing the genome '
         'files to use (FASTA or GenBank format) or a single GenBank or '
