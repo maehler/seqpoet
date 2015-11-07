@@ -59,7 +59,7 @@ class TestFindOperon:
 		assert len(res[0]['operon']) == 2
 
 		operon_len = len(res[0]['seq'])
-		assert operon_len == 3296, 'length is {0}'.format(operon_len)
+		assert operon_len == 3303, 'length is {0}'.format(operon_len)
 
 	def test_operon_find_extend_downstream(self):
 		res = seqpoet_script.find_operon(self.matches, self.seqs,
@@ -82,7 +82,10 @@ class TestFindOperon:
 		assert len(res) == 1
 		assert len(res[0]['operon']) == 2
 
+		assert not res[0]['downstream_edge']
+		assert res[0]['upstream_edge']
+
 		assert all(x.location.is_complement for x in res[0]['operon'])
 
 		operon_len = len(res[0]['seq'])
-		assert operon_len == 2135, 'length is {0}'.format(operon_len)
+		assert operon_len == 2378, 'length is {0}'.format(operon_len)

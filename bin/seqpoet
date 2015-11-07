@@ -236,8 +236,10 @@ def find_operon(matches, seqs, max_distance=500, minus_revcomp=True,
                 max(1, m['hitstart'] - extend_downstream),
                 m['hitend'] + extend_upstream)
 
+        match_is_complement = m['strand'] == '-'
+
         features = filter(lambda x: x.location.is_complement == \
-            (m['strand'] == '-'),  locus.features_at_location(location))
+            (match_is_complement),  locus.features_at_location(location))
 
         if len(features) == 0:
             print('WARNING: no gene for match in locus {0}'.format(m['seqname']),
@@ -257,7 +259,12 @@ def find_operon(matches, seqs, max_distance=500, minus_revcomp=True,
 
             if us is None:
                 # We hit the edge of the sequence.
-                upstream_edge = True
+                if match_is_complement and \
+                        len(locus.seq) - operon_genes[-1].location.end < max_distance:
+                    upstream_edge = True
+                if not match_is_complement and \
+                        operon_genes[-1].location.start < max_distance:
+                    upstream_edge = True
 
             # Add the current feature
             operon_genes.append(f)
@@ -270,17 +277,39 @@ def find_operon(matches, seqs, max_distance=500, minus_revcomp=True,
                 ds = locus.next_downstream(ds)
 
             if ds is None:
-                downstream_edge = True
+                if match_is_complement and \
+                        operon_genes[-1].location.start < max_distance:
+                    downstream_edge = True
+                if not match_is_complement and \
+                        len(locus.seq) - operon_genes[-1].location.end < max_distance:
+                    downstream_edge = True
 
         if len(operon_genes) == 1:
             print('WARNING: only one gene found for match in locus '
                 '{0}, not an operon'.format(m['seqname']), file=sys.stderr)
 
         operon_genes = sorted(operon_genes, key=lambda x: x.location.start)
-        min_start = operon_genes[0].location.start
-        max_end = operon_genes[-1].location.end
 
-        operon_seq = locus.seq[min_start:max_end]
+        if match_is_complement:
+            if upstream_edge:
+                max_end = len(locus.seq)
+            else:
+                max_end = operon_genes[-1].location.end + 1
+            if downstream_edge:
+                min_start = 1
+            else:
+                min_start = operon_genes[0].location.start + 1
+        else:
+            if upstream_edge:
+                min_start = 1
+            else:
+                operon_genes[0].location.start + 1
+            if downstream_edge:
+                max_end = len(locus.seq)
+            else:
+                max_end = operon_genes[-1].location.end + 1
+
+        operon_seq = locus.seq[(min_start - 1):max_end]
 
         if minus_revcomp and m['strand'] == '-':
             operon_seq = operon_seq.revcomp()
@@ -288,8 +317,8 @@ def find_operon(matches, seqs, max_distance=500, minus_revcomp=True,
         match_operon.append({
             'filename': m['filename'],
             'seqname': m['seqname'],
-            'hitstart': min_start + 1,
-            'hitend': max_end + 1,
+            'hitstart': min_start,
+            'hitend': max_end,
             'length': m['length'],
             'strand': m['strand'],
             'upstream_edge': upstream_edge,
