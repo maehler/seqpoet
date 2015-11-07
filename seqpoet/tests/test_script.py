@@ -15,7 +15,7 @@ seqpoet_script = imp.load_source('seqpoet_script',
 class TestFindOperon:
 
 	def setup(self):
-		gb_dir = ('/Users/niklasm/Dropbox/operon_extractor/data_genbank')
+		gb_dir = os.path.expanduser('~/Dropbox/operon_extractor/data_genbank')
 		gb_fname = os.path.join(gb_dir, 'LMG718-cremoris.gb')
 		if not os.path.exists(gb_fname):
 			raise SkipTest
@@ -25,8 +25,7 @@ class TestFindOperon:
 			gb_fname: gb
 		}
 		self.matches = [{
-			'filename': ('/Users/niklasm/Dropbox/operon_extractor/'
-				'data_genbank/LMG718-cremoris.gb'),
+			'filename': gb_fname,
 			'hitend': 3360,
 			'hitstart': 3311,
 			'length': 50,
@@ -37,7 +36,7 @@ class TestFindOperon:
 			'strand': '+'
 		}]
 		self.minus_matches = [{
-			'filename': '/Users/niklasm/Dropbox/operon_extractor/data_genbank/LMG718-cremoris.gb',
+			'filename': gb_fname,
 			'hitend': 3360,
 			'hitstart': 3311,
 			'length': 50,
