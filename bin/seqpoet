@@ -3,6 +3,7 @@ from __future__ import print_function
 import argparse
 import itertools
 import os
+import stat
 import sys
 
 import seqpoet
@@ -379,7 +380,8 @@ def parse_args():
     if not os.path.exists(args.probe):
         parser.error('file or directory not found: {}'.format(args.probe))
 
-    if not os.path.isfile(args.probe):
+    if not os.path.isfile(args.probe) and \
+            not stat.S_ISFIFO(os.stat(args.probe).st_mode):
         parser.error('probe is not a file: {}'. format(args.probe))
 
     if not isinstance(args.out, file):
