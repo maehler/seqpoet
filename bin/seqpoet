@@ -303,7 +303,7 @@ def find_operon(matches, seqs, max_distance=500, minus_revcomp=True,
             if upstream_edge:
                 min_start = 1
             else:
-                operon_genes[0].location.start + 1
+                min_start = operon_genes[0].location.start + 1
             if downstream_edge:
                 max_end = len(locus.seq)
             else:
