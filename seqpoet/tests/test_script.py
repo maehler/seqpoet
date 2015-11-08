@@ -15,7 +15,7 @@ seqpoet_script = imp.load_source('seqpoet_script',
 class TestFindOperon:
 
 	def setup(self):
-		gb_dir = ('/Users/niklasm/Dropbox/operon_extractor/data_genbank')
+		gb_dir = os.path.expanduser('~/Dropbox/operon_extractor/data_genbank')
 		gb_fname = os.path.join(gb_dir, 'LMG718-cremoris.gb')
 		if not os.path.exists(gb_fname):
 			raise SkipTest
@@ -25,8 +25,7 @@ class TestFindOperon:
 			gb_fname: gb
 		}
 		self.matches = [{
-			'filename': ('/Users/niklasm/Dropbox/operon_extractor/'
-				'data_genbank/LMG718-cremoris.gb'),
+			'filename': gb_fname,
 			'hitend': 3360,
 			'hitstart': 3311,
 			'length': 50,
@@ -37,7 +36,7 @@ class TestFindOperon:
 			'strand': '+'
 		}]
 		self.minus_matches = [{
-			'filename': '/Users/niklasm/Dropbox/operon_extractor/data_genbank/LMG718-cremoris.gb',
+			'filename': gb_fname,
 			'hitend': 3360,
 			'hitstart': 3311,
 			'length': 50,
@@ -60,7 +59,7 @@ class TestFindOperon:
 		assert len(res[0]['operon']) == 2
 
 		operon_len = len(res[0]['seq'])
-		assert operon_len == 3296, 'length is {0}'.format(operon_len)
+		assert operon_len == 3303, 'length is {0}'.format(operon_len)
 
 	def test_operon_find_extend_downstream(self):
 		res = seqpoet_script.find_operon(self.matches, self.seqs,
@@ -83,7 +82,10 @@ class TestFindOperon:
 		assert len(res) == 1
 		assert len(res[0]['operon']) == 2
 
+		assert not res[0]['downstream_edge']
+		assert res[0]['upstream_edge']
+
 		assert all(x.location.is_complement for x in res[0]['operon'])
 
 		operon_len = len(res[0]['seq'])
-		assert operon_len == 2135, 'length is {0}'.format(operon_len)
+		assert operon_len == 2378, 'length is {0}'.format(operon_len)

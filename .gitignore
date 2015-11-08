@@ -2,6 +2,7 @@
 /dist/
 /*.egg-info
 /*.egg
+/.eggs
 /build/
 /cover/
 /.coverage

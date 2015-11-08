@@ -9,8 +9,8 @@ Currently, the easiest way of installing seqpoet is to download the `latest
 release from GitHub <https://github.com/maehler/seqpoet/releases/latest>`_
 and install it manually::
 
-    > unzip seqpoet-0.3.3.zip # or tar zxvf seqpoet-0.3.3.tar.gz
-    > cd seqpoet-0.3.3
+    > unzip seqpoet-0.3.4.zip # or tar zxvf seqpoet-0.3.4.tar.gz
+    > cd seqpoet-0.3.4
     > python setup.py install
 
 If you want the cutting edge version (potentially unstable), you can clone

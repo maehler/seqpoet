@@ -5,6 +5,10 @@ and operon extraction in prokaryotes. The secondary purpose of seqpoet is to be
 a Python package that can be used for handling sequence data in the form of
 FASTA and GenBank files.
 
+## Documentation
+
+For full documentation, please see http://seqpoet.readthedocs.org.
+
 ## Requirements
 
 Currently, the only requirement is Python >= 2.7, but Python 3 is not supported

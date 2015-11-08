@@ -3,6 +3,7 @@ from __future__ import print_function
 import argparse
 import itertools
 import os
+import stat
 import sys
 
 import seqpoet
@@ -22,6 +23,7 @@ def get_probe(fname):
         exit(1)
     elif len(seqs) > 2:
         print('ERROR: probe file contains too many sequences', file=sys.stderr)
+        exit(1)
 
     return seqs
 
@@ -213,6 +215,9 @@ def match_primer(primers, seqs, mismatches=2, minus_revcomp=True,
         except seqpoet.genbank.ParsingError as pe:
             print('ERROR: parsing failed in {0}: {1}'.format(fname, pe.message))
             sys.exit(1)
+        except ValueError as ve:
+            print('ERROR: parsing failed in {0}: {1}'.format(fname, ve.message))
+            sys.exit(1)
 
     return matches
 
@@ -231,14 +236,18 @@ def find_operon(matches, seqs, max_distance=500, minus_revcomp=True,
                 max(1, m['hitstart'] - extend_downstream),
                 m['hitend'] + extend_upstream)
 
+        match_is_complement = m['strand'] == '-'
+
         features = filter(lambda x: x.location.is_complement == \
-            (m['strand'] == '-'),  locus.features_at_location(location))
+            (match_is_complement),  locus.features_at_location(location))
 
         if len(features) == 0:
             print('WARNING: no gene for match in locus {0}'.format(m['seqname']),
                 file=sys.stderr)
             continue
 
+        upstream_edge = False
+        downstream_edge = False
         operon_genes = []
         for f in features:
             # Find upstream genes
@@ -247,6 +256,15 @@ def find_operon(matches, seqs, max_distance=500, minus_revcomp=True,
                     us.location.min_distance(f.location) < max_distance:
                 operon_genes.append(us)
                 us = locus.next_upstream(us)
+
+            if us is None:
+                # We hit the edge of the sequence.
+                if match_is_complement and \
+                        len(locus.seq) - operon_genes[-1].location.end < max_distance:
+                    upstream_edge = True
+                if not match_is_complement and \
+                        operon_genes[-1].location.start < max_distance:
+                    upstream_edge = True
 
             # Add the current feature
             operon_genes.append(f)
@@ -258,15 +276,40 @@ def find_operon(matches, seqs, max_distance=500, minus_revcomp=True,
                 operon_genes.append(ds)
                 ds = locus.next_downstream(ds)
 
+            if ds is None:
+                if match_is_complement and \
+                        operon_genes[-1].location.start < max_distance:
+                    downstream_edge = True
+                if not match_is_complement and \
+                        len(locus.seq) - operon_genes[-1].location.end < max_distance:
+                    downstream_edge = True
+
         if len(operon_genes) == 1:
             print('WARNING: only one gene found for match in locus '
                 '{0}, not an operon'.format(m['seqname']), file=sys.stderr)
 
         operon_genes = sorted(operon_genes, key=lambda x: x.location.start)
-        min_start = operon_genes[0].location.start
-        max_end = operon_genes[-1].location.end
 
-        operon_seq = locus.seq[min_start:max_end]
+        if match_is_complement:
+            if upstream_edge:
+                max_end = len(locus.seq)
+            else:
+                max_end = operon_genes[-1].location.end + 1
+            if downstream_edge:
+                min_start = 1
+            else:
+                min_start = operon_genes[0].location.start + 1
+        else:
+            if upstream_edge:
+                min_start = 1
+            else:
+                min_start = operon_genes[0].location.start + 1
+            if downstream_edge:
+                max_end = len(locus.seq)
+            else:
+                max_end = operon_genes[-1].location.end + 1
+
+        operon_seq = locus.seq[(min_start - 1):max_end]
 
         if minus_revcomp and m['strand'] == '-':
             operon_seq = operon_seq.revcomp()
@@ -274,10 +317,12 @@ def find_operon(matches, seqs, max_distance=500, minus_revcomp=True,
         match_operon.append({
             'filename': m['filename'],
             'seqname': m['seqname'],
-            'hitstart': m['hitstart'],
-            'hitend': m['hitend'],
+            'hitstart': min_start,
+            'hitend': max_end,
             'length': m['length'],
             'strand': m['strand'],
+            'upstream_edge': upstream_edge,
+            'downstream_edge': downstream_edge,
             'operon': operon_genes,
             'seq': operon_seq
         })
@@ -303,7 +348,8 @@ def write_fasta(matches, filename=sys.stdout):
         f.close()
 
 def parse_args():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description='For more detailed '
+        'documentation, see http://seqpoet.readthedocs.org')
 
     parser.add_argument('genomedir', help=('directory containing the genome '
         'files to use (FASTA or GenBank format) or a single GenBank or '
@@ -363,6 +409,10 @@ def parse_args():
     if not os.path.exists(args.probe):
         parser.error('file or directory not found: {}'.format(args.probe))
 
+    if not os.path.isfile(args.probe) and \
+            not stat.S_ISFIFO(os.stat(args.probe).st_mode):
+        parser.error('probe is not a file: {}'. format(args.probe))
+
     if not isinstance(args.out, file):
         args.out = os.path.abspath(args.out)
         if not os.path.exists(os.path.dirname(args.out)):
@@ -412,12 +462,15 @@ def main():
         matches = match_probe(probe[0], seqs, mismatches=args.mismatches,
             minus_revcomp=args.minus_revcomp)
 
-    print('Found {0} match{1}'.format(len(matches),
-        'es' if len(matches) > 1 or len(matches) == 0 else ''), file=sys.stderr)
-
     if len(matches) == 0:
         print('WARNING: no matches found', file=sys.stderr)
         exit(0)
+
+    match_files = set([x['filename'] for x in matches])
+
+    print('Found {0} match{1} in {2} file{3}'.format(len(matches),
+        'es' if len(matches) > 1 or len(matches) == 0 else '',
+        len(match_files), 's' if len(match_files) > 1 else ''), file=sys.stderr)
 
     # In silico PCR results
     if is_primer and args.pcr:
@@ -433,6 +486,44 @@ def main():
     if len(match_features) == 0:
         print('WARNING: no operons found', file=sys.stderr)
         exit(0)
+
+    # Some statistics
+    edges_upstream = sum(x['upstream_edge'] for x in match_features)
+    edges_downstream = sum(x['downstream_edge'] for x in match_features)
+
+    print('Found {0} operon{1} in {2} file{3}'.format(
+        len(match_features), 's' if len(match_features) != 1 else '',
+        len(seqs), 's' if len(seqs) != 1 else ''), file=sys.stderr)
+    print('{0} operon{1} reached the sequence edge upstream of the match'.format(
+        edges_upstream, 's' if edges_upstream != 1 else ''), file=sys.stderr)
+    print('{0} operon{1} reached the sequence edge downstream of the match'.format(
+        edges_downstream, 's' if edges_downstream != 1 else ''), file=sys.stderr)
+
+    operon_files = set([x['filename'] for x in match_features])
+    for s in seqs.itervalues():
+        fname = s.filename
+        if fname in match_files:
+            n_matches = sum([x['filename'] == fname for x in matches])
+            print('{0}:'.format(os.path.basename(fname)), file=sys.stderr)
+            print('\t{1} match{2}'.format(fname, n_matches,
+                'es' if n_matches > 1 else ''), file=sys.stderr)
+            if fname in operon_files:
+                operons = [x for x in match_features if x['filename'] == fname]
+                n_operons = len(operons)
+                print('\t{0} operon{1}'.format(n_operons,
+                    's' if n_operons > 1 else ''), file=sys.stderr)
+                for o in operons:
+                    if o['upstream_edge']:
+                        print('operon in {0} hit upstream edge'.format(
+                            o['seqname']), file=sys.stderr)
+                    if o['downstream_edge']:
+                        print('\toperon in {0} hit downstream edge'.format(
+                            o['seqname']), file=sys.stderr)
+            else:
+                print('\t0 operons', file=sys.stderr)
+        else:
+            print('{0}:\n\tno matches'.format(os.path.basename(fname)),
+                file=sys.stderr)
 
     write_fasta(match_features, filename=args.out)
 

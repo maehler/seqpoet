@@ -413,6 +413,7 @@ class GenBankLocus(object):
         - **name:** locus name.
         - **seq:** a Sequence object with the sequence of the locus.
         - **features:** a dictionary containing the features of the locus.
+        - **header:** a dictionary containing a genbank header.
 
     :param name: the name of the locus.
     :param seq: a Sequence object representing the sequence of the locus.
@@ -426,6 +427,7 @@ class GenBankLocus(object):
             name: the name of the locus.
             seq: a Sequence object representing the sequence of the locus.
             features: a dictionary containing features of the locus.
+            header: a dictionary containing a genbank header
         """
         self.name = name
         self.seq = seq
