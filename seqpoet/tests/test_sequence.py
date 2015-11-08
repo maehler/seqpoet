@@ -4,6 +4,24 @@ import re
 from nose.tools import raises
 
 import seqpoet
+from seqpoet.sequence import Sequence, DNA, IUPACDNA
+
+class TestAlphabet:
+
+    def test_dna_bases(self):
+        assert DNA.bases == 'ACGT'
+
+    def test_iupac_dna_bases(self):
+        assert IUPACDNA.bases == 'ACGTMRWSYKVHDBN'
+
+class TestSequenceAlphabet:
+
+    @raises(ValueError)
+    def test_iupac_seq_wrong_alphabet(self):
+        assert Sequence('CAGWRSYKHVH', DNA())
+
+    def test_iupac_seq_right_alphabet(self):
+        assert isinstance(Sequence('CAGWRSYKHVH', IUPACDNA()), Sequence)
 
 class TestSequence:
 

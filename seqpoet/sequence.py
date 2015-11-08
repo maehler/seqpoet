@@ -8,33 +8,48 @@
 import re
 import string
 
+class DNA(object):
+    """DNA alphabet.
+    """
+
+    bases = 'ACGT'
+    complement = 'TGCA'
+
+class IUPACDNA(DNA):
+    """DNA alpahbet with IUPAC ambiguity bases.
+    """
+
+    bases = DNA.bases + 'MRWSYKVHDBN'
+    complement = DNA.complement + 'KYWSRMBDHVN'
+
 class Sequence(object):
     """Represent a DNA sequence.
 
-    :param seq: a string representing a DNA sequence. Bases A, C,
-                G, T and N are allowed.
-    :raises: ValuError if the sequence contains illegal characters.
+    :param seq: a string representing a DNA sequence.
+    :param alphabet: alphabet to use, see :py:class:`.DNA`
+                     and :py:class:`.IUPACDNA`.
+    :raises: ValueError if the sequence contains illegal characters.
     """
 
     #: Reverse complement translation table.
     _revcomp_trans = string.maketrans('acgt', 'tgca')
 
-    def __init__(self, seq):
+    def __init__(self, seq, alphabet=IUPACDNA()):
         """Sequence constructor.
 
         To prevent confusion in sequence comparisons, sequences
         are represented as all lower case.
 
         Args:
-            seq: a string representing a DNA sequence. Bases A, C,
-                 G, T and N are allowed.
+            seq: a string representing a DNA sequence.
         Raises:
             ValuError: if the sequence contains illegal characters.
         """
+        self.alphabet = alphabet
         self.seq = seq.lower()
-        if not re.match(r'^[acgtn]*$', self.seq):
+        if not re.match(r'^[{0}]*$'.format(alphabet.bases), self.seq, re.I):
             raise ValueError('illegal characters in sequence, '
-                'currently only supports DNA sequences')
+                'not part of {0} class'.format(alphabet.__class__.__name__))
 
     def revcomp(self):
         """Get the reverse complement of the sequence.
