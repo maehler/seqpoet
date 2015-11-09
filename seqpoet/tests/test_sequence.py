@@ -14,6 +14,12 @@ class TestAlphabet:
     def test_iupac_dna_bases(self):
         assert IUPACDNA.bases == 'ACGTMRWSYKVHDBN'
 
+    def test_dna_revcomp(self):
+        assert DNA.revcomp('ACGT') == 'ACGT'
+
+    def test_iupacdna_revcomp(self):
+        assert IUPACDNA.revcomp('NACRY') == 'RYGTN'
+
 class TestSequenceAlphabet:
 
     @raises(ValueError)

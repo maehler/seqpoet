@@ -14,6 +14,11 @@ class DNA(object):
 
     bases = 'ACGT'
     complement = 'TGCA'
+    transtable = string.maketrans(bases, complement)
+
+    @classmethod
+    def revcomp(self, s):
+        return s.upper().translate(self.transtable)[::-1]
 
 class IUPACDNA(DNA):
     """DNA alpahbet with IUPAC ambiguity bases.
@@ -21,6 +26,7 @@ class IUPACDNA(DNA):
 
     bases = DNA.bases + 'MRWSYKVHDBN'
     complement = DNA.complement + 'KYWSRMBDHVN'
+    transtable = string.maketrans(bases, complement)
 
 class Sequence(object):
     """Represent a DNA sequence.
@@ -42,6 +48,7 @@ class Sequence(object):
 
         Args:
             seq: a string representing a DNA sequence.
+            alphabet: alphabet to use.
         Raises:
             ValuError: if the sequence contains illegal characters.
         """
@@ -58,7 +65,7 @@ class Sequence(object):
             a sequence object representing the reverse complement
             of the sequence.
         """
-        return Sequence(self.seq.translate(Sequence._revcomp_trans)[::-1])
+        return Sequence(self.alphabet.revcomp(self.seq))
 
     def __getitem__(self, key):
         return Sequence(self.seq[key])
