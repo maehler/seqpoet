@@ -9,10 +9,10 @@ from seqpoet.sequence import Sequence, DNA, IUPACDNA
 class TestAlphabet:
 
     def test_dna_bases(self):
-        assert DNA.bases == 'ACGT'
+        assert re.match(r'^[acgt]+$', DNA.bases, re.I)
 
     def test_iupac_dna_bases(self):
-        assert IUPACDNA.bases == 'ACGTMRWSYKVHDBN'
+        assert re.match(r'^[ACGTMRWSYKVHDBN]+$', IUPACDNA.bases, re.I)
 
     def test_dna_revcomp(self):
         assert DNA.revcomp('ACGT') == 'ACGT'
@@ -32,7 +32,7 @@ class TestSequenceAlphabet:
 class TestSequence:
 
     def setup(self):
-        self.seq1 = 'ACATacacagaATAgagaCacata'
+        self.seq1 = 'ACATacacagaATAgagaCacaTA'
         self.illegal = 'agagcatgcacthisisnotcorrect'
 
     def test_sequence_length(self):
@@ -41,7 +41,7 @@ class TestSequence:
 
     def test_casing(self):
         s = seqpoet.Sequence(self.seq1)
-        assert re.match('^[acgt]+$', str(s))
+        assert s == self.seq1
 
     def test_reverse_complement(self):
         s = seqpoet.Sequence(self.seq1)
@@ -53,12 +53,12 @@ class TestSequence:
 
     def test_str(self):
         s = seqpoet.Sequence(self.seq1)
-        assert str(s) == self.seq1.lower()
+        assert str(s) == self.seq1
 
     def test_repr(self):
         s = seqpoet.Sequence(self.seq1)
-        assert repr(s) == '<Sequence: acata...>'
-        assert repr(s.revcomp()) == '<Sequence: tatgt...>'
+        assert repr(s) == '<Sequence: ACATa...>'
+        assert repr(s.revcomp()) == '<Sequence: TAtgt...>'
 
     def test_indexing(self):
         s = seqpoet.Sequence(self.seq1)

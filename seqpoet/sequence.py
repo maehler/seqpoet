@@ -12,21 +12,23 @@ class DNA(object):
     """DNA alphabet.
     """
 
-    bases = 'ACGT'
+    bases      = 'ACGT'
     complement = 'TGCA'
-    transtable = string.maketrans(bases, complement)
+    transtable = string.maketrans(bases + bases.lower(),
+        complement + complement.lower())
 
     @classmethod
     def revcomp(self, s):
-        return s.upper().translate(self.transtable)[::-1]
+        return s.translate(self.transtable)[::-1]
 
 class IUPACDNA(DNA):
     """DNA alpahbet with IUPAC ambiguity bases.
     """
 
-    bases = DNA.bases + 'MRWSYKVHDBN'
+    bases      = DNA.bases      + 'MRWSYKVHDBN'
     complement = DNA.complement + 'KYWSRMBDHVN'
-    transtable = string.maketrans(bases, complement)
+    transtable = string.maketrans(bases + bases.lower(),
+        complement + complement.lower())
 
 class Sequence(object):
     """Represent a DNA sequence.
@@ -53,7 +55,7 @@ class Sequence(object):
             ValuError: if the sequence contains illegal characters.
         """
         self.alphabet = alphabet
-        self.seq = seq.lower()
+        self.seq = seq
         if not re.match(r'^[{0}]*$'.format(alphabet.bases), self.seq, re.I):
             raise ValueError('illegal characters in sequence, '
                 'not part of {0} class'.format(alphabet.__class__.__name__))
@@ -72,8 +74,8 @@ class Sequence(object):
 
     def __eq__(self, seq2):
         if isinstance(seq2, basestring):
-            return self.seq == seq2
-        return self.seq == seq2.seq
+            return self.seq.lower() == seq2.lower()
+        return self.seq.lower() == seq2.seq.lower()
 
     def __len__(self):
         return len(self.seq)
