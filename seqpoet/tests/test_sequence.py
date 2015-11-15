@@ -72,6 +72,12 @@ class TestSequence:
         assert s == self.seq1.lower()
         assert s[:3] == seqpoet.Sequence(self.seq1[:3])
 
+    def test_inequality(self):
+        s = seqpoet.Sequence(self.seq1)
+        assert not s != self.seq1.lower()
+        assert seqpoet.Sequence('acgtt') != seqpoet.Sequence('acgta')
+        assert seqpoet.Sequence('a') != seqpoet.Sequence('t')
+
     @raises(ValueError)
     def test_illegal_characters(self):
         s = seqpoet.Sequence(self.illegal)

@@ -77,6 +77,9 @@ class Sequence(object):
             return self.seq.lower() == seq2.lower()
         return self.seq.lower() == seq2.seq.lower()
 
+    def __ne__(self, seq2):
+        return not self.__eq__(seq2)
+
     def __len__(self):
         return len(self.seq)
 
