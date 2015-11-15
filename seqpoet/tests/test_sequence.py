@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import os
 import re
 
@@ -77,6 +79,15 @@ class TestSequence:
         assert not s != self.seq1.lower()
         assert seqpoet.Sequence('acgtt') != seqpoet.Sequence('acgta')
         assert seqpoet.Sequence('a') != seqpoet.Sequence('t')
+
+    def test_zip(self):
+        for a, b in zip(self.seq1, self.seq1):
+            assert a == b
+
+    def test_iter(self):
+        seq_iter = iter(self.seq1)
+        seq_list = list(seq_iter)
+        assert len(seq_list) == len(self.seq1)
 
     @raises(ValueError)
     def test_illegal_characters(self):

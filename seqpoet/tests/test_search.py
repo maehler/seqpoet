@@ -28,6 +28,12 @@ class TestHammingDistance:
     def test_one_mismatch(self):
         assert hamming_distance('niklas', 'niclas') == 1
 
+    def test_sequences(self):
+        assert hamming_distance(Sequence('acgtt'), Sequence('acgtt')) == 0, \
+            'expected 0 distance, got {0}'.format(hamming_distance(
+                Sequence('acgtt'), Sequence('acgtt')
+            ))
+
 class TestSearch:
 
     def setUp(self):
