@@ -25,7 +25,34 @@ class DNA(object):
 
     @classmethod
     def revcomp(self, s):
+        """Reverse complement a sequence.
+        """
         return s.translate(self.transtable)[::-1]
+
+    @classmethod
+    def equals(self, s1, s2):
+        """Check equality between two sequences.
+
+        This method is not symmetrical, i.e. ``equals('NNN', 'ACG')`` is not
+        the same as ``equals('ACG', 'NNN')``. The first example would return
+        ``True`` since ``N`` can be any nucleotide, but the opposite is
+        ``False`` since ``A`` could be ``N``, but it is not the only option.
+
+        This function is not meant to be called directly, but rather through
+        the __eq__ method of the sequence class.
+
+        :param s1: sequence as a string
+        :param s2: sequence as a string
+        :returns: ``True`` if the sequences are identical, otherwise ``False``
+        """
+        s1 = s1.upper()
+        s2 = s2.upper()
+        if len(s1) != len(s2):
+            return False
+        for c1, c2 in zip(s1, s2):
+            if c2 not in self.base_dict[c1]['eq']:
+                return False
+        return True
 
 class IUPACDNA(DNA):
     """DNA alpahbet with IUPAC ambiguity bases.
@@ -94,8 +121,8 @@ class Sequence(object):
 
     def __eq__(self, seq2):
         if isinstance(seq2, basestring):
-            return self.seq.lower() == seq2.lower()
-        return self.seq.lower() == seq2.seq.lower()
+            return self.alphabet.equals(self.seq, seq2)
+        return self.alphabet.equals(self.seq, seq2.seq)
 
     def __ne__(self, seq2):
         return not self.__eq__(seq2)

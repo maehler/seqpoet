@@ -20,8 +20,15 @@ class TestAlphabet:
         assert DNA.revcomp('ACGT') == 'ACGT'
 
     def test_iupacdna_revcomp(self):
-        assert IUPACDNA.revcomp('NACRY') == 'RYGTN', \
-            'expected RYGTN, got {0}'.format(IUPACDNA.revcomp('NACRY'))
+        assert IUPACDNA.revcomp('NACRYSW') == 'WSRYGTN', \
+            'expected WSRYGTN, got {0}'.format(IUPACDNA.revcomp('NACRYSW'))
+
+    def test_equals(self):
+        assert IUPACDNA.equals('nnnn', 'acgt')
+        assert not IUPACDNA.equals('acgt', 'nnnn')
+        assert IUPACDNA.equals('n', 'w')
+        assert not IUPACDNA.equals('w', 'n')
+        assert IUPACDNA.equals('CWGC', 'CAGC')
 
 class TestSequenceAlphabet:
 
