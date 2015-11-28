@@ -12,8 +12,14 @@ class DNA(object):
     """DNA alphabet.
     """
 
-    bases      = 'ACGT'
-    complement = 'TGCA'
+    base_dict = {
+        'A': { 'eq': set('A'), 'comp': 'T' },
+        'C': { 'eq': set('C'), 'comp': 'G' },
+        'G': { 'eq': set('G'), 'comp': 'C' },
+        'T': { 'eq': set('T'), 'comp': 'A' }
+    }
+    bases      = ''.join(base_dict.keys())
+    complement = ''.join(x['comp'] for x in base_dict.values())
     transtable = string.maketrans(bases + bases.lower(),
         complement + complement.lower())
 
@@ -25,8 +31,22 @@ class IUPACDNA(DNA):
     """DNA alpahbet with IUPAC ambiguity bases.
     """
 
-    bases      = DNA.bases      + 'MRWSYKVHDBN'
-    complement = DNA.complement + 'KYWSRMBDHVN'
+    base_dict = {
+        'M': { 'eq': set('MAC'), 'comp': 'K' },
+        'R': { 'eq': set('RAG'), 'comp': 'Y' },
+        'W': { 'eq': set('WAT'), 'comp': 'W' },
+        'S': { 'eq': set('SCG'), 'comp': 'S' },
+        'Y': { 'eq': set('YCT'), 'comp': 'R' },
+        'K': { 'eq': set('KGT'), 'comp': 'M' },
+        'V': { 'eq': set('VMRSACG'), 'comp': 'B' },
+        'H': { 'eq': set('HMWYACT'), 'comp': 'D' },
+        'D': { 'eq': set('DRWKAGT'), 'comp': 'H' },
+        'B': { 'eq': set('BSYKCGT'), 'comp': 'V' },
+        'N': { 'eq': set('NMRWSYKVHDBACGT'), 'comp': 'N' }
+    }
+    base_dict.update(DNA.base_dict)
+    bases      = ''.join(base_dict.keys())
+    complement = ''.join(x['comp'] for x in base_dict.values())
     transtable = string.maketrans(bases + bases.lower(),
         complement + complement.lower())
 
