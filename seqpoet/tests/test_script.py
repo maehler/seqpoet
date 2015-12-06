@@ -12,6 +12,53 @@ bindir = os.path.join(rootdir, 'bin')
 seqpoet_script = imp.load_source('seqpoet_script',
 	os.path.join(bindir, 'seqpoet'))
 
+class TestPCR:
+
+	def setup(self):
+		fasta_dir = os.path.expanduser('~/Dropbox/operon_extractor/data_fasta')
+		fasta_fname = os.path.join(fasta_dir, 'LMG718-cremoris.fasta')
+
+		primer_fname = os.path.expanduser('~/Dropbox/operon_extractor/primers.txt')
+
+		if not os.path.exists(fasta_fname) or \
+				not os.path.exists(primer_fname):
+			raise SkipTest
+
+		self.seqs = {
+			fasta_fname: seqpoet_script.get_single_sequence(fasta_fname,
+				use_iupac=False)
+		}
+
+		self.iupac_seqs = {
+			fasta_fname: seqpoet_script.get_single_sequence(fasta_fname,
+				use_iupac=True)
+		}
+
+		self.primers = seqpoet_script.get_probe(primer_fname, use_iupac=False)
+		self.iupac_primers = seqpoet_script.get_probe(primer_fname, use_iupac=True)
+
+	def test_primers(self):
+		assert len(self.primers) == 2
+		assert isinstance(self.primers[0].alphabet, seqpoet.sequence.DNA)
+		assert isinstance(self.primers[1].alphabet, seqpoet.sequence.DNA)
+		assert not isinstance(self.primers[0].alphabet, seqpoet.sequence.IUPACDNA)
+		assert not isinstance(self.primers[1].alphabet, seqpoet.sequence.IUPACDNA)
+
+	def test_iupac_primers(self):
+		assert len(self.iupac_primers) == 2
+		assert isinstance(self.iupac_primers[0].alphabet, seqpoet.sequence.IUPACDNA)
+		assert isinstance(self.iupac_primers[1].alphabet, seqpoet.sequence.IUPACDNA)
+		assert isinstance(self.iupac_primers[0].alphabet, seqpoet.sequence.DNA)
+		assert isinstance(self.iupac_primers[1].alphabet, seqpoet.sequence.DNA)
+
+	def test_iupac_results(self):
+		matches = seqpoet_script.match_primer(self.iupac_primers, self.iupac_seqs)
+		assert len(matches) == 1, 'expected 1 match, got {0}'.format(len(matches))
+
+	def test_results(self):
+		matches = seqpoet_script.match_primer(self.primers, self.seqs)
+		assert len(matches) == 1, 'expected 1 match, got {0}'.format(len(matches))
+
 class TestFindOperon:
 
 	def setup(self):
