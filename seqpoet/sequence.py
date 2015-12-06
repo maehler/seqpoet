@@ -89,7 +89,7 @@ class Sequence(object):
     #: Reverse complement translation table.
     _revcomp_trans = string.maketrans('acgt', 'tgca')
 
-    def __init__(self, seq, alphabet=IUPACDNA()):
+    def __init__(self, seq, alphabet=IUPACDNA):
         """Sequence constructor.
 
         To prevent confusion in sequence comparisons, sequences
@@ -101,7 +101,7 @@ class Sequence(object):
         Raises:
             ValuError: if the sequence contains illegal characters.
         """
-        self.alphabet = alphabet
+        self.alphabet = alphabet()
         self.seq = seq
         if not re.match(r'^[{0}]*$'.format(alphabet.bases), self.seq, re.I):
             raise ValueError('illegal characters in sequence, '

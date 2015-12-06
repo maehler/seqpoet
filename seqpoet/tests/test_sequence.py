@@ -34,10 +34,10 @@ class TestSequenceAlphabet:
 
     @raises(ValueError)
     def test_iupac_seq_wrong_alphabet(self):
-        assert Sequence('CAGWRSYKHVH', DNA())
+        assert Sequence('CAGWRSYKHVH', DNA)
 
     def test_iupac_seq_right_alphabet(self):
-        assert isinstance(Sequence('CAGWRSYKHVH', IUPACDNA()), Sequence)
+        assert isinstance(Sequence('CAGWRSYKHVH', IUPACDNA), Sequence)
 
 class TestSequence:
 
