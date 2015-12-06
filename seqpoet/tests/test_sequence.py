@@ -29,6 +29,8 @@ class TestAlphabet:
         assert IUPACDNA.equals('n', 'w')
         assert not IUPACDNA.equals('w', 'n')
         assert IUPACDNA.equals('CWGC', 'CAGC')
+        assert DNA.equals('GTACACTATGTTTATAACAATCATCCAG',
+                          'gtacactatgtttataacaatcatccag')
 
 class TestSequenceAlphabet:
 
@@ -81,6 +83,12 @@ class TestSequence:
         s = seqpoet.Sequence(self.seq1)
         assert s == self.seq1.lower()
         assert s[:3] == seqpoet.Sequence(self.seq1[:3])
+
+    def test_example_primers(self):
+        assert seqpoet.Sequence('GTACACTATGTTTATAACAATCATCCAG', DNA) == \
+               seqpoet.Sequence('gtacactatgtttataacaatcatccag', DNA)
+        assert seqpoet.Sequence('GCAAACCAGATTCAAAGTCAGTATG', DNA).revcomp() == \
+               seqpoet.Sequence('catactgactttgaatctggtttgc', DNA)
 
     def test_inequality(self):
         s = seqpoet.Sequence(self.seq1)
