@@ -11,21 +11,25 @@ import itertools
 import os
 import textwrap
 
+import seqpoet
 from seqpoet.sequence import Sequence
 
 class FastaIndex(object):
     """Represents an index for a FASTA file.
 
-    :param fname: filename of the FASTA file.
+    :param fname: filename of the FASTA file
+    :param alphabet: alphabet to use for sequences
     """
 
-    def __init__(self, fname):
+    def __init__(self, fname, alphabet=seqpoet.sequence.IUPACDNA):
         """FastaIndex constructor.
 
         Args:
             fname: filename of the FASTA index
+            alphabet: alphabet to use for sequences
         """
         self.filename = fname
+        self.alphabet = alphabet
         if not os.path.isfile(fname):
             self.index = self.create_index()
         else:
@@ -152,21 +156,25 @@ class FastaRecord(object):
 
     :param seq: the sequence of the record represented either as a string
                 or as a Sequence object.
+    :param alphabet: alphabet to use for sequences, only used if ``seq``
+                     is a string.
     :raises: TypeError if the seq argument is not a string or a Sequence.
     """
 
-    def __init__(self, seq, name):
+    def __init__(self, seq, name, alphabet=seqpoet.sequence.IUPACDNA):
         """FastaRecord constructor.
 
         Args:
             seq: the sequence of the record represented either as a string
                  or as a Sequence object.
+            alphabet: alphabet to use for sequences, only used if ``seq``
+                      is a string.
             name: the name (or FASTA header) of the record.
         Raises:
             TypeError: if the seq argument is not str or Sequence
         """
         if isinstance(seq, basestring):
-            self.seq = Sequence(seq)
+            self.seq = Sequence(seq, alphabet)
         elif isinstance(seq, Sequence):
             self.seq = seq
         else:
@@ -187,14 +195,16 @@ class FastaRecord(object):
 class Fasta(object):
     """Represent a FASTA file."""
 
-    def __init__(self, fname):
+    def __init__(self, fname, alphabet=seqpoet.sequence.IUPACDNA):
         """Fasta constructor.
 
         Args:
             fname: filename of the FASTA file
+            alphabet: alphabet to use for sequences
         """
         self.filename = fname
         self.index = FastaIndex(self.filename + '.fai')
+        self.alphabet = alphabet
 
     def get_record(self, key):
         """Get a single FASTA record.
@@ -204,7 +214,7 @@ class Fasta(object):
         """
         indexdict = self.index[key]
         if indexdict['length'] == 0:
-            return FastaRecord(Sequence(''), indexdict['name'])
+            return FastaRecord(Sequence('', self.alphabet), indexdict['name'])
         seq = ''
         with open(self.filename) as f:
             f.seek(indexdict['offset'])
@@ -214,7 +224,7 @@ class Fasta(object):
                 seq += f.read(indexdict['linelen']).strip()
             restbytes = indexdict['length'] % len(seq)
             seq += f.read(restbytes).strip()
-        return FastaRecord(Sequence(seq), indexdict['name'])
+        return FastaRecord(Sequence(seq, self.alphabet), indexdict['name'])
 
     def generate_records(self):
         """FastaRecord generator.

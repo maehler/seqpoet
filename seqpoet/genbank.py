@@ -9,6 +9,7 @@ import collections
 import itertools
 import re
 
+import seqpoet
 from seqpoet.sequence import Sequence
 
 class LocationError(Exception):
@@ -554,16 +555,19 @@ class GenBank(object):
         - index: a list of dictionaries representing an index of the file.
 
     :param fname: filename of the GenBank file.
+    :param alphabet: alphabet to use for sequences.
     :raises: :py:exc:`.ParsingError` if parsing fails.
     """
 
-    def __init__(self, fname):
+    def __init__(self, fname, alphabet=seqpoet.sequence.IUPACDNA):
         """GenBank constructor.
 
         Args:
             fname: filename of the GenBank file.
+            alphabet: alphabet to use for sequences.
         """
         self.filename = fname
+        self.alphabet = alphabet
         self.index, self.features = self._index()
 
     def _index(self):
@@ -772,8 +776,8 @@ class GenBank(object):
                 line = f.readline()
                 seq += ''.join(line.strip().split()[1:])
 
-        return GenBankLocus(locus_index['name'], Sequence(seq), features,
-            head_data)
+        return GenBankLocus(locus_index['name'], Sequence(seq, self.alphabet),
+            features, head_data)
 
     def get_locus_from_name(self, name):
         """Get a specific GenBankLocus object from the locus name.
