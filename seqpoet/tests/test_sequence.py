@@ -11,7 +11,7 @@ from seqpoet.sequence import Sequence, DNA, IUPACDNA
 class TestAlphabet:
 
     def test_dna_bases(self):
-        assert re.match(r'^[acgt]+$', DNA.bases, re.I)
+        assert re.match(r'^[acgtn]+$', DNA.bases, re.I)
 
     def test_iupac_dna_bases(self):
         assert re.match(r'^[ACGTMRWSYKVHDBN]+$', IUPACDNA.bases, re.I)

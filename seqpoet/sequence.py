@@ -16,7 +16,8 @@ class DNA(object):
         'A': { 'eq': set('A'), 'comp': 'T' },
         'C': { 'eq': set('C'), 'comp': 'G' },
         'G': { 'eq': set('G'), 'comp': 'C' },
-        'T': { 'eq': set('T'), 'comp': 'A' }
+        'T': { 'eq': set('T'), 'comp': 'A' },
+        'N': { 'eq': set('NMRWSYKVHDBACGT'), 'comp': 'N' }
     }
     bases      = ''.join(base_dict.keys())
     complement = ''.join(x['comp'] for x in base_dict.values())
@@ -68,8 +69,7 @@ class IUPACDNA(DNA):
         'V': { 'eq': set('VMRSACG'), 'comp': 'B' },
         'H': { 'eq': set('HMWYACT'), 'comp': 'D' },
         'D': { 'eq': set('DRWKAGT'), 'comp': 'H' },
-        'B': { 'eq': set('BSYKCGT'), 'comp': 'V' },
-        'N': { 'eq': set('NMRWSYKVHDBACGT'), 'comp': 'N' }
+        'B': { 'eq': set('BSYKCGT'), 'comp': 'V' }
     }
     base_dict.update(DNA.base_dict)
     bases      = ''.join(base_dict.keys())
