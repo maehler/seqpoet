@@ -48,6 +48,12 @@ class TestSearch:
         assert res == [14], 'expected one match in pos 14, found {0}' \
             .format(str(res))
 
+    def test_end_match(self):
+        needle = 'cacatg'
+        res = search(needle, self.haystack)
+        assert len(res) == 1
+        assert res[0] == 34
+
     def test_one_mismatch(self):
         res = search(self.needle, self.haystack, mismatches=1)
         assert res == [14], 'expected one match in pos 14, found {0}' \

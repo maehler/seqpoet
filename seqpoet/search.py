@@ -15,7 +15,7 @@ def search(needle, haystack, mismatches=0):
     """
     n = len(needle)
     matches = []
-    for i in xrange(0, len(haystack) - n):
+    for i in xrange(0, len(haystack) - n + 1):
         hd = hamming_distance(needle, haystack[i:i + n], mismatches)
         if hd <= mismatches:
             matches.append(i)
