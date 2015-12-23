@@ -23,6 +23,12 @@ class TestAlphabet:
         assert IUPACDNA.revcomp('NACRYSW') == 'WSRYGTN', \
             'expected WSRYGTN, got {0}'.format(IUPACDNA.revcomp('NACRYSW'))
 
+    def test_primer_revcomp(self):
+        assert IUPACDNA.revcomp('GCAAACCAGATTCAAAGTCAGTATG') == \
+            'CATACTGACTTTGAATCTGGTTTGC'
+        assert DNA.revcomp('GCAAACCAGATTCAAAGTCAGTATG') == \
+            'CATACTGACTTTGAATCTGGTTTGC'
+
     def test_equals(self):
         assert IUPACDNA.equals('nnnn', 'acgt')
         assert not IUPACDNA.equals('acgt', 'nnnn')
@@ -62,6 +68,9 @@ class TestSequence:
             '"{0}" is not "tatgtgtctctattctgtgtatgt"'.format(s.revcomp().seq)
         assert s2.revcomp() == 'aggt', \
             '"{0}" is not "aggt"'.format(s2.revcomp().seq)
+
+        s = seqpoet.Sequence('GCAAACCAGATTCAAAGTCAGTATG')
+        assert s.revcomp() == 'CATACTGACTTTGAATCTGGTTTGC'
 
     def test_str(self):
         s = seqpoet.Sequence(self.seq1)
