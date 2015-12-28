@@ -156,16 +156,16 @@ def match_primer(primers, seqs, mismatches=2, minus_revcomp=True,
     for fname, f in seqs.iteritems():
         try:
             for i, record in enumerate(f):
-                res1_1 = seqpoet.search.search(str(primers[0]), str(record.seq),
+                res1_1 = seqpoet.search.search(primers[0], record.seq,
                     mismatches=mismatches)
                 res1_2 = [len(record.seq) - x - pl1 for x in \
-                    seqpoet.search.search(str(primers[0]), str(record.seq.revcomp()),
+                    seqpoet.search.search(primers[0], record.seq.revcomp(),
                         mismatches=mismatches)]
 
-                res2_1 = seqpoet.search.search(str(primers[1]), str(record.seq),
+                res2_1 = seqpoet.search.search(primers[1], record.seq,
                     mismatches=mismatches)
                 res2_2 = [len(record.seq) - x - pl2 for x in \
-                    seqpoet.search.search(str(primers[1]), str(record.seq.revcomp()),
+                    seqpoet.search.search(primers[1], record.seq.revcomp(),
                         mismatches=mismatches)]
 
                 # Match res1_1 with res2_2 and res2_1 with res1_2 to get primer
